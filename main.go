@@ -4,6 +4,7 @@ import (
   "fmt"
   "log"
   "net/http"
+  "html/template"
   "github.com/fhs/gompd/mpd"
 )
 
@@ -36,7 +37,17 @@ func mpdStatus() string {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, mpdStatus())
+  p := map[string]string{
+    "APIURL": "localhost:8080",
+    "APIALT": "localhost:8080",
+    "MPDPORT": "6600",
+    "MPDHOST": "192.168.9.108",
+    "MPDPASS": "user",
+    "KPASS": "dev",
+  }
+  t, err := template.ParseFiles("res/gui.gotmp")
+  if err != nil { log.Fatalln(err) }
+  t.Execute(w, p)
 }
 
 func main() {
