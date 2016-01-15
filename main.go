@@ -51,12 +51,17 @@ func gui(w http.ResponseWriter, r *http.Request) {
   t.Execute(w, p)
 }
 
-func status(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w,mpdStatus())
+func api(w http.ResponseWriter, r *http.Request) {
+  switch r.FormValue("a"){
+    case "info":
+      w.Header().Set("Access-Control-Allow-Origin", "*")
+      w.Header().Set("Content-Type", "text/html")
+      fmt.Fprintf(w,mpdStatus())
+  }
 }
 
 func main() {
   http.HandleFunc("/", gui)
-  http.HandleFunc("/api", status)
+  http.HandleFunc("/api", api)
   http.ListenAndServe(":8080", nil)
 }
