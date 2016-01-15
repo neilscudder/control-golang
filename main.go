@@ -37,18 +37,23 @@ func mpdStatus() string {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-  p := map[string]string{
-    "APIURL": "localhost:8080",
-    "APIALT": "localhost:8080",
-    "MPDPORT": "6600",
-    "LABEL": "PORTO",
-    "MPDHOST": "192.168.9.108",
-    "MPDPASS": "user",
-    "KPASS": "dev",
-  }
-  t, err := template.ParseFiles("res/gui.gotmp")
-  if err != nil { log.Fatalln(err) }
-  t.Execute(w, p)
+  switch r.URL.Path[1:] {
+    case "api":
+      fmt.Fprintf(w,mpdStatus())
+    default:
+      p := map[string]string{
+        "APIURL": "192.168.9.114:8080/api",
+        "APIALT": "localhost:8080",
+        "MPDPORT": "6600",
+        "LABEL": "PORTO",
+        "MPDHOST": "192.168.9.108",
+        "MPDPASS": "user",
+        "KPASS": "dev",
+      }
+      t, err := template.ParseFiles("res/gui.gotmp")
+      if err != nil { log.Fatalln(err) }
+      t.Execute(w, p)
+    }
 }
 
 func main() {
