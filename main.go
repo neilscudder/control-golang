@@ -36,7 +36,7 @@ func mpdStatus() string {
   return line
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func gui(w http.ResponseWriter, r *http.Request) {
   p := map[string]string{
     "APIURL": "192.168.9.114:8080/api",
     "APIALT": "localhost:8080",
@@ -51,12 +51,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
   t.Execute(w, p)
 }
 
-func yohandler(w http.ResponseWriter, r *http.Request) {
+func status(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w,mpdStatus())
 }
 
 func main() {
-  http.HandleFunc("/", handler)
-  http.HandleFunc("/api", yohandler)
+  http.HandleFunc("/", gui)
+  http.HandleFunc("/api", status)
   http.ListenAndServe(":8080", nil)
 }
