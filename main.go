@@ -8,6 +8,16 @@ import (
   "github.com/fhs/gompd/mpd"
 )
 
+
+func mpdNext() {
+  conn, err := mpd.DialAuthenticated("tcp", "192.168.9.108:6600", "user")
+  if err != nil { log.Fatalln(err) }
+  defer conn.Close()
+
+  err = conn.Next()
+  if err != nil { log.Fatalln(err) }
+}
+
 func mpdStatus() string {
   conn, err := mpd.DialAuthenticated("tcp", "192.168.9.108:6600", "user")
   if err != nil { log.Fatalln(err) }
@@ -51,6 +61,8 @@ func api(w http.ResponseWriter, r *http.Request) {
       w.Header().Set("Access-Control-Allow-Origin", "*")
       w.Header().Set("Content-Type", "text/html")
       fmt.Fprintf(w,mpdStatus())
+    case "fw":
+      mpdNext()
   }
 }
 
