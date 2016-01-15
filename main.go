@@ -41,6 +41,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
     "APIURL": "localhost:8080",
     "APIALT": "localhost:8080",
     "MPDPORT": "6600",
+    "LABEL": "PORTO",
     "MPDHOST": "192.168.9.108",
     "MPDPASS": "user",
     "KPASS": "dev",

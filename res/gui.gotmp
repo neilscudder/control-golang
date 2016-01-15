@@ -327,13 +327,13 @@ path.confirm {
       <section id="info">just a sec..</section>
       <!-- END Viewer-->
     </main>
-    <div id={{.APIURL}} class="APIURL"></div>
-    <div id={{.APIALT}} class="APIALT"></div>
-    <div id={{.MPDPORT}} class="MPDPORT"></div>
-    <div id={{.MPDHOST}} class="MPDHOST"></div> 
-    <div id={{.MPDPASS}}  class="MPDPASS"></div>
-    <div id={{.LABEL}}  class="LABEL"></div>
-    <div id={{.KPASS}}  class="KPASS"></div>
+    <div id="{{.APIURL}}" class="APIURL"></div>
+    <div id="{{.APIALT}}" class="APIALT"></div>
+    <div id="{{.MPDPORT}}" class="MPDPORT"></div>
+    <div id="{{.MPDHOST}}" class="MPDHOST"></div> 
+    <div id="{{.MPDPASS}}"  class="MPDPASS"></div>
+    <div id="{{.LABEL}}"  class="LABEL"></div>
+    <div id="{{.KPASS}}"  class="KPASS"></div>
     
 <script>var clickEventType = ((document.ontouchstart!==null)?'click':'touchstart')
 var PreviousInfo
