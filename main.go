@@ -42,6 +42,19 @@ func mpdNoStatus(cmd string) {
         err = conn.SetVolume(new)
         if err != nil { log.Fatalln(err) }
       }
+    case "random":
+      status, err := conn.Status()
+      if err != nil { log.Fatalln(err) }
+      var current int
+      current, err = strconv.Atoi(status["random"])
+      if err != nil { log.Fatalln(err) }
+      if current == 1 {
+        err = conn.Random(false)
+        if err != nil { log.Fatalln(err) }
+      } else {
+        err = conn.Random(true)
+        if err != nil { log.Fatalln(err) }
+      }
    }
 }
 
