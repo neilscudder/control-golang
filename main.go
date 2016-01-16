@@ -15,45 +15,40 @@ func mpdConnect() *mpd.Client {
   return conn
 }
 
+func e(err error){
+  if err != nil { log.Fatalln(err) }
+}
+
 func mpdNoStatus(cmd string) {
   conn := mpdConnect()
   defer conn.Close()
   switch cmd {
     case "fw":
-      err := conn.Next()
-      if err != nil { log.Fatalln(err) }
+      err := conn.Next(); e(err)
     case "up":
-      status, err := conn.Status()
-      if err != nil { log.Fatalln(err) }
+      status, err := conn.Status(); e(err)
       var current int
-      current, _ = strconv.Atoi(status["volume"])
+      current, err = strconv.Atoi(status["volume"]); e(err)
       if current < 100 {
         new := current + 5
-        err = conn.SetVolume(new)
-        if err != nil { log.Fatalln(err) }
+        err = conn.SetVolume(new); e(err)
       }
     case "dn":
-      status, err := conn.Status()
-      if err != nil { log.Fatalln(err) }
+      status, err := conn.Status(); e(err)
       var current int
-      current, _ = strconv.Atoi(status["volume"])
+      current, err = strconv.Atoi(status["volume"]); e(err)
       if current > 0 {
         new := current - 5
-        err = conn.SetVolume(new)
-        if err != nil { log.Fatalln(err) }
+        err = conn.SetVolume(new); e(err)
       }
     case "random":
-      status, err := conn.Status()
-      if err != nil { log.Fatalln(err) }
+      status, err := conn.Status(); e(err)
       var current int
-      current, err = strconv.Atoi(status["random"])
-      if err != nil { log.Fatalln(err) }
+      current, err = strconv.Atoi(status["random"]); e(err)
       if current == 1 {
-        err = conn.Random(false)
-        if err != nil { log.Fatalln(err) }
+        err = conn.Random(false); e(err)
       } else {
-        err = conn.Random(true)
-        if err != nil { log.Fatalln(err) }
+        err = conn.Random(true); e(err)
       }
    }
 }
@@ -64,10 +59,8 @@ func mpdStatus() string {
   defer conn.Close()
   bufferedStatus := ""
   currentStatus := ""
-  status, err := conn.Status()
-  if err != nil { log.Fatalln(err) }
-   song, err := conn.CurrentSong()
-  if err != nil { log.Fatalln(err) }
+  status, err := conn.Status(); e(err)
+   song, err := conn.CurrentSong(); e(err)
   if status["state"] == "play" {
     currentStatus = fmt.Sprintf("%s - %s, (%s)", song["Artist"], song["Title"], status["volume"])
   } else {
@@ -89,8 +82,7 @@ func gui(w http.ResponseWriter, r *http.Request) {
     "MPDPASS": "user",
     "KPASS": "dev",
   }
-  t, err := template.ParseFiles("res/gui.gotmp")
-  if err != nil { log.Fatalln(err) }
+  t, err := template.ParseFiles("res/gui.gotmp"); e(err)
   t.Execute(w, p)
 }
 
