@@ -3,6 +3,7 @@ package main
 import (
   "fmt"
   "log"
+  "strconv"
   "net/http"
   "html/template"
   "github.com/fhs/gompd/mpd"
@@ -22,11 +23,25 @@ func mpdNoStatus(cmd string) {
       err := conn.Next()
       if err != nil { log.Fatalln(err) }
     case "up":
-      err := conn.SetVolume(90)
+      status, err := conn.Status()
       if err != nil { log.Fatalln(err) }
+      var current int
+      current, _ = strconv.Atoi(status["volume"])
+      if current < 100 {
+        new := current + 5
+        err = conn.SetVolume(new)
+        if err != nil { log.Fatalln(err) }
+      }
     case "dn":
-      err := conn.SetVolume(30)
+      status, err := conn.Status()
       if err != nil { log.Fatalln(err) }
+      var current int
+      current, _ = strconv.Atoi(status["volume"])
+      if current > 0 {
+        new := current - 5
+        err = conn.SetVolume(new)
+        if err != nil { log.Fatalln(err) }
+      }
    }
 }
 
@@ -38,10 +53,10 @@ func mpdStatus() string {
   currentStatus := ""
   status, err := conn.Status()
   if err != nil { log.Fatalln(err) }
-  song, err := conn.CurrentSong()
+   song, err := conn.CurrentSong()
   if err != nil { log.Fatalln(err) }
   if status["state"] == "play" {
-    currentStatus = fmt.Sprintf("%s - %s", song["Artist"], song["Title"])
+    currentStatus = fmt.Sprintf("%s - %s, (%s)", song["Artist"], song["Title"], status["volume"])
   } else {
     currentStatus = fmt.Sprintf("State: %s", status["state"])
   }
