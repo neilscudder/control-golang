@@ -14,12 +14,22 @@ func mpdConnect() *mpd.Client {
   return conn
 }
 
-func mpdNext() {
+func mpdNoStatus(cmd string) {
   conn := mpdConnect()
   defer conn.Close()
-  err := conn.Next()
-  if err != nil { log.Fatalln(err) }
+  switch cmd {
+    case "fw":
+      err := conn.Next()
+      if err != nil { log.Fatalln(err) }
+    case "up":
+      err := conn.SetVolume(90)
+      if err != nil { log.Fatalln(err) }
+    case "dn":
+      err := conn.SetVolume(30)
+      if err != nil { log.Fatalln(err) }
+   }
 }
+
 
 func mpdStatus() string {
   conn := mpdConnect()
@@ -44,7 +54,7 @@ func mpdStatus() string {
 func gui(w http.ResponseWriter, r *http.Request) {
   p := map[string]string{
     "APIURL": "http://192.168.9.114:8080/api",
-    "APIALT": "localhost:8080",
+    "APIALT": "",
     "MPDPORT": "6600",
     "LABEL": "PORTO",
     "MPDHOST": "192.168.9.108",
@@ -64,8 +74,8 @@ func api(w http.ResponseWriter, r *http.Request) {
       w.Header().Set("Access-Control-Allow-Origin", "*")
       w.Header().Set("Content-Type", "text/html")
       fmt.Fprintf(w,mpdStatus())
-    case "fw":
-      mpdNext()
+    default:
+      mpdNoStatus(r.FormValue("a"))
   }
 }
 
