@@ -380,7 +380,7 @@ function autoRefresh(id) {
   xhr.open("GET",localParams,true)
   xhr.send()
   xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4) {
+    if (xhr.readyState == 4 && xhr.status == 200) {
       var CurrentInfo = xhr.responseText;
       if (CurrentInfo !== PreviousInfo && !isEmpty(CurrentInfo)) {
         var div = document.getElementById(id)

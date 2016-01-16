@@ -43,7 +43,7 @@ func mpdStatus() string {
 
 func gui(w http.ResponseWriter, r *http.Request) {
   p := map[string]string{
-    "APIURL": "192.168.9.114:8080/api",
+    "APIURL": "http://192.168.9.114:8080/api",
     "APIALT": "localhost:8080",
     "MPDPORT": "6600",
     "LABEL": "PORTO",
@@ -57,8 +57,10 @@ func gui(w http.ResponseWriter, r *http.Request) {
 }
 
 func api(w http.ResponseWriter, r *http.Request) {
+  log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
   switch r.FormValue("a"){
     case "info":
+      w.Header().Set("Status", "200")
       w.Header().Set("Access-Control-Allow-Origin", "*")
       w.Header().Set("Content-Type", "text/html")
       fmt.Fprintf(w,mpdStatus())
