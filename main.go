@@ -1,7 +1,6 @@
 package main
 
 import (
-  "fmt"
   "log"
   "strconv"
   "net/http"
@@ -51,11 +50,9 @@ func mpdNoStatus(r *http.Request) {
    }
 }
 
-func mpdStatus(w http.ResponseWriter, r *http.Request) string {
+func mpdStatus(w http.ResponseWriter, r *http.Request) {
   conn := mpdConnect(r)
   defer conn.Close()
-  bufferedStatus := ""
-  currentStatus := ""
   status, ror := conn.Status(); er(ror)
   song, ror := conn.CurrentSong(); er(ror)
   if status["state"] == "play" {
@@ -67,12 +64,14 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) string {
     t, ror := template.ParseFiles("res/status.gotmp"); er(ror)
     t.Execute(w, p)
   } else {
-    currentStatus = fmt.Sprintf("State: %s", status["state"])
+    p := map[string]string{
+      "title": status["state"],
+      "artist": "",
+      "album": "",
+    }
+    t, ror := template.ParseFiles("res/status.gotmp"); er(ror)
+    t.Execute(w, p)
   }
-  if bufferedStatus != currentStatus {
-    bufferedStatus = currentStatus
-  }
-  return bufferedStatus
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
@@ -93,7 +92,7 @@ func api(w http.ResponseWriter, r *http.Request) {
   switch r.FormValue("a"){
     case "info":
       w.Header().Set("Content-Type", "text/html")
-      fmt.Fprintf(w,mpdStatus(w,r))
+      mpdStatus(w,r)
     default:
       log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
       mpdNoStatus(r)
@@ -102,7 +101,7 @@ func api(w http.ResponseWriter, r *http.Request) {
 
 func er(ror error){
   if ror != nil { log.Fatalln(ror) }
-} 
+}
 
 func main() {
   http.HandleFunc("/", gui)
