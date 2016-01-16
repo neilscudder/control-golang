@@ -19,29 +19,24 @@ func mpdNoStatus(r *http.Request) {
   cmd := r.FormValue("a")
   conn := mpdConnect(r)
   defer conn.Close()
+  status, ror := conn.Status(); er(ror)
   switch cmd {
     case "fw":
       ror := conn.Next(); er(ror)
     case "up":
-      status, ror := conn.Status(); er(ror)
-      var current int
-      current, ror = strconv.Atoi(status["volume"]); er(ror)
+      current, ror := strconv.Atoi(status["volume"]); er(ror)
       if current <= 95 {
         new := current + 5
         ror = conn.SetVolume(new); er(ror)
       }
     case "dn":
-      status, ror := conn.Status(); er(ror)
-      var current int
-      current, ror = strconv.Atoi(status["volume"]); er(ror)
+      current, ror := strconv.Atoi(status["volume"]); er(ror)
       if current >= 5 {
         new := current - 5
         ror = conn.SetVolume(new); er(ror)
       }
     case "random":
-      status, ror := conn.Status(); er(ror)
-      var current int
-      current, ror = strconv.Atoi(status["random"]); er(ror)
+      current, ror := strconv.Atoi(status["random"]); er(ror)
       if current == 1 {
         ror = conn.Random(false); er(ror)
       } else {
