@@ -8,21 +8,22 @@ import (
   "github.com/fhs/gompd/mpd"
 )
 
-
-func mpdNext() {
+func mpdConnect() *mpd.Client {
   conn, err := mpd.DialAuthenticated("tcp", "192.168.9.108:6600", "user")
   if err != nil { log.Fatalln(err) }
-  defer conn.Close()
+  return conn
+}
 
-  err = conn.Next()
+func mpdNext() {
+  conn := mpdConnect()
+  defer conn.Close()
+  err := conn.Next()
   if err != nil { log.Fatalln(err) }
 }
 
 func mpdStatus() string {
-  conn, err := mpd.DialAuthenticated("tcp", "192.168.9.108:6600", "user")
-  if err != nil { log.Fatalln(err) }
+  conn := mpdConnect()
   defer conn.Close()
-
   bufferedStatus := ""
   currentStatus := ""
   status, err := conn.Status()
