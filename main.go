@@ -82,7 +82,6 @@ func gui(w http.ResponseWriter, r *http.Request) {
 }
 
 func api(w http.ResponseWriter, r *http.Request) {
-  log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
   switch r.FormValue("a"){
     case "info":
       w.Header().Set("Status", "200")
@@ -90,6 +89,7 @@ func api(w http.ResponseWriter, r *http.Request) {
       w.Header().Set("Content-Type", "text/html")
       fmt.Fprintf(w,mpdStatus())
     default:
+      log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
       mpdNoStatus(r.FormValue("a"))
   }
 }
