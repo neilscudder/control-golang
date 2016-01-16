@@ -71,13 +71,13 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) {
 
 func gui(w http.ResponseWriter, r *http.Request) {
   p := map[string]string{
-    "APIURL": "http://192.168.9.114:8080/api",
-    "APIALT": "",
-    "MPDPORT": "6600",
-    "LABEL": "PORTO",
-    "MPDHOST": "192.168.9.108",
-    "MPDPASS": "user",
-    "KPASS": "dev",
+    "APIURL": r.FormValue("APIURL"),
+    "APIALT": r.FormValue("APIALT"),
+    "MPDPORT": r.FormValue("MPDPORT"),
+    "LABEL": r.FormValue("LABEL"),
+    "MPDHOST": r.FormValue("MPDHOST"),
+    "MPDPASS": r.FormValue("MPDPASS"),
+    "KPASS": r.FormValue("KPASS"),
   }
   t, ror := template.ParseFiles("res/gui.gotmp"); er(ror)
   t.Execute(w, p)
