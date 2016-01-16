@@ -9,18 +9,16 @@ import (
   "github.com/fhs/gompd/mpd"
 )
 
-func mpdConnect() *mpd.Client {
-  conn, ror := mpd.DialAuthenticated("tcp", "192.168.9.108:6600", "user")
-  if ror != nil { log.Fatalln(ror) }
+func mpdConnect(r *http.Request) *mpd.Client {
+  host := r.FormValue("MPDHOST") + ":" + r.FormValue("MPDPORT")
+  pass := r.FormValue("MPDPASS")
+  conn, ror := mpd.DialAuthenticated("tcp", host, pass); er(ror)
   return conn
 }
 
-func er(ror error){
-  if ror != nil { log.Fatalln(ror) }
-}
-
-func mpdNoStatus(cmd string) {
-  conn := mpdConnect()
+func mpdNoStatus(r *http.Request) {
+  cmd := r.FormValue("a")
+  conn := mpdConnect(r)
   defer conn.Close()
   switch cmd {
     case "fw":
@@ -53,9 +51,8 @@ func mpdNoStatus(cmd string) {
    }
 }
 
-
-func mpdStatus() string {
-  conn := mpdConnect()
+func mpdStatus(r *http.Request) string {
+  conn := mpdConnect(r)
   defer conn.Close()
   bufferedStatus := ""
   currentStatus := ""
@@ -90,12 +87,16 @@ func api(w http.ResponseWriter, r *http.Request) {
   switch r.FormValue("a"){
     case "info":
       w.Header().Set("Content-Type", "text/html")
-      fmt.Fprintf(w,mpdStatus())
+      fmt.Fprintf(w,mpdStatus(r))
     default:
       log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
-      mpdNoStatus(r.FormValue("a"))
+      mpdNoStatus(r)
   }
 }
+
+func er(ror error){
+  if ror != nil { log.Fatalln(ror) }
+} 
 
 func main() {
   http.HandleFunc("/", gui)
