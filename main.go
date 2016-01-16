@@ -112,7 +112,7 @@ func authorize(w http.ResponseWriter, r *http.Request) {
     if r.FormValue("EMAIL") != "" { controlURL += "&EMAIL=" + r.FormValue("EMAIL") }
     if r.FormValue("APIURL") != "" { controlURL += "&APIURL=" + r.FormValue("APIURL") }
     if r.FormValue("APIALT") != "" { controlURL += "&APIALT=" + r.FormValue("APIALT") }
-    if r.FormValue("KPASS") != "" { controlURL += "&KPASS=" + r.FormValue("KPASS") }
+    controlURL += "&KPASS="
     resetURL := controlURL
     rkey,ror := uuid.NewV4(); er(ror)
     ckey,ror := uuid.NewV4(); er(ror)
