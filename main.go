@@ -27,7 +27,7 @@ func mpdNoStatus(r *http.Request) {
       status, ror := conn.Status(); er(ror)
       var current int
       current, ror = strconv.Atoi(status["volume"]); er(ror)
-      if current < 100 {
+      if current <= 95 {
         new := current + 5
         ror = conn.SetVolume(new); er(ror)
       }
@@ -35,7 +35,7 @@ func mpdNoStatus(r *http.Request) {
       status, ror := conn.Status(); er(ror)
       var current int
       current, ror = strconv.Atoi(status["volume"]); er(ror)
-      if current > 0 {
+      if current >= 5 {
         new := current - 5
         ror = conn.SetVolume(new); er(ror)
       }
@@ -51,7 +51,7 @@ func mpdNoStatus(r *http.Request) {
    }
 }
 
-func mpdStatus(r *http.Request) string {
+func mpdStatus(w http.ResponseWriter, r *http.Request) string {
   conn := mpdConnect(r)
   defer conn.Close()
   bufferedStatus := ""
@@ -59,7 +59,13 @@ func mpdStatus(r *http.Request) string {
   status, ror := conn.Status(); er(ror)
   song, ror := conn.CurrentSong(); er(ror)
   if status["state"] == "play" {
-    currentStatus = fmt.Sprintf("%s - %s, (%s)", song["Artist"], song["Title"], status["volume"])
+    p := map[string]string{
+      "title": song["Title"],
+      "artist": song["Artist"],
+      "album": song["Album"],
+    }
+    t, ror := template.ParseFiles("res/status.gotmp"); er(ror)
+    t.Execute(w, p)
   } else {
     currentStatus = fmt.Sprintf("State: %s", status["state"])
   }
@@ -87,7 +93,7 @@ func api(w http.ResponseWriter, r *http.Request) {
   switch r.FormValue("a"){
     case "info":
       w.Header().Set("Content-Type", "text/html")
-      fmt.Fprintf(w,mpdStatus(r))
+      fmt.Fprintf(w,mpdStatus(w,r))
     default:
       log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
       mpdNoStatus(r)
