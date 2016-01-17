@@ -2,6 +2,7 @@ package main
 
 import (
   "log"
+  "path"
   "strconv"
   "net/http"
   "html/template"
@@ -51,11 +52,21 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) {
   defer conn.Close()
   status, ror := conn.Status(); er(ror)
   song, ror := conn.CurrentSong(); er(ror)
-  if status["state"] == "play" {
+  if status["state"] == "play" && song["Title"] != "" {
     p := map[string]string{
       "title": song["Title"],
       "artist": song["Artist"],
       "album": song["Album"],
+    }
+    t, ror := template.ParseFiles("res/status.gotmp"); er(ror)
+    t.Execute(w, p)
+  } else if status["state"] == "play" {
+    filename := path.Base(song["file"])
+    directory := path.Dir(song["file"])
+    p := map[string]string{
+      "title": filename,
+      "artist": song["Artist"],
+      "album": directory,
     }
     t, ror := template.ParseFiles("res/status.gotmp"); er(ror)
     t.Execute(w, p)
