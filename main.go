@@ -97,13 +97,7 @@ func gui(w http.ResponseWriter, r *http.Request) {
 
 func authority(w http.ResponseWriter, r *http.Request) {
   p := map[string]string{
-    "": r.FormValue("APIURL"),
-    "APIALT": r.FormValue("APIALT"),
-    "MPDPORT": r.FormValue("MPDPORT"),
-    "LABEL": r.FormValue("LABEL"),
-    "MPDHOST": r.FormValue("MPDHOST"),
-    "MPDPASS": r.FormValue("MPDPASS"),
-    "KPASS": r.FormValue("KPASS"),
+    "dummy": r.FormValue("dummy"),
   }
   t, ror := template.ParseFiles("res/authority.gotmp"); er(ror)
   t.Execute(w, p)

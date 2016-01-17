@@ -327,28 +327,16 @@ path.confirm {
       <section id="info">just a sec..</section>
       <!-- END Viewer-->
     </main>
-    <div id="{{.APIURL}}" class="APIURL"></div>
-    <div id="{{.APIALT}}" class="APIALT"></div>
-    <div id="{{.MPDPORT}}" class="MPDPORT"></div>
-    <div id="{{.MPDHOST}}" class="MPDHOST"></div> 
-    <div id="{{.MPDPASS}}"  class="MPDPASS"></div>
-    <div id="{{.LABEL}}"  class="LABEL"></div>
-    <div id="{{.KPASS}}"  class="KPASS"></div>
     
 <script>var clickEventType = ((document.ontouchstart!==null)?'click':'touchstart')
 var PreviousInfo
-var APIURL = document.getElementsByClassName("APIURL")[0].id
-var APIALT = document.getElementsByClassName("APIALT")[0].id
-var MPDPORT = document.getElementsByClassName("MPDPORT")[0].id
-var MPDHOST = document.getElementsByClassName("MPDHOST")[0].id
-var MPDPASS = document.getElementsByClassName("MPDPASS")[0].id
-var KPASS = document.getElementsByClassName("KPASS")[0].id
+var p = {{.}}
 // TODO fallback to APIALT if necessary
-params = APIURL 
-  + "?MPDPORT=" + MPDPORT
-  + "&MPDHOST=" + MPDHOST
-  + "&MPDPASS=" + MPDPASS
-  + "&KPASS=" + KPASS;
+params = p.APIURL 
+  + "?MPDPORT=" + p.MPDPORT
+  + "&MPDHOST=" + p.MPDHOST
+  + "&MPDPASS=" + p.MPDPASS
+  + "&KPASS=" + p.KPASS;
 
 function sendCmd(id){
   var x = document.getElementById(id)
