@@ -1,10 +1,11 @@
 package main
 
 import (
-  "fmt"
+//  "fmt"
   "log"
   "path"
   "strconv"
+  "encoding/json"
   "io/ioutil"
   "net/http"
   "html/template"
@@ -84,21 +85,29 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 type Params struct {
-  APIURL string
-  APIALT string
-  LABEL string
-  EMAIL string
-  MPDPORT string
-  MPDHOST string
-  MPDPASS string
-  KPASS string
+  APIURL,
+  APIALT,
+  LABEL,
+  EMAIL,
+  MPDPORT,
+  MPDHOST,
+  MPDPASS,
+  KPASS,
   RPASS string
 }
 
 func (p *Params) save() error {
-  filename := p.RPASS + "." + p.EMAIL
-  byteP := []byte(fmt.Sprintf("%v", p)) 
+  filename := p.RPASS + ".txt"
+  byteP,_ := json.Marshal(p)
   return ioutil.WriteFile(filename, byteP, 0600)
+}
+
+func loadParams(rpass string) *Params {
+  var p *Params
+  filename := rpass + ".txt"
+  byteP,ror := ioutil.ReadFile(filename); er(ror)
+  ror = json.Unmarshal(byteP, &p); er(ror)
+  return p
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
