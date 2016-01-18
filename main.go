@@ -1,9 +1,11 @@
 package main
 
 import (
+  "fmt"
   "log"
   "path"
   "strconv"
+  "io/ioutil"
   "net/http"
   "html/template"
   "github.com/fhs/gompd/mpd"
@@ -81,6 +83,24 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+type Params struct {
+  APIURL string
+  APIALT string
+  LABEL string
+  EMAIL string
+  MPDPORT string
+  MPDHOST string
+  MPDPASS string
+  KPASS string
+  RPASS string
+}
+
+func (p *Params) save() error {
+  filename := p.RPASS + "." + p.EMAIL
+  byteP := []byte(fmt.Sprintf("%v", p)) 
+  return ioutil.WriteFile(filename, byteP, 0600)
+}
+
 func gui(w http.ResponseWriter, r *http.Request) {
   p := map[string]string{
     "APIURL": r.FormValue("APIURL"),
@@ -117,8 +137,9 @@ func authorize(w http.ResponseWriter, r *http.Request) {
     if r.FormValue("EMAIL") != "" { controlURL += "&EMAIL=" + r.FormValue("EMAIL") }
     if r.FormValue("APIURL") != "" { controlURL += "&APIURL=" + r.FormValue("APIURL") }
     if r.FormValue("APIALT") != "" { controlURL += "&APIALT=" + r.FormValue("APIALT") }
-    controlURL += "&KPASS="
     resetURL := controlURL
+    controlURL += "&KPASS="
+    resetURL += "&RPASS="
     rkey,ror := uuid.NewV4(); er(ror)
     ckey,ror := uuid.NewV4(); er(ror)
     resetURL += rkey.String()
