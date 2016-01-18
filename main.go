@@ -85,6 +85,7 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 type Params struct {
+  GUIURL,
   APIURL,
   APIALT,
   LABEL,
@@ -97,8 +98,8 @@ type Params struct {
 }
 
 func (p *Params) save() error {
-  filename := p.RPASS + ".txt"
-  byteP,_ := json.Marshal(p)
+  filename := p.KPASS + ".txt"
+  byteP,ror := json.Marshal(p); er(ror)
   return ioutil.WriteFile(filename, byteP, 0600)
 }
 
@@ -133,33 +134,44 @@ func authority(w http.ResponseWriter, r *http.Request) {
 }
 
 func authorize(w http.ResponseWriter, r *http.Request) {
-// TODO validate data here
-    controlURL := r.FormValue("GUIURL") + "/?"
-    if r.FormValue("MPDPASS") != "" && r.FormValue("MPDHOST") != "" {
-      controlURL += "MPDPASS=" + r.FormValue("MPDPASS") + "&MPDHOST=" + r.FormValue("MPDHOST")
-    }
-    if r.FormValue("MPDPASS") == "" && r.FormValue("MPDHOST") != "" {
-      controlURL += "&MPDHOST=" + r.FormValue("MPDHOST")
-    }
-    if r.FormValue("MPDPORT") != "" { controlURL += "&MPDPORT=" + r.FormValue("MPDPORT") }
-    if r.FormValue("LABEL") != "" { controlURL += "&LABEL=" + r.FormValue("LABEL") }
-    if r.FormValue("EMAIL") != "" { controlURL += "&EMAIL=" + r.FormValue("EMAIL") }
-    if r.FormValue("APIURL") != "" { controlURL += "&APIURL=" + r.FormValue("APIURL") }
-    if r.FormValue("APIALT") != "" { controlURL += "&APIALT=" + r.FormValue("APIALT") }
-    resetURL := controlURL
-    controlURL += "&KPASS="
-    resetURL += "&RPASS="
-    rkey,ror := uuid.NewV4(); er(ror)
-    ckey,ror := uuid.NewV4(); er(ror)
-    resetURL += rkey.String()
-    controlURL += ckey.String()
-
-  p := map[string]string{
+  p := &Params{
+    GUIURL: r.FormValue("GUIURL"),
+    APIURL: r.FormValue("APIURL"),
+    APIALT: r.FormValue("APIALT"),
+    LABEL: r.FormValue("LABEL"),
+    EMAIL: r.FormValue("EMAIL"),
+    MPDPORT: r.FormValue("MPDPORT"),
+    MPDHOST: r.FormValue("MPDHOST"),
+    MPDPASS: r.FormValue("MPDPASS"),
+  }
+  controlURL := p.GUIURL + "/?"
+  if p.MPDPASS != "" && p.MPDHOST != "" {
+    controlURL += "MPDPASS=" + p.MPDPASS + "&MPDHOST=" + p.MPDHOST
+  }
+  if p.MPDPASS == "" && p.MPDHOST != "" {
+    controlURL += "&MPDHOST=" + p.MPDHOST
+  }
+  if p.MPDPORT != "" { controlURL += "&MPDPORT=" + p.MPDPORT }
+  if p.LABEL != "" { controlURL += "&LABEL=" + p.LABEL }
+  if p.EMAIL != "" { controlURL += "&EMAIL=" + p.EMAIL }
+  if p.APIURL != "" { controlURL += "&APIURL=" + p.APIURL }
+  if p.APIALT != "" { controlURL += "&APIALT=" + p.APIALT }
+  resetURL := controlURL
+  controlURL += "&KPASS="
+  resetURL += "&RPASS="
+  rkey,ror := uuid.NewV4(); er(ror)
+  ckey,ror := uuid.NewV4(); er(ror)
+  p.KPASS = ckey.String()
+  p.RPASS = rkey.String()
+  ror = p.save(); er(ror)
+  resetURL += rkey.String()
+  controlURL += ckey.String()
+  u := map[string]string{
     "controlURL": controlURL,
     "resetURL": resetURL,
   }
   t, ror := template.ParseFiles("res/authorize.gotmp"); er(ror)
-  t.Execute(w, p)
+  t.Execute(w, u)
 }
 
 func api(w http.ResponseWriter, r *http.Request) {
