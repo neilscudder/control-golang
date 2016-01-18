@@ -144,31 +144,31 @@ func authorize(w http.ResponseWriter, r *http.Request) {
     MPDHOST: r.FormValue("MPDHOST"),
     MPDPASS: r.FormValue("MPDPASS"),
   }
-  controlURL := p.GUIURL + "/?"
+  cURL := p.GUIURL + "/?"
   if p.MPDPASS != "" && p.MPDHOST != "" {
-    controlURL += "MPDPASS=" + p.MPDPASS + "&MPDHOST=" + p.MPDHOST
+    cURL += "MPDPASS=" + p.MPDPASS + "&MPDHOST=" + p.MPDHOST
   }
   if p.MPDPASS == "" && p.MPDHOST != "" {
-    controlURL += "&MPDHOST=" + p.MPDHOST
+    cURL += "&MPDHOST=" + p.MPDHOST
   }
-  if p.MPDPORT != "" { controlURL += "&MPDPORT=" + p.MPDPORT }
-  if p.LABEL != "" { controlURL += "&LABEL=" + p.LABEL }
-  if p.EMAIL != "" { controlURL += "&EMAIL=" + p.EMAIL }
-  if p.APIURL != "" { controlURL += "&APIURL=" + p.APIURL }
-  if p.APIALT != "" { controlURL += "&APIALT=" + p.APIALT }
-  resetURL := controlURL
-  controlURL += "&KPASS="
-  resetURL += "&RPASS="
-  rkey,ror := uuid.NewV4(); er(ror)
-  ckey,ror := uuid.NewV4(); er(ror)
+  if p.MPDPORT != "" { cURL += "&MPDPORT=" + p.MPDPORT }
+  if p.LABEL != "" { cURL += "&LABEL=" + p.LABEL }
+  if p.EMAIL != "" { cURL += "&EMAIL=" + p.EMAIL }
+  if p.APIURL != "" { cURL += "&APIURL=" + p.APIURL }
+  if p.APIALT != "" { cURL += "&APIALT=" + p.APIALT }
+  rURL := cURL
+  cURL += "&KPASS="
+  rURL += "&RPASS="
+  rkey,_ := uuid.NewV4()
+  ckey,_ := uuid.NewV4()
   p.KPASS = ckey.String()
   p.RPASS = rkey.String()
-  ror = p.save(); er(ror)
-  resetURL += rkey.String()
-  controlURL += ckey.String()
+  ror := p.save(); er(ror)            // Save to file
+  rURL += rkey.String()              // Reset URL
+  cURL += ckey.String()              // Control URL
   u := map[string]string{
-    "controlURL": controlURL,
-    "resetURL": resetURL,
+    "controlURL": cURL,
+    "resetURL": rURL,
   }
   t, ror := template.ParseFiles("res/authorize.gotmp"); er(ror)
   t.Execute(w, u)
