@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-  http.HandleFunc("/gui", gui)
+  http.HandleFunc("/", gui)
   http.HandleFunc("/get", get)
   http.HandleFunc("/cmd", cmd)
   http.HandleFunc("/authority", authority)
@@ -25,7 +25,8 @@ func main() {
 
 func gui(w http.ResponseWriter, r *http.Request) {
   var p *Params
-  p = authenticate(r.FormValue("KPASS"))
+  kpass := r.FormValue("KPASS")
+  p = authenticate(kpass)
   t, ror := template.ParseGlob("templates/gui/*"); er(ror)
   t.ExecuteTemplate(w, "GUI" ,p)
 }
@@ -43,7 +44,8 @@ func cmd(w http.ResponseWriter, r *http.Request) {
 
 func mpdConnect(r *http.Request) *mpd.Client {
   var p *Params
-  p = authenticate(r.FormValue("KPASS"))
+  kpass := r.FormValue("KPASS")
+  p = authenticate(kpass)
   host := p.MPDHOST + ":" + p.MPDPORT
   pass := p.MPDPASS
   conn, ror := mpd.DialAuthenticated("tcp", host, pass); er(ror)
@@ -119,7 +121,8 @@ type Params struct {
   EMAIL,
   MPDPORT,
   MPDHOST,
-  MPDPASS string
+  MPDPASS,
+  KPASS string
 }
 
 func (p *Params) save(kpass, rpass string) error {
@@ -130,10 +133,9 @@ func (p *Params) save(kpass, rpass string) error {
 
 func authenticate(kpass string) *Params {
   var p Params
-  if len(kpass) < 3 { kpass = "nil" }
   file,ror := filepath.Glob("data/" + kpass + ".*"); er(ror)
   if file == nil {
-    log.Fatalf("Access Denied")
+    log.Fatalf("Access Denied: kpass=%v",kpass)
   } else {
     log.Printf("Authenticated: %v", file)
     byteP,ror := ioutil.ReadFile(file[0]); er(ror)
@@ -159,6 +161,7 @@ func authorize(w http.ResponseWriter, r *http.Request) {
     MPDPORT: r.FormValue("MPDPORT"),
     MPDHOST: r.FormValue("MPDHOST"),
     MPDPASS: r.FormValue("MPDPASS"),
+    KPASS: r.FormValue("KPASS"),
   }
   cURL := r.FormValue("GUIURL") + "/?"
   if p.MPDPASS != "" && p.MPDHOST != "" {
@@ -177,6 +180,7 @@ func authorize(w http.ResponseWriter, r *http.Request) {
   rURL += "&RPASS="
   rkey,_ := uuid.NewV4()
   ckey,_ := uuid.NewV4()
+  p.KPASS = ckey.String()
   ror := p.save(ckey.String(),rkey.String()); er(ror)            // Save to file
   rURL += rkey.String()                       // Reset URL
   cURL += ckey.String()                      // Control URL
