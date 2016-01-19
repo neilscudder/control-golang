@@ -4,6 +4,7 @@ import (
 //  "fmt"
   "log"
   "path"
+  "path/filepath"
   "strconv"
   "encoding/json"
   "io/ioutil"
@@ -23,7 +24,8 @@ func main() {
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
-  p := map[string]string{
+  p := authenticate(r.FormValue("KPASS"))
+/*  p := map[string]string{
     "APIURL": r.FormValue("APIURL"),
     "APIALT": r.FormValue("APIALT"),
     "MPDPORT": r.FormValue("MPDPORT"),
@@ -31,12 +33,11 @@ func gui(w http.ResponseWriter, r *http.Request) {
     "MPDHOST": r.FormValue("MPDHOST"),
     "MPDPASS": r.FormValue("MPDPASS"),
     "KPASS": r.FormValue("KPASS"),
-  }
+  }*/
   //var templates = template.Must(template.ParseGlob("templates/gui/*"))
   t, ror := template.ParseGlob("templates/gui/*"); er(ror)
   t.ExecuteTemplate(w, "GUI" ,p)
 }
-
 func get(w http.ResponseWriter, r *http.Request) {
   switch r.FormValue("a"){
     case "info":
@@ -44,37 +45,9 @@ func get(w http.ResponseWriter, r *http.Request) {
       mpdStatus(w,r)
   }
 }
-
 func cmd(w http.ResponseWriter, r *http.Request) {
   log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
   mpdNoStatus(r)
-}
-
-type Params struct {
-  GUIURL,
-  APIURL,
-  APIALT,
-  LABEL,
-  EMAIL,
-  MPDPORT,
-  MPDHOST,
-  MPDPASS,
-  KPASS,
-  RPASS string
-}
-
-func (p *Params) save() error {
-  filename := "data/" + p.KPASS + "." + p.RPASS
-  byteP,ror := json.Marshal(p); er(ror)
-  return ioutil.WriteFile(filename, byteP, 0600)
-}
-
-func loadParams(rpass string) *Params {
-  var p *Params
-  filename := rpass + ".txt"
-  byteP,ror := ioutil.ReadFile(filename); er(ror)
-  ror = json.Unmarshal(byteP, &p); er(ror)
-  return p
 }
 
 func authority(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +60,6 @@ func authority(w http.ResponseWriter, r *http.Request) {
 
 func authorize(w http.ResponseWriter, r *http.Request) {
   p := &Params{
-    GUIURL: r.FormValue("GUIURL"),
     APIURL: r.FormValue("APIURL"),
     APIALT: r.FormValue("APIALT"),
     LABEL: r.FormValue("LABEL"),
@@ -96,7 +68,7 @@ func authorize(w http.ResponseWriter, r *http.Request) {
     MPDHOST: r.FormValue("MPDHOST"),
     MPDPASS: r.FormValue("MPDPASS"),
   }
-  cURL := p.GUIURL + "/?"
+  cURL := r.FormValue("GUIURL") + "/?"
   if p.MPDPASS != "" && p.MPDHOST != "" {
     cURL += "MPDPASS=" + p.MPDPASS + "&MPDHOST=" + p.MPDHOST
   }
@@ -113,11 +85,9 @@ func authorize(w http.ResponseWriter, r *http.Request) {
   rURL += "&RPASS="
   rkey,_ := uuid.NewV4()
   ckey,_ := uuid.NewV4()
-  p.KPASS = ckey.String()
-  p.RPASS = rkey.String()
-  ror := p.save(); er(ror)            // Save to file
-  rURL += rkey.String()              // Reset URL
-  cURL += ckey.String()              // Control URL
+  ror := p.save(ckey.String(),rkey.String()); er(ror)            // Save to file
+  rURL += rkey.String()                       // Reset URL
+  cURL += ckey.String()                      // Control URL
   u := map[string]string{
     "controlURL": cURL,
     "resetURL": rURL,
@@ -193,6 +163,34 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) {
     }
     t.Execute(w, p)
   }
+}
+
+type Params struct {
+  APIURL,
+  APIALT,
+  LABEL,
+  EMAIL,
+  MPDPORT,
+  MPDHOST,
+  MPDPASS string
+}
+
+func (p *Params) save(kpass, rpass string) error {
+  filename := "data/" + kpass + "." + rpass
+  byteP,ror := json.Marshal(p); er(ror)
+  return ioutil.WriteFile(filename, byteP, 0600)
+}
+
+func authenticate(kpass string) *Params {
+  var p *Params
+  file,err := filepath.Glob("data/" + kpass + ".*")
+  if err != nil {
+    log.Printf("Access Denied")
+  }
+  log.Printf("Authenticated: " + kpass)
+  byteP,ror := ioutil.ReadFile(file[0]); er(ror)
+  ror = json.Unmarshal(byteP, &p); er(ror)
+  return p
 }
 
 func er(ror error){
