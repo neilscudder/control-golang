@@ -87,8 +87,9 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 }
 
 func mpdConnect(r *http.Request) *mpd.Client {
-  host := r.FormValue("MPDHOST") + ":" + r.FormValue("MPDPORT")
-  pass := r.FormValue("MPDPASS")
+  p := authenticate(r.FormValue("KPASS"))
+  host := p.MPDHOST + ":" + p.MPDPORT
+  pass := p.MPDPASS
   conn, ror := mpd.DialAuthenticated("tcp", host, pass); er(ror)
   return conn
 }
