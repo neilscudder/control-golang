@@ -96,7 +96,7 @@ type Params struct {
 }
 
 func (p *Params) save() error {
-  filename := p.KPASS + ".txt"
+  filename := "data/" + p.KPASS + "." + p.RPASS
   byteP,ror := json.Marshal(p); er(ror)
   return ioutil.WriteFile(filename, byteP, 0600)
 }
