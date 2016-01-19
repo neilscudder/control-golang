@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <title>Playnode Control Authority</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <style type="text/css">
+      body{
+      background-color: #002b36;
+      font-family: sans-serif;
+      color: #93a1a1;
+      }
+      input{
+      font-size: 1.3em;
+      color: #002b36;
+      background-color: #eee8d5;
+      width: 90%;
+      }
+      h4{
+      margin: 5px 0 5px 0;
+      }
+      a{
+      color: #eee8d5;
+      }
+    </style>
+  </head>
+  <body>
+      <p>Authorization updated. Your URLs are:</p>
+      <p><a href="{{.controlURL}}">{{.controlURL}}</a></p>
+      <p><a href="{{.resetURL}}">{{.resetURL}}</a></p>
+  </body>
+</html>

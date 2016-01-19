@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <title>Playnode Control Authority</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <style type="text/css">
+      body{
+      background-color: #002b36;
+      font-family: sans-serif;
+      color: #93a1a1;
+      }
+      input{
+      font-size: 1.3em;
+      color: #002b36;
+      background-color: #eee8d5;
+      width: 90%;
+      }
+      h4{
+      margin: 5px 0 5px 0;
+      }
+      a{
+      color: #eee8d5;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="authorize" method="post" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate="">
+      <h4>Playnode label:</h4>
+      <input type="text" name="LABEL" value="Porto"/>
+      <h4>User email:</h4>
+      <input type="text" name="EMAIL" value="dude@my.car"/>
+      <h4>MPD port:</h4>
+      <input type="text" name="MPDPORT" value="6600"/>
+      <h4>MPD host:</h4>
+      <input type="text" name="MPDHOST" value="192.168.9.105"/>
+      <h4>MPD password:</h4>
+      <input type="text" name="MPDPASS" value="user"/>
+      <h4>Server:</h4>
+      <input type="text" name="GUIURL" value="http://192.168.9.113:8080/"/>
+      <h4>API Server:</h4>
+      <input type="text" name="APIURL" value="http://192.168.9.113:8080/"/>
+      <h4>ALT API Server:</h4>
+      <input type="text" name="APIALT" value=""/><br/><br/>
+      <input type="submit" value="Submit"/>
+    </form>
+  </body>
+</html>
