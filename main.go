@@ -55,13 +55,13 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) {
   defer conn.Close()
   status, ror := conn.Status(); er(ror)
   song, ror := conn.CurrentSong(); er(ror)
+  t, ror := template.ParseFiles("templates/status.html"); er(ror)
   if status["state"] == "play" && song["Title"] != "" {
     p := map[string]string{
       "title": song["Title"],
       "artist": song["Artist"],
       "album": song["Album"],
     }
-    t, ror := template.ParseFiles("res/status.gotmp"); er(ror)
     t.Execute(w, p)
   } else if status["state"] == "play" {
     filename := path.Base(song["file"])
@@ -71,7 +71,6 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) {
       "artist": song["Artist"],
       "album": directory,
     }
-    t, ror := template.ParseFiles("res/status.gotmp"); er(ror)
     t.Execute(w, p)
   } else {
     p := map[string]string{
@@ -79,7 +78,6 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) {
       "artist": "",
       "album": "",
     }
-    t, ror := template.ParseFiles("res/status.gotmp"); er(ror)
     t.Execute(w, p)
   }
 }
@@ -121,15 +119,16 @@ func gui(w http.ResponseWriter, r *http.Request) {
     "MPDPASS": r.FormValue("MPDPASS"),
     "KPASS": r.FormValue("KPASS"),
   }
-  t, ror := template.ParseFiles("res/gui.gotmp"); er(ror)
-  t.Execute(w, p)
+  //var templates = template.Must(template.ParseGlob("templates/gui/*"))
+  t, ror := template.ParseGlob("templates/gui/*"); er(ror)
+  t.ExecuteTemplate(w, "GUI" ,p)
 }
 
 func authority(w http.ResponseWriter, r *http.Request) {
   p := map[string]string{
     "dummy": r.FormValue("dummy"),
   }
-  t, ror := template.ParseFiles("res/authority.gotmp"); er(ror)
+  t, ror := template.ParseFiles("templates/authority.html"); er(ror)
   t.Execute(w, p)
 }
 
@@ -170,19 +169,21 @@ func authorize(w http.ResponseWriter, r *http.Request) {
     "controlURL": cURL,
     "resetURL": rURL,
   }
-  t, ror := template.ParseFiles("res/authorize.gotmp"); er(ror)
+  t, ror := template.ParseFiles("templates/authorize.html"); er(ror)
   t.Execute(w, u)
 }
 
-func api(w http.ResponseWriter, r *http.Request) {
+func get(w http.ResponseWriter, r *http.Request) {
   switch r.FormValue("a"){
     case "info":
       w.Header().Set("Content-Type", "text/html")
       mpdStatus(w,r)
-    default:
-      log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
-      mpdNoStatus(r)
   }
+}
+
+func cmd(w http.ResponseWriter, r *http.Request) {
+  log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
+  mpdNoStatus(r)
 }
 
 func er(ror error){
@@ -191,7 +192,8 @@ func er(ror error){
 
 func main() {
   http.HandleFunc("/", gui)
-  http.HandleFunc("/api", api)
+  http.HandleFunc("/get", get)
+  http.HandleFunc("/cmd", cmd)
   http.HandleFunc("/authority", authority)
   http.HandleFunc("/authorize", authorize)
   http.ListenAndServe(":8080", nil)
