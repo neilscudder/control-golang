@@ -13,6 +13,119 @@ import (
   "github.com/nu7hatch/gouuid"
 )
 
+func main() {
+  http.HandleFunc("/", gui)
+  http.HandleFunc("/get", get)
+  http.HandleFunc("/cmd", cmd)
+  http.HandleFunc("/authority", authority)
+  http.HandleFunc("/authorize", authorize)
+  http.ListenAndServe(":8080", nil)
+}
+
+func gui(w http.ResponseWriter, r *http.Request) {
+  p := map[string]string{
+    "APIURL": r.FormValue("APIURL"),
+    "APIALT": r.FormValue("APIALT"),
+    "MPDPORT": r.FormValue("MPDPORT"),
+    "LABEL": r.FormValue("LABEL"),
+    "MPDHOST": r.FormValue("MPDHOST"),
+    "MPDPASS": r.FormValue("MPDPASS"),
+    "KPASS": r.FormValue("KPASS"),
+  }
+  //var templates = template.Must(template.ParseGlob("templates/gui/*"))
+  t, ror := template.ParseGlob("templates/gui/*"); er(ror)
+  t.ExecuteTemplate(w, "GUI" ,p)
+}
+
+func get(w http.ResponseWriter, r *http.Request) {
+  switch r.FormValue("a"){
+    case "info":
+      w.Header().Set("Content-Type", "text/html")
+      mpdStatus(w,r)
+  }
+}
+
+func cmd(w http.ResponseWriter, r *http.Request) {
+  log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
+  mpdNoStatus(r)
+}
+
+type Params struct {
+  GUIURL,
+  APIURL,
+  APIALT,
+  LABEL,
+  EMAIL,
+  MPDPORT,
+  MPDHOST,
+  MPDPASS,
+  KPASS,
+  RPASS string
+}
+
+func (p *Params) save() error {
+  filename := "data/" + p.KPASS + "." + p.RPASS
+  byteP,ror := json.Marshal(p); er(ror)
+  return ioutil.WriteFile(filename, byteP, 0600)
+}
+
+func loadParams(rpass string) *Params {
+  var p *Params
+  filename := rpass + ".txt"
+  byteP,ror := ioutil.ReadFile(filename); er(ror)
+  ror = json.Unmarshal(byteP, &p); er(ror)
+  return p
+}
+
+func authority(w http.ResponseWriter, r *http.Request) {
+  p := map[string]string{
+    "dummy": r.FormValue("dummy"),
+  }
+  t, ror := template.ParseFiles("templates/authority.html"); er(ror)
+  t.Execute(w, p)
+}
+
+func authorize(w http.ResponseWriter, r *http.Request) {
+  p := &Params{
+    GUIURL: r.FormValue("GUIURL"),
+    APIURL: r.FormValue("APIURL"),
+    APIALT: r.FormValue("APIALT"),
+    LABEL: r.FormValue("LABEL"),
+    EMAIL: r.FormValue("EMAIL"),
+    MPDPORT: r.FormValue("MPDPORT"),
+    MPDHOST: r.FormValue("MPDHOST"),
+    MPDPASS: r.FormValue("MPDPASS"),
+  }
+  cURL := p.GUIURL + "/?"
+  if p.MPDPASS != "" && p.MPDHOST != "" {
+    cURL += "MPDPASS=" + p.MPDPASS + "&MPDHOST=" + p.MPDHOST
+  }
+  if p.MPDPASS == "" && p.MPDHOST != "" {
+    cURL += "&MPDHOST=" + p.MPDHOST
+  }
+  if p.MPDPORT != "" { cURL += "&MPDPORT=" + p.MPDPORT }
+  if p.LABEL != "" { cURL += "&LABEL=" + p.LABEL }
+  if p.EMAIL != "" { cURL += "&EMAIL=" + p.EMAIL }
+  if p.APIURL != "" { cURL += "&APIURL=" + p.APIURL }
+  if p.APIALT != "" { cURL += "&APIALT=" + p.APIALT }
+  rURL := cURL
+  cURL += "&KPASS="
+  rURL += "&RPASS="
+  rkey,_ := uuid.NewV4()
+  ckey,_ := uuid.NewV4()
+  p.KPASS = ckey.String()
+  p.RPASS = rkey.String()
+  ror := p.save(); er(ror)            // Save to file
+  rURL += rkey.String()              // Reset URL
+  cURL += ckey.String()              // Control URL
+  u := map[string]string{
+    "controlURL": cURL,
+    "resetURL": rURL,
+  }
+  t, ror := template.ParseFiles("templates/authorize.html"); er(ror)
+  t.Execute(w, u)
+}
+
 func mpdConnect(r *http.Request) *mpd.Client {
   host := r.FormValue("MPDHOST") + ":" + r.FormValue("MPDPORT")
   pass := r.FormValue("MPDPASS")
@@ -82,119 +195,8 @@ func mpdStatus(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-type Params struct {
-  GUIURL,
-  APIURL,
-  APIALT,
-  LABEL,
-  EMAIL,
-  MPDPORT,
-  MPDHOST,
-  MPDPASS,
-  KPASS,
-  RPASS string
-}
-
-func (p *Params) save() error {
-  filename := "data/" + p.KPASS + "." + p.RPASS
-  byteP,ror := json.Marshal(p); er(ror)
-  return ioutil.WriteFile(filename, byteP, 0600)
-}
-
-func loadParams(rpass string) *Params {
-  var p *Params
-  filename := rpass + ".txt"
-  byteP,ror := ioutil.ReadFile(filename); er(ror)
-  ror = json.Unmarshal(byteP, &p); er(ror)
-  return p
-}
-
-func gui(w http.ResponseWriter, r *http.Request) {
-  p := map[string]string{
-    "APIURL": r.FormValue("APIURL"),
-    "APIALT": r.FormValue("APIALT"),
-    "MPDPORT": r.FormValue("MPDPORT"),
-    "LABEL": r.FormValue("LABEL"),
-    "MPDHOST": r.FormValue("MPDHOST"),
-    "MPDPASS": r.FormValue("MPDPASS"),
-    "KPASS": r.FormValue("KPASS"),
-  }
-  //var templates = template.Must(template.ParseGlob("templates/gui/*"))
-  t, ror := template.ParseGlob("templates/gui/*"); er(ror)
-  t.ExecuteTemplate(w, "GUI" ,p)
-}
-
-func authority(w http.ResponseWriter, r *http.Request) {
-  p := map[string]string{
-    "dummy": r.FormValue("dummy"),
-  }
-  t, ror := template.ParseFiles("templates/authority.html"); er(ror)
-  t.Execute(w, p)
-}
-
-func authorize(w http.ResponseWriter, r *http.Request) {
-  p := &Params{
-    GUIURL: r.FormValue("GUIURL"),
-    APIURL: r.FormValue("APIURL"),
-    APIALT: r.FormValue("APIALT"),
-    LABEL: r.FormValue("LABEL"),
-    EMAIL: r.FormValue("EMAIL"),
-    MPDPORT: r.FormValue("MPDPORT"),
-    MPDHOST: r.FormValue("MPDHOST"),
-    MPDPASS: r.FormValue("MPDPASS"),
-  }
-  cURL := p.GUIURL + "/?"
-  if p.MPDPASS != "" && p.MPDHOST != "" {
-    cURL += "MPDPASS=" + p.MPDPASS + "&MPDHOST=" + p.MPDHOST
-  }
-  if p.MPDPASS == "" && p.MPDHOST != "" {
-    cURL += "&MPDHOST=" + p.MPDHOST
-  }
-  if p.MPDPORT != "" { cURL += "&MPDPORT=" + p.MPDPORT }
-  if p.LABEL != "" { cURL += "&LABEL=" + p.LABEL }
-  if p.EMAIL != "" { cURL += "&EMAIL=" + p.EMAIL }
-  if p.APIURL != "" { cURL += "&APIURL=" + p.APIURL }
-  if p.APIALT != "" { cURL += "&APIALT=" + p.APIALT }
-  rURL := cURL
-  cURL += "&KPASS="
-  rURL += "&RPASS="
-  rkey,_ := uuid.NewV4()
-  ckey,_ := uuid.NewV4()
-  p.KPASS = ckey.String()
-  p.RPASS = rkey.String()
-  ror := p.save(); er(ror)            // Save to file
-  rURL += rkey.String()              // Reset URL
-  cURL += ckey.String()              // Control URL
-  u := map[string]string{
-    "controlURL": cURL,
-    "resetURL": rURL,
-  }
-  t, ror := template.ParseFiles("templates/authorize.html"); er(ror)
-  t.Execute(w, u)
-}
-
-func get(w http.ResponseWriter, r *http.Request) {
-  switch r.FormValue("a"){
-    case "info":
-      w.Header().Set("Content-Type", "text/html")
-      mpdStatus(w,r)
-  }
-}
-
-func cmd(w http.ResponseWriter, r *http.Request) {
-  log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
-  mpdNoStatus(r)
-}
-
 func er(ror error){
   if ror != nil { log.Fatalln(ror) }
 }
 
-func main() {
-  http.HandleFunc("/", gui)
-  http.HandleFunc("/get", get)
-  http.HandleFunc("/cmd", cmd)
-  http.HandleFunc("/authority", authority)
-  http.HandleFunc("/authorize", authorize)
-  http.ListenAndServe(":8080", nil)
-}
+
