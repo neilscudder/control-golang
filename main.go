@@ -25,16 +25,6 @@ func main() {
 
 func gui(w http.ResponseWriter, r *http.Request) {
   p := authenticate(r.FormValue("KPASS"))
-/*  p := map[string]string{
-    "APIURL": r.FormValue("APIURL"),
-    "APIALT": r.FormValue("APIALT"),
-    "MPDPORT": r.FormValue("MPDPORT"),
-    "LABEL": r.FormValue("LABEL"),
-    "MPDHOST": r.FormValue("MPDHOST"),
-    "MPDPASS": r.FormValue("MPDPASS"),
-    "KPASS": r.FormValue("KPASS"),
-  }*/
-  //var templates = template.Must(template.ParseGlob("templates/gui/*"))
   t, ror := template.ParseGlob("templates/gui/*"); er(ror)
   t.ExecuteTemplate(w, "GUI" ,p)
 }
