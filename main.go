@@ -40,52 +40,6 @@ func cmd(w http.ResponseWriter, r *http.Request) {
   mpdNoStatus(r)
 }
 
-func authority(w http.ResponseWriter, r *http.Request) {
-  p := map[string]string{
-    "dummy": r.FormValue("dummy"),
-  }
-  t, ror := template.ParseFiles("templates/authority.html"); er(ror)
-  t.Execute(w, p)
-}
-
-func authorize(w http.ResponseWriter, r *http.Request) {
-  p := &Params{
-    APIURL: r.FormValue("APIURL"),
-    APIALT: r.FormValue("APIALT"),
-    LABEL: r.FormValue("LABEL"),
-    EMAIL: r.FormValue("EMAIL"),
-    MPDPORT: r.FormValue("MPDPORT"),
-    MPDHOST: r.FormValue("MPDHOST"),
-    MPDPASS: r.FormValue("MPDPASS"),
-  }
-  cURL := r.FormValue("GUIURL") + "/?"
-  if p.MPDPASS != "" && p.MPDHOST != "" {
-    cURL += "MPDPASS=" + p.MPDPASS + "&MPDHOST=" + p.MPDHOST
-  }
-  if p.MPDPASS == "" && p.MPDHOST != "" {
-    cURL += "&MPDHOST=" + p.MPDHOST
-  }
-  if p.MPDPORT != "" { cURL += "&MPDPORT=" + p.MPDPORT }
-  if p.LABEL != "" { cURL += "&LABEL=" + p.LABEL }
-  if p.EMAIL != "" { cURL += "&EMAIL=" + p.EMAIL }
-  if p.APIURL != "" { cURL += "&APIURL=" + p.APIURL }
-  if p.APIALT != "" { cURL += "&APIALT=" + p.APIALT }
-  rURL := cURL
-  cURL += "&KPASS="
-  rURL += "&RPASS="
-  rkey,_ := uuid.NewV4()
-  ckey,_ := uuid.NewV4()
-  ror := p.save(ckey.String(),rkey.String()); er(ror)            // Save to file
-  rURL += rkey.String()                       // Reset URL
-  cURL += ckey.String()                      // Control URL
-  u := map[string]string{
-    "controlURL": cURL,
-    "resetURL": rURL,
-  }
-  t, ror := template.ParseFiles("templates/authorize.html"); er(ror)
-  t.Execute(w, u)
-}
-
 func mpdConnect(r *http.Request) *mpd.Client {
   p := authenticate(r.FormValue("KPASS"))
   host := p.MPDHOST + ":" + p.MPDPORT
@@ -182,6 +136,52 @@ func authenticate(kpass string) *Params {
   byteP,ror := ioutil.ReadFile(file[0]); er(ror)
   ror = json.Unmarshal(byteP, &p); er(ror)
   return p
+}
+
+func authority(w http.ResponseWriter, r *http.Request) {
+  p := map[string]string{
+    "dummy": r.FormValue("dummy"),
+  }
+  t, ror := template.ParseFiles("templates/authority.html"); er(ror)
+  t.Execute(w, p)
+}
+
+func authorize(w http.ResponseWriter, r *http.Request) {
+  p := &Params{
+    APIURL: r.FormValue("APIURL"),
+    APIALT: r.FormValue("APIALT"),
+    LABEL: r.FormValue("LABEL"),
+    EMAIL: r.FormValue("EMAIL"),
+    MPDPORT: r.FormValue("MPDPORT"),
+    MPDHOST: r.FormValue("MPDHOST"),
+    MPDPASS: r.FormValue("MPDPASS"),
+  }
+  cURL := r.FormValue("GUIURL") + "/?"
+  if p.MPDPASS != "" && p.MPDHOST != "" {
+    cURL += "MPDPASS=" + p.MPDPASS + "&MPDHOST=" + p.MPDHOST
+  }
+  if p.MPDPASS == "" && p.MPDHOST != "" {
+    cURL += "&MPDHOST=" + p.MPDHOST
+  }
+  if p.MPDPORT != "" { cURL += "&MPDPORT=" + p.MPDPORT }
+  if p.LABEL != "" { cURL += "&LABEL=" + p.LABEL }
+  if p.EMAIL != "" { cURL += "&EMAIL=" + p.EMAIL }
+  if p.APIURL != "" { cURL += "&APIURL=" + p.APIURL }
+  if p.APIALT != "" { cURL += "&APIALT=" + p.APIALT }
+  rURL := cURL
+  cURL += "&KPASS="
+  rURL += "&RPASS="
+  rkey,_ := uuid.NewV4()
+  ckey,_ := uuid.NewV4()
+  ror := p.save(ckey.String(),rkey.String()); er(ror)            // Save to file
+  rURL += rkey.String()                       // Reset URL
+  cURL += ckey.String()                      // Control URL
+  u := map[string]string{
+    "controlURL": cURL,
+    "resetURL": rURL,
+  }
+  t, ror := template.ParseFiles("templates/authorize.html"); er(ror)
+  t.Execute(w, u)
 }
 
 func er(ror error){
