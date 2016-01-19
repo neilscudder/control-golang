@@ -135,7 +135,17 @@ func authenticate(kpass string) *Params {
   var p Params
   file,ror := filepath.Glob("data/" + kpass + ".*"); er(ror)
   if file == nil {
-    log.Fatalf("Access Denied: kpass=%v",kpass)
+    log.Printf("Access Denied: kpass=%v",kpass)
+    p = Params{
+      APIURL: "",
+      APIALT: "",
+      LABEL:"",
+      EMAIL:"",
+      MPDPORT:"",
+      MPDHOST:"",
+      MPDPASS:"",
+      KPASS:"",
+    }
   } else {
     log.Printf("Authenticated: %v", file)
     byteP,ror := ioutil.ReadFile(file[0]); er(ror)
