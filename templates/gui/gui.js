@@ -1,22 +1,18 @@
 {{define "JS"}}
 <script>var clickEventType = ((document.ontouchstart!==null)?'click':'touchstart')
 var PreviousInfo
-// data binding only works in root template apparently
-//var p = {{.}}
 // TODO fallback to APIALT if necessary
-cmdparams = p.APIURL
-  + "cmd" 
-  + "?MPDPORT=" + p.MPDPORT
-  + "&MPDHOST=" + p.MPDHOST
-  + "&MPDPASS=" + p.MPDPASS
-  + "&KPASS=" + p.KPASS;
+function getURLParameter(name) {
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+}
 
-getparams = p.APIURL
+cmdparams = getURLParameter('APIURL')
+  + "cmd" 
+  + "?KPASS=" + getURLParameter('KPASS');
+
+getparams = getURLParameter('APIURL')
   + "get"
-  + "?MPDPORT=" + p.MPDPORT
-  + "&MPDHOST=" + p.MPDHOST
-  + "&MPDPASS=" + p.MPDPASS
-  + "&KPASS=" + p.KPASS;
+  + "?KPASS=" + getURLParameter('KPASS');
 
 function sendCmd(id){
   var x = document.getElementById(id)

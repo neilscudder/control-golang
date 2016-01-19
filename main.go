@@ -174,15 +174,6 @@ func authorize(w http.ResponseWriter, r *http.Request) {
     KPASS: r.FormValue("KPASS"),
   }
   cURL := r.FormValue("GUIURL") + "/?"
-  if p.MPDPASS != "" && p.MPDHOST != "" {
-    cURL += "MPDPASS=" + p.MPDPASS + "&MPDHOST=" + p.MPDHOST
-  }
-  if p.MPDPASS == "" && p.MPDHOST != "" {
-    cURL += "&MPDHOST=" + p.MPDHOST
-  }
-  if p.MPDPORT != "" { cURL += "&MPDPORT=" + p.MPDPORT }
-  if p.LABEL != "" { cURL += "&LABEL=" + p.LABEL }
-  if p.EMAIL != "" { cURL += "&EMAIL=" + p.EMAIL }
   if p.APIURL != "" { cURL += "&APIURL=" + p.APIURL }
   if p.APIALT != "" { cURL += "&APIALT=" + p.APIALT }
   rURL := cURL
