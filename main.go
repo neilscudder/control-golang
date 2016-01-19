@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-  http.HandleFunc("/", gui)
+  http.HandleFunc("/gui", gui)
   http.HandleFunc("/get", get)
   http.HandleFunc("/cmd", cmd)
   http.HandleFunc("/authority", authority)
@@ -24,7 +24,8 @@ func main() {
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
-  p := authenticate(r.FormValue("KPASS"))
+  var p *Params
+  p = authenticate(r.FormValue("KPASS"))
   t, ror := template.ParseGlob("templates/gui/*"); er(ror)
   t.ExecuteTemplate(w, "GUI" ,p)
 }
@@ -41,7 +42,8 @@ func cmd(w http.ResponseWriter, r *http.Request) {
 }
 
 func mpdConnect(r *http.Request) *mpd.Client {
-  p := authenticate(r.FormValue("KPASS"))
+  var p *Params
+  p = authenticate(r.FormValue("KPASS"))
   host := p.MPDHOST + ":" + p.MPDPORT
   pass := p.MPDPASS
   conn, ror := mpd.DialAuthenticated("tcp", host, pass); er(ror)
@@ -127,15 +129,17 @@ func (p *Params) save(kpass, rpass string) error {
 }
 
 func authenticate(kpass string) *Params {
-  var p *Params
-  file,err := filepath.Glob("data/" + kpass + ".*")
-  if err != nil {
-    log.Printf("Access Denied")
+  var p Params
+  if len(kpass) < 3 { kpass = "nil" }
+  file,ror := filepath.Glob("data/" + kpass + ".*"); er(ror)
+  if file == nil {
+    log.Fatalf("Access Denied")
+  } else {
+    log.Printf("Authenticated: %v", file)
+    byteP,ror := ioutil.ReadFile(file[0]); er(ror)
+    ror = json.Unmarshal(byteP, &p); er(ror)
   }
-  log.Printf("Authenticated: " + kpass)
-  byteP,ror := ioutil.ReadFile(file[0]); er(ror)
-  ror = json.Unmarshal(byteP, &p); er(ror)
-  return p
+  return &p
 }
 
 func authority(w http.ResponseWriter, r *http.Request) {
