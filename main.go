@@ -42,19 +42,19 @@ func cmd(w http.ResponseWriter, r *http.Request) {
   mpdNoStatus(r)
 }
 
-func mpdConnect(r *http.Request) *mpd.Client {
+func mpdConnect(r *http.Request) (*mpd.Client,error) {
   var p *Params
   kpass := r.FormValue("KPASS")
   p = authenticate(kpass)
   host := p.MPDHOST + ":" + p.MPDPORT
   pass := p.MPDPASS
-  conn, ror := mpd.DialAuthenticated("tcp", host, pass); er(ror)
-  return conn
+  return mpd.DialAuthenticated("tcp", host, pass)
 }
 
 func mpdNoStatus(r *http.Request) {
   cmd := r.FormValue("a")
-  conn := mpdConnect(r)
+  conn,err := mpdConnect(r)
+  if err != nil { return }
   defer conn.Close()
   status, ror := conn.Status(); er(ror)
   switch cmd {
@@ -83,7 +83,8 @@ func mpdNoStatus(r *http.Request) {
 }
 
 func mpdStatus(w http.ResponseWriter, r *http.Request) {
-  conn := mpdConnect(r)
+  conn,err := mpdConnect(r)
+  if err != nil { return }
   defer conn.Close()
   status, ror := conn.Status(); er(ror)
   song, ror := conn.CurrentSong(); er(ror)
@@ -135,7 +136,7 @@ func authenticate(kpass string) *Params {
   var p Params
   file,ror := filepath.Glob("data/" + kpass + ".*"); er(ror)
   if file == nil {
-    log.Printf("Access Denied: kpass=%v",kpass)
+    log.Printf("Access Denied: %v",kpass)
     p = Params{
       APIURL: "",
       APIALT: "",
@@ -147,7 +148,7 @@ func authenticate(kpass string) *Params {
       KPASS:"",
     }
   } else {
-    log.Printf("Authenticated: %v", file)
+    log.Printf("Authenticated: %v", kpass)
     byteP,ror := ioutil.ReadFile(file[0]); er(ror)
     ror = json.Unmarshal(byteP, &p); er(ror)
   }
