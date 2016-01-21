@@ -148,7 +148,7 @@ func authenticate(kpass string) *Params {
       KPASS:"",
     }
   } else {
-    log.Printf("Authenticated: %v", kpass)
+//    log.Printf("Authenticated: %v", kpass)
     byteP,ror := ioutil.ReadFile(file[0]); er(ror)
     ror = json.Unmarshal(byteP, &p); er(ror)
   }
