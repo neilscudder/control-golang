@@ -77,7 +77,6 @@ func authority(w http.ResponseWriter, r *http.Request) {
 func authorize(w http.ResponseWriter, r *http.Request) {
   p := &Params{
     APIURL: r.FormValue("APIURL"),
-    APIALT: r.FormValue("APIALT"),
     LABEL: r.FormValue("LABEL"),
     EMAIL: r.FormValue("EMAIL"),
     MPDPORT: r.FormValue("MPDPORT"),
@@ -87,7 +86,6 @@ func authorize(w http.ResponseWriter, r *http.Request) {
   }
   cURL := r.FormValue("GUIURL") + "/?"
   if p.APIURL != "" { cURL += "&APIURL=" + p.APIURL }
-  if p.APIALT != "" { cURL += "&APIALT=" + p.APIALT }
   rURL := cURL
   cURL += "&KPASS="
   rURL += "&RPASS="
