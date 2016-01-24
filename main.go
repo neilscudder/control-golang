@@ -7,7 +7,7 @@ import (
   "net/http"
   "html/template"
   "internal/authority"
-  "internal/mpdcache"
+  "internal/mpdcacher"
 )
 
 func main() {
