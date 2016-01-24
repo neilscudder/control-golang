@@ -6,9 +6,9 @@
 # Folders
 _obj
 _test
-src
-pkg
 internal/authority/data
+.directory
+.txt
 
 # Architecture specific extensions/prefixes
 *.[568vq]

@@ -6,16 +6,26 @@ import (
   "encoding/json"
   "net/http"
   "html/template"
-  "internal/authority"
-  "internal/mpdcacher"
+  "github.com/neilscudder/control-golang/internal/authority"
+  "github.com/neilscudder/control-golang/internal/mpdcacher"
 )
+
+type Params struct {
+  APIURL,
+  LABEL,
+  EMAIL,
+  MPDPORT,
+  MPDHOST,
+  MPDPASS,
+  KPASS string
+}
 
 func main() {
   http.HandleFunc("/", gui)
   http.HandleFunc("/get", get)
   http.HandleFunc("/cmd", cmd)
   http.HandleFunc("/authority", authority)
-  http.HandleFunc("/authorize", authorize)
+  http.HandleFunc("/authorize", auth)
   http.ListenAndServe(":8080", nil)
 }
 
@@ -39,17 +49,6 @@ func cmd(w http.ResponseWriter, r *http.Request) {
   mpdcache.MpdNoStatus(r)
 }
 
-
-type Params struct {
-  APIURL,
-  LABEL,
-  EMAIL,
-  MPDPORT,
-  MPDHOST,
-  MPDPASS,
-  KPASS string
-}
-
 func getParams(kpass string) *Params,error{
   var p Params
   byteP,err = authority.Authenticate(kpass)
@@ -67,7 +66,7 @@ func authority(w http.ResponseWriter, r *http.Request) {
   t.Execute(w, p)
 }
 
-func authorize(w http.ResponseWriter, r *http.Request) {
+func auth(w http.ResponseWriter, r *http.Request) {
   p := &Params{
     APIURL: r.FormValue("APIURL"),
     LABEL: r.FormValue("LABEL"),
