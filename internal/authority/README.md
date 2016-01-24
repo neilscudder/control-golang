@@ -1,0 +1,1 @@
+Grant/authenticate access to json obj by temporary KPASS uuid. Keys can be reset quickly with RPASS uuid. To be implemented in restful api which formats keys for delivery to users and authenticates a super user for adding and deleting records.
