@@ -12,6 +12,8 @@ import (
   "html/template"
   "github.com/fhs/gompd/mpd"
   "github.com/nu7hatch/gouuid"
+  "internal/authority"
+  "internal/mpdcache"
 )
 
 func main() {
@@ -26,94 +28,23 @@ func main() {
 func gui(w http.ResponseWriter, r *http.Request) {
   var p *Params
   kpass := r.FormValue("KPASS")
-  p = authenticate(kpass)
+  p = getParams(kpass)
   t, ror := template.ParseGlob("templates/gui/*"); er(ror)
   t.ExecuteTemplate(w, "GUI" ,p)
 }
 func get(w http.ResponseWriter, r *http.Request) {
+  p,ror := getParams(r.FormValue("KPASS")); er(ror)
   switch r.FormValue("a"){
     case "info":
       w.Header().Set("Content-Type", "text/html")
-      mpdStatus(w,r)
+      mpdcache.MpdStatus(w,r)
   }
 }
 func cmd(w http.ResponseWriter, r *http.Request) {
   log.Printf("API Call: " + r.FormValue("a") + " " + r.FormValue("LABEL"))
-  mpdNoStatus(r)
+  mpdcache.MpdNoStatus(r)
 }
 
-func mpdConnect(r *http.Request) (*mpd.Client,error) {
-  var p *Params
-  kpass := r.FormValue("KPASS")
-  p = authenticate(kpass)
-  host := p.MPDHOST + ":" + p.MPDPORT
-  pass := p.MPDPASS
-  return mpd.DialAuthenticated("tcp", host, pass)
-}
-
-func mpdNoStatus(r *http.Request) {
-  cmd := r.FormValue("a")
-  conn,err := mpdConnect(r)
-  if err != nil { return }
-  defer conn.Close()
-  status, ror := conn.Status(); er(ror)
-  switch cmd {
-    case "fw":
-      ror := conn.Next(); er(ror)
-    case "up":
-      current, ror := strconv.Atoi(status["volume"]); er(ror)
-      if current <= 95 {
-        new := current + 5
-        ror = conn.SetVolume(new); er(ror)
-      }
-    case "dn":
-      current, ror := strconv.Atoi(status["volume"]); er(ror)
-      if current >= 5 {
-        new := current - 5
-        ror = conn.SetVolume(new); er(ror)
-      }
-    case "random":
-      current, ror := strconv.Atoi(status["random"]); er(ror)
-      if current == 1 {
-        ror = conn.Random(false); er(ror)
-      } else {
-        ror = conn.Random(true); er(ror)
-      }
-   }
-}
-
-func mpdStatus(w http.ResponseWriter, r *http.Request) {
-  conn,err := mpdConnect(r)
-  if err != nil { return }
-  defer conn.Close()
-  status, ror := conn.Status(); er(ror)
-  song, ror := conn.CurrentSong(); er(ror)
-  t, ror := template.ParseFiles("templates/status.html"); er(ror)
-  if status["state"] == "play" && song["Title"] != "" {
-    p := map[string]string{
-      "title": song["Title"],
-      "artist": song["Artist"],
-      "album": song["Album"],
-    }
-    t.Execute(w, p)
-  } else if status["state"] == "play" {
-    filename := path.Base(song["file"])
-    directory := path.Dir(song["file"])
-    p := map[string]string{
-      "title": filename,
-      "artist": song["Artist"],
-      "album": directory,
-    }
-    t.Execute(w, p)
-  } else {
-    p := map[string]string{
-      "title": status["state"],
-      "artist": "",
-      "album": "",
-    }
-    t.Execute(w, p)
-  }
-}
 
 type Params struct {
   APIURL,
@@ -126,33 +57,13 @@ type Params struct {
   KPASS string
 }
 
-func (p *Params) save(kpass, rpass string) error {
-  filename := "data/" + kpass + "." + rpass
-  byteP,ror := json.Marshal(p); er(ror)
-  return ioutil.WriteFile(filename, byteP, 0600)
-}
-
-func authenticate(kpass string) *Params {
+func getParams(kpass string) *Params{
   var p Params
-  file,ror := filepath.Glob("data/" + kpass + ".*"); er(ror)
-  if file == nil {
-    log.Printf("Access Denied: %v",kpass)
-    p = Params{
-      APIURL: "",
-      APIALT: "",
-      LABEL:"",
-      EMAIL:"",
-      MPDPORT:"",
-      MPDHOST:"",
-      MPDPASS:"",
-      KPASS:"",
-    }
-  } else {
-//    log.Printf("Authenticated: %v", kpass)
-    byteP,ror := ioutil.ReadFile(file[0]); er(ror)
-    ror = json.Unmarshal(byteP, &p); er(ror)
+  byteP,err = authority.Authenticate(kpass)
+  if err == nil {
+    return json.Unmarshal(byteP, &p)
   }
-  return &p
+  return nil,err
 }
 
 func authority(w http.ResponseWriter, r *http.Request) {
@@ -180,18 +91,15 @@ func authorize(w http.ResponseWriter, r *http.Request) {
   rURL := cURL
   cURL += "&KPASS="
   rURL += "&RPASS="
-  rkey,_ := uuid.NewV4()
-  ckey,_ := uuid.NewV4()
-  p.KPASS = ckey.String()
-  ror := p.save(ckey.String(),rkey.String()); er(ror)            // Save to file
-  rURL += rkey.String()                       // Reset URL
-  cURL += ckey.String()                      // Control URL
+  kpass,rpass,ror := authority.Authorize(p); er(ror)
+  cURL += kpass
+  rURL += rpass
   u := map[string]string{
     "controlURL": cURL,
     "resetURL": rURL,
   }
   t, ror := template.ParseFiles("templates/authorize.html"); er(ror)
-  t.Execute(w, u)
+  t.Execute(w,u)
 }
 
 func er(ror error){
