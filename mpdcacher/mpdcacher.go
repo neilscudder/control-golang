@@ -7,21 +7,19 @@ import (
   "github.com/fhs/gompd/mpd"
 )
 
-func mpdConnect(r *http.Request) (*mpd.Client,error) {
-  var p *Params
-  kpass := r.FormValue("KPASS")
-  p = authenticate(kpass)
-  host := p.MPDHOST + ":" + p.MPDPORT
-  pass := p.MPDPASS
+func mpdConnect(params map[string]string) (*mpd.Client,error) {
+  host := params.MPDHOST + ":" + params.MPDPORT
+  pass := params.MPDPASS
   return mpd.DialAuthenticated("tcp", host, pass)
 }
 
-func MpdNoStatus(r *http.Request) {
-  cmd := r.FormValue("a")
-  conn,err := mpdConnect(r)
+func MpdStatus(cmd string,params map[string]string) map[string]string {
+  var p map[string]string
+  conn,err := mpdConnect(params)
   if err != nil { return }
   defer conn.Close()
   status, ror := conn.Status(); er(ror)
+  song, ror := conn.CurrentSong(); er(ror)
   switch cmd {
     case "fw":
       ror := conn.Next(); er(ror)
@@ -44,39 +42,32 @@ func MpdNoStatus(r *http.Request) {
       } else {
         ror = conn.Random(true); er(ror)
       }
+    case "info":
+      // nothing
    }
-}
-
-func MpdStatus(w http.ResponseWriter, r *http.Request) {
-  conn,err := mpdConnect(r)
-  if err != nil { return }
-  defer conn.Close()
-  status, ror := conn.Status(); er(ror)
-  song, ror := conn.CurrentSong(); er(ror)
-  t, ror := template.ParseFiles("templates/status.html"); er(ror)
-  if status["state"] == "play" && song["Title"] != "" {
-    p := map[string]string{
-      "title": song["Title"],
-      "artist": song["Artist"],
-      "album": song["Album"],
+  return func() map[string]string{
+    if status["state"] == "play" && song["Title"] != "" {
+      p = map[string]string{
+	"title": song["Title"],
+	"artist": song["Artist"],
+	"album": song["Album"],
+      }
+    } else if status["state"] == "play" {
+      filename := path.Base(song["file"])
+      directory := path.Dir(song["file"])
+      p = map[string]string{
+	"title": filename,
+	"artist": song["Artist"],
+	"album": directory,
+      }
+    } else {
+      p = map[string]string{
+	"title": status["state"],
+	"artist": "",
+	"album": "",
+      }
     }
-    t.Execute(w, p)
-  } else if status["state"] == "play" {
-    filename := path.Base(song["file"])
-    directory := path.Dir(song["file"])
-    p := map[string]string{
-      "title": filename,
-      "artist": song["Artist"],
-      "album": directory,
-    }
-    t.Execute(w, p)
-  } else {
-    p := map[string]string{
-      "title": status["state"],
-      "artist": "",
-      "album": "",
-    }
-    t.Execute(w, p)
+    return p
   }
 }
 
