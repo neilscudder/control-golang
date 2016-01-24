@@ -28,7 +28,7 @@ func main() {
 func gui(w http.ResponseWriter, r *http.Request) {
   var p *Params
   kpass := r.FormValue("KPASS")
-  p = getParams(kpass)
+  p,ror := getParams(kpass); er(ror)
   t, ror := template.ParseGlob("templates/gui/*"); er(ror)
   t.ExecuteTemplate(w, "GUI" ,p)
 }
@@ -57,7 +57,7 @@ type Params struct {
   KPASS string
 }
 
-func getParams(kpass string) *Params{
+func getParams(kpass string) *Params,error{
   var p Params
   byteP,err = authority.Authenticate(kpass)
   if err == nil {
