@@ -6,8 +6,8 @@ import (
   "encoding/json"
   "net/http"
   "html/template"
-  "github.com/neilscudder/control-golang/internal/authority"
-  "github.com/neilscudder/control-golang/internal/mpdcacher"
+  "github.com/neilscudder/control-golang/authority"
+  "github.com/neilscudder/control-golang/mpdcacher"
 )
 
 type Params struct {
