@@ -1,19 +1,13 @@
 package authority
 
 import (
-//  "fmt"
   "errors"
   "log"
-  "path"
   "path/filepath"
-  "strconv"
   "encoding/json"
   "io/ioutil"
-  "net/http"
-  "html/template"
   "github.com/nu7hatch/gouuid"
 )
-
 
 func save(kpass,rpass,obj string) error {
   filename := "data/" + kpass + "." + rpass

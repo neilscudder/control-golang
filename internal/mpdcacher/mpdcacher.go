@@ -1,15 +1,9 @@
 package mpdcacher
 
 import (
-//  "fmt"
   "log"
   "path"
-  "path/filepath"
   "strconv"
-  "encoding/json"
-  "io/ioutil"
-  "net/http"
-  "html/template"
   "github.com/fhs/gompd/mpd"
 )
 
