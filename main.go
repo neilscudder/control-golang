@@ -48,7 +48,6 @@ func cmd(w http.ResponseWriter, r *http.Request) {
 
 type Params struct {
   APIURL,
-  APIALT,
   LABEL,
   EMAIL,
   MPDPORT,
