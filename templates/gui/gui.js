@@ -26,7 +26,7 @@ function sendCmd(id) {
   infoDiv.classList.remove('opaque')
   infoDiv.classList.add('heartbeat')
   var xhr = new XMLHttpRequest()
-  params = getparams + "&a=" + button
+  params = getparams + "&a=" + id
   xhr.open("GET",params,true)
   xhr.send()
   xhr.onreadystatechange = function() {
@@ -35,12 +35,12 @@ function sendCmd(id) {
       console.log("xhr.onreadystate " + xhr.readyState)
       var CurrentInfo = xhr.responseText;
       console.log("xhr.responseText: " + CurrentInfo)
+      infoDiv.classList.remove('heartbeat')
+      infoDiv.classList.add('opaque')
       if (CurrentInfo !== PreviousInfo && !isEmpty(CurrentInfo)) {
         infoDiv.innerHTML = CurrentInfo
         PreviousInfo = CurrentInfo
         animatedButtonListener()
-        infoDiv.classList.remove('heartbeat')
-        infoDiv.classList.add('opaque')
         console.log("CurrentInfo !== PreviousInfo" + CurrentInfo)
       }
       if (button.classList.contains("pushed")) {
