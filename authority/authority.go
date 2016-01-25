@@ -21,7 +21,6 @@ func Authenticate(kpass string) ([]byte,error) {
     log.Printf("Authenticated: %v", kpass)
     return ioutil.ReadFile(file[0])
   }
-  log.Printf("Access Denied: %v", kpass)
   return nil,errors.New("Access Denied")
 }
 

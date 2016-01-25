@@ -37,15 +37,16 @@ func gui(w http.ResponseWriter, r *http.Request) {
   t.ExecuteTemplate(w, "GUI" ,p)
 }
 func get(w http.ResponseWriter, r *http.Request) {
-  params,ror := getParams(r.FormValue("KPASS")); er(ror)
-  p := map[string]string {
-    "MPDHOST": params.MPDHOST,
-    "MPDPORT": params.MPDPORT,
-    "MPDPASS": params.MPDPASS,
+  kpass := r.FormValue("KPASS")
+  p,ror := getParams(kpass); er(ror)
+  params := map[string]string {
+    "MPDHOST": p.MPDHOST,
+    "MPDPORT": p.MPDPORT,
+    "MPDPASS": p.MPDPASS,
   }
   cmd := r.FormValue("a")
   w.Header().Set("Content-Type", "text/html")
-  u := mpdcacher.MpdStatus(cmd,p)
+  u := mpdcacher.MpdStatus(cmd,params)
   t, ror := template.ParseFiles("templates/status.html"); er(ror)
   t.Execute(w,u)
 }
