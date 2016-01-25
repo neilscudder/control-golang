@@ -22,6 +22,7 @@ function sendCmd(id){
   xhr.send()
   xhr.onreadystatechange = function() {
     if (xhr.status == 200 && xhr.readyState == 4 && x.classList.contains("pushed")) {
+      manualRefresh('info')
       x.classList.add('released')
       x.classList.remove('pushed')
     } else if (xhr.readyState == 4 && x.classList.contains("pushed")) {
@@ -38,7 +39,30 @@ function autoRefresh(id) {
   x.classList.remove('opaque')
   x.classList.add('heartbeat')
 
-  setTimeout(function(){ autoRefresh(id) },1500)
+  setTimeout(function(){ autoRefresh(id) },4000)
+  var xhr = new XMLHttpRequest()
+  params = getparams + "&a=" + id
+  xhr.open("GET",params,true)
+  xhr.send()
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      var CurrentInfo = xhr.responseText;
+      if (CurrentInfo !== PreviousInfo && !isEmpty(CurrentInfo)) {
+        var div = document.getElementById(id)
+        div.innerHTML = CurrentInfo
+        PreviousInfo = CurrentInfo
+        animatedButtonListener()
+      } 
+      x.classList.remove('heartbeat')
+      x.classList.add('opaque')
+    } 
+  } 
+} 
+function manualRefresh(id) {
+  var x = document.getElementById('info')
+  x.classList.remove('opaque')
+  x.classList.add('heartbeat')
+
   var xhr = new XMLHttpRequest()
   params = getparams + "&a=" + id
   xhr.open("GET",params,true)
