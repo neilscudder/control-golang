@@ -32,7 +32,7 @@ func main() {
 func gui(w http.ResponseWriter, r *http.Request) {
   var p Params
   kpass := r.FormValue("KPASS")
-  p,ror := getParams(kpass); er(ror)
+  p,_ = getParams(kpass)
   t, ror := template.ParseGlob("templates/gui/*"); er(ror)
   t.ExecuteTemplate(w, "GUI" ,p)
 }
