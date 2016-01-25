@@ -25,13 +25,13 @@ func Authenticate(kpass string) ([]byte,error) {
   return nil,errors.New("Access Denied")
 }
 
-func Authorize(obj map[string]string) string {
+func Authorize(obj map[string]string) (string,string) {
   kpass,ror := uuid.NewV4(); er(ror)
   rpass,ror := uuid.NewV4(); er(ror)
   k := kpass.String()
   r := rpass.String()
   ror = save(k,r,obj); er(ror)
-  return k
+  return k,r
 }
 
 func er(ror error){

@@ -7,16 +7,14 @@ import (
   "github.com/fhs/gompd/mpd"
 )
 
-func mpdConnect(params map[string]string) (*mpd.Client,error) {
-  host := params.MPDHOST + ":" + params.MPDPORT
-  pass := params.MPDPASS
+func mpdConnect(p map[string]string) (*mpd.Client,error) {
+  host := p["MPDHOST"] + ":" + p["MPDPORT"]
+  pass := p["MPDPASS"]
   return mpd.DialAuthenticated("tcp", host, pass)
 }
 
 func MpdStatus(cmd string,params map[string]string) map[string]string {
-  var p map[string]string
-  conn,err := mpdConnect(params)
-  if err != nil { return }
+  conn,ror := mpdConnect(params); er(ror)
   defer conn.Close()
   status, ror := conn.Status(); er(ror)
   song, ror := conn.CurrentSong(); er(ror)
@@ -45,30 +43,33 @@ func MpdStatus(cmd string,params map[string]string) map[string]string {
     case "info":
       // nothing
    }
-  return func() map[string]string{
-    if status["state"] == "play" && song["Title"] != "" {
-      p = map[string]string{
-	"title": song["Title"],
-	"artist": song["Artist"],
-	"album": song["Album"],
-      }
-    } else if status["state"] == "play" {
-      filename := path.Base(song["file"])
-      directory := path.Dir(song["file"])
-      p = map[string]string{
-	"title": filename,
-	"artist": song["Artist"],
-	"album": directory,
-      }
-    } else {
-      p = map[string]string{
-	"title": status["state"],
-	"artist": "",
-	"album": "",
-      }
+  return getStatus(song,status)
+}
+
+func getStatus(song,status map[string]string) map[string]string{
+  var p map[string]string
+  if status["state"] == "play" && song["Title"] != "" {
+    p = map[string]string{
+      "title": song["Title"],
+      "artist": song["Artist"],
+      "album": song["Album"],
     }
-    return p
+  } else if status["state"] == "play" {
+    filename := path.Base(song["file"])
+    directory := path.Dir(song["file"])
+    p = map[string]string{
+      "title": filename,
+      "artist": song["Artist"],
+      "album": directory,
+    }
+  } else {
+    p = map[string]string{
+      "title": status["state"],
+      "artist": "",
+      "album": "",
+    }
   }
+  return p
 }
 
 func er(ror error){
