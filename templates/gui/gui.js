@@ -14,70 +14,39 @@ getparams = getURLParameter('APIURL')
   + "get"
   + "?KPASS=" + getURLParameter('KPASS');
 
-function sendCmd(id){
-  var x = document.getElementById(id)
-  var xhr = new XMLHttpRequest()
-  params = cmdparams + "&a=" + id
-  xhr.open("GET",params,true)
-  xhr.send()
-  xhr.onreadystatechange = function() {
-    if (xhr.status == 200 && xhr.readyState == 4 && x.classList.contains("pushed")) {
-      manualRefresh('info')
-      x.classList.add('released')
-      x.classList.remove('pushed')
-    } else if (xhr.readyState == 4 && x.classList.contains("pushed")) {
-      x.classList.add('denied')
-      x.classList.remove('pushed')
-    } else {
-      // Nothing
-    }
-  }
-}
-
 function autoRefresh(id) {
-  var x = document.getElementById('info')
-  x.classList.remove('opaque')
-  x.classList.add('heartbeat')
-
+  console.log("Auto-Refresh: " + id)
+  sendCmd('info')
   setTimeout(function(){ autoRefresh(id) },4000)
-  var xhr = new XMLHttpRequest()
-  params = getparams + "&a=" + id
-  xhr.open("GET",params,true)
-  xhr.send()
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      var CurrentInfo = xhr.responseText;
-      if (CurrentInfo !== PreviousInfo && !isEmpty(CurrentInfo)) {
-        var div = document.getElementById(id)
-        div.innerHTML = CurrentInfo
-        PreviousInfo = CurrentInfo
-        animatedButtonListener()
-      } 
-      x.classList.remove('heartbeat')
-      x.classList.add('opaque')
-    } 
-  } 
 } 
-function manualRefresh(id) {
-  var x = document.getElementById('info')
-  x.classList.remove('opaque')
-  x.classList.add('heartbeat')
-
+function sendCmd(id) {
+  console.log("sendCmd: " + id)
+  var button = document.getElementById(id)
+  var infoDiv = document.getElementById('info')
+  infoDiv.classList.remove('opaque')
+  infoDiv.classList.add('heartbeat')
   var xhr = new XMLHttpRequest()
-  params = getparams + "&a=" + id
+  params = getparams + "&a=" + button
   xhr.open("GET",params,true)
   xhr.send()
   xhr.onreadystatechange = function() {
+    console.log("xhr.onreadystatechange")
     if (xhr.readyState == 4 && xhr.status == 200) {
+      console.log("xhr.onreadystate " + xhr.readyState)
       var CurrentInfo = xhr.responseText;
+      console.log("xhr.responseText: " + CurrentInfo)
       if (CurrentInfo !== PreviousInfo && !isEmpty(CurrentInfo)) {
-        var div = document.getElementById(id)
-        div.innerHTML = CurrentInfo
+        infoDiv.innerHTML = CurrentInfo
         PreviousInfo = CurrentInfo
         animatedButtonListener()
-      } 
-      x.classList.remove('heartbeat')
-      x.classList.add('opaque')
+        infoDiv.classList.remove('heartbeat')
+        infoDiv.classList.add('opaque')
+        console.log("CurrentInfo !== PreviousInfo" + CurrentInfo)
+      }
+      if (button.classList.contains("pushed")) {
+        button.classList.remove('pushed')
+        button.classList.add('released')
+      }
     } 
   } 
 } 
@@ -90,9 +59,6 @@ function initialise() {
   animatedButtonListener()
 }
 
-//
-// LISTENERS
-//
 function pushed(id){
     document.getElementById(id).classList.add('pushed')
     document.getElementById(id).classList.remove('released')
