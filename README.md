@@ -7,7 +7,7 @@ This is a proof-of-concept application.
 Fast sharing and re-generating of password-less controls over music in a lightweight, highly compatible mobile web interface is intended for use by staff controlling music at the local branch of a chain of restaurants.
 
 ## Usage:
-Navigate to http://localhost:8080/authority to configure an instance of mpd. Two links will be generated, one to the control interface, and another to re-generate both URLs with new codes, (re-generator not yet implemented). Control may be installed on the same host as mpd, on the same network, or on a remote web server for network-independant control.
+Navigate to http://localhost:8080/authority to configure a control for an existing instance of mpd. Two links will be generated, one to the control interface, and another to re-generate both URLs with new codes.
 
 
 
