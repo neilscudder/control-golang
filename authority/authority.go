@@ -4,15 +4,13 @@ import (
   "errors"
   "log"
   "path/filepath"
-  "encoding/json"
   "io/ioutil"
   "github.com/nu7hatch/gouuid"
 )
 
-func save(kpass string,rpass string,obj map[string]string) error {
+func save(kpass string,rpass string,obj []byte) error {
   filename := "data/" + kpass + "." + rpass
-  byteP,ror := json.Marshal(obj); er(ror)
-  return ioutil.WriteFile(filename, byteP, 0600)
+  return ioutil.WriteFile(filename,obj,0600)
 }
 
 func Authenticate(kpass string) ([]byte,error) {
@@ -24,7 +22,7 @@ func Authenticate(kpass string) ([]byte,error) {
   return nil,errors.New("Access Denied")
 }
 
-func Authorize(obj map[string]string) (string,string) {
+func Authorize(obj []byte) (string,string) {
   kpass,ror := uuid.NewV4(); er(ror)
   rpass,ror := uuid.NewV4(); er(ror)
   k := kpass.String()

@@ -69,7 +69,8 @@ func auth(w http.ResponseWriter, r *http.Request) {
   rURL := cURL
   cURL += "&KPASS="
   rURL += "&RPASS="
-  kpass,rpass := authority.Authorize(p)
+  byteP,ror := json.Marshal(p); er(ror)
+  kpass,rpass := authority.Authorize(byteP)
   cURL += kpass
   rURL += rpass
   u := map[string]string{
