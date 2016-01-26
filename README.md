@@ -1,7 +1,7 @@
 # control-golang
 A web client for mpd, the music player daemon, (https://github.com/MaxKellermann/MPD). 
 
-## Status: POC
+This is a proof-of-concept application.
 
 ## Purpose:
 Fast sharing and re-generating of password-less controls over music in a lightweight, highly compatible mobile web interface is intended for use by staff controlling music at the local branch of a chain of restaurants.
