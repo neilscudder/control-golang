@@ -50,23 +50,21 @@ func getStatus(song,status map[string]string) map[string]string{
   var p map[string]string
   if status["state"] == "play" && song["Title"] != "" {
     p = map[string]string{
-      "title": song["Title"],
-      "artist": song["Artist"],
-      "album": song["Album"],
+      "Album": song["Album"],
+      "Artist": song["Artist"],
+      "Title": song["Title"],
     }
   } else if status["state"] == "play" {
     filename := path.Base(song["file"])
     directory := path.Dir(song["file"])
     p = map[string]string{
-      "title": filename,
-      "artist": song["Artist"],
-      "album": directory,
+      "File": filename,
+      "Artist": song["Artist"],
+      "Folder": directory,
     }
   } else {
     p = map[string]string{
-      "title": status["state"],
-      "artist": "",
-      "album": "",
+      "State": status["state"],
     }
   }
   return p

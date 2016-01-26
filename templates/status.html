@@ -1,7 +1,7 @@
 <div id="infotainer" class="info-container">
-  <h2>{{.title}}{{.file}}</h2> 
-  <p><strong>Artist:</strong> {{.artist}}</p> 
-  <p><strong>Album:</strong> {{.album}}</p> 
+{{range $label,$value := . }}
+  <p><strong>{{ $label }}:</strong> {{ $value }}</p> 
+{{ end }}
   <div class="animated button released" id="insertNextTwo"> 
     Insert Next Two 
   </div> 
