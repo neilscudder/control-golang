@@ -1,7 +1,7 @@
 package main
 
 import (
-//  "fmt"
+  "fmt"
   "log"
   "encoding/json"
   "net/http"
@@ -22,13 +22,23 @@ func main() {
 func gui(w http.ResponseWriter, r *http.Request) {
   var p map[string]string
   kpass := r.FormValue("KPASS")
-  p,_ = getParams(kpass)
+  p,err := getParams(kpass)
+  if err != nil { 
+    // Make func send w, set httpstatus
+    fmt.Fprintf(w, err.Error())
+    return
+  }
   t, ror := template.ParseGlob("templates/gui/*"); er(ror)
   t.ExecuteTemplate(w, "GUI" ,p)
 }
 func get(w http.ResponseWriter, r *http.Request) {
   kpass := r.FormValue("KPASS")
-  p,ror := getParams(kpass); er(ror)
+  p,err := getParams(kpass)
+  if err != nil { 
+    // Make func send w, set httpstatus
+    fmt.Fprintf(w, err.Error()) 
+    return
+  }
   cmd := r.FormValue("a")
   w.Header().Set("Content-Type", "text/html")
   u := mpdcacher.MpdStatus(cmd,p)

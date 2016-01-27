@@ -1,5 +1,5 @@
 <div id="infotainer" class="info-container">
-{{ range $index,$element := . }}  
+{{ range $index,$element := . }} 
   {{ range $label,$value := $element }}
     <p><strong>{{ $label }}:</strong> {{ $value }}</p> 
   {{ end }}

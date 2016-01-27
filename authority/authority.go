@@ -16,7 +16,6 @@ func save(kpass string,rpass string,obj []byte) error {
 func Authenticate(kpass string) ([]byte,error) {
   file,ror := filepath.Glob("data/" + kpass + ".*"); er(ror)
   if file != nil {
-    log.Printf("Authenticated: %v", kpass)
     return ioutil.ReadFile(file[0])
   }
   return nil,errors.New("Access Denied")
