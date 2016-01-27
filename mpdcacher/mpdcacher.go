@@ -13,7 +13,7 @@ func mpdConnect(p map[string]string) (*mpd.Client,error) {
   return mpd.DialAuthenticated("tcp", host, pass)
 }
 
-func MpdStatus(cmd string,params map[string]string) map[string]string {
+func MpdStatus(cmd string,params map[string]string) map[int]map[string]string {
   conn,ror := mpdConnect(params); er(ror)
   defer conn.Close()
   status, ror := conn.Status(); er(ror)
@@ -46,25 +46,39 @@ func MpdStatus(cmd string,params map[string]string) map[string]string {
   return getStatus(song,status)
 }
 
-func getStatus(song,status map[string]string) map[string]string{
-  var p map[string]string
+func getStatus(song,status map[string]string) map[int]map[string]string{
+  var p map[int]map[string]string
   if status["state"] == "play" && song["Title"] != "" {
-    p = map[string]string{
-      "Album": song["Album"],
-      "Artist": song["Artist"],
-      "Title": song["Title"],
+    p = map[int]map[string]string{
+      1: map[string]string{
+        "Title": song["Title"],
+      },
+      2: map[string]string{
+        "Artist": song["Artist"],
+      },
+      3: map[string]string{
+        "Album": song["Album"],
+      },
     }
   } else if status["state"] == "play" {
     filename := path.Base(song["file"])
     directory := path.Dir(song["file"])
-    p = map[string]string{
-      "File": filename,
-      "Artist": song["Artist"],
-      "Folder": directory,
+    p = map[int]map[string]string{
+      1: map[string]string{
+        "Label": "File",
+        "Value": filename,
+      },
+      2: map[string]string{
+        "Label": "Folder",
+        "Artist": directory,
+      },
     }
   } else {
-    p = map[string]string{
-      "State": status["state"],
+    p = map[int]map[string]string{
+      1: map[string]string{
+        "Label": "State",
+        "Value": status["state"],
+      },
     }
   }
   return p
