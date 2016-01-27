@@ -65,18 +65,15 @@ func getStatus(song,status map[string]string) map[int]map[string]string{
     directory := path.Dir(song["file"])
     p = map[int]map[string]string{
       1: map[string]string{
-        "Label": "File",
         "Value": filename,
       },
       2: map[string]string{
-        "Label": "Folder",
         "Artist": directory,
       },
     }
   } else {
     p = map[int]map[string]string{
       1: map[string]string{
-        "Label": "State",
         "Value": status["state"],
       },
     }
