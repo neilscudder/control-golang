@@ -13,7 +13,6 @@ import (
 func main() {
   http.HandleFunc("/", gui)
   http.HandleFunc("/get", get)
-  http.HandleFunc("/cmd", get)
   http.HandleFunc("/authority", setup)
   http.HandleFunc("/authorize", auth)
   http.ListenAndServe(":8080", nil)
