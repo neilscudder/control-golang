@@ -24,8 +24,8 @@ func gui(w http.ResponseWriter, r *http.Request) {
   kpass := r.FormValue("KPASS")
   p,err := getParams(kpass)
   if err != nil { 
-    // Make func send w, set httpstatus
-    fmt.Fprintf(w, err.Error())
+    log.Println(err.Error())
+    fmt.Fprintf(w, err.Error()) 
     return
   }
   t, ror := template.ParseGlob("templates/gui/*"); er(ror)
@@ -35,7 +35,7 @@ func get(w http.ResponseWriter, r *http.Request) {
   kpass := r.FormValue("KPASS")
   p,err := getParams(kpass)
   if err != nil { 
-    // Make func send w, set httpstatus
+    log.Println(err.Error())
     fmt.Fprintf(w, err.Error()) 
     return
   }
