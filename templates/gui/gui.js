@@ -11,12 +11,12 @@ getparams = getURLParameter('APIURL')
   + "?KPASS=" + getURLParameter('KPASS');
 
 function autoRefresh(id) {
-  console.log("Auto-Refresh: " + id)
+  //console.log("Auto-Refresh: " + id)
   sendCmd('info')
   setTimeout(function(){ autoRefresh(id) },4000)
 } 
 function sendCmd(id) {
-  console.log("sendCmd: " + id)
+  //console.log("sendCmd: " + id)
   var button = document.getElementById(id)
   var infoDiv = document.getElementById('info')
   infoDiv.classList.remove('opaque')
@@ -26,18 +26,18 @@ function sendCmd(id) {
   xhr.open("GET",params,true)
   xhr.send()
   xhr.onreadystatechange = function() {
-    console.log("xhr.onreadystatechange")
+    //console.log("xhr.onreadystatechange")
     if (xhr.readyState == 4 && xhr.status == 200) {
-      console.log("xhr.onreadystate " + xhr.readyState)
+      //console.log("xhr.onreadystate " + xhr.readyState)
       var CurrentInfo = xhr.responseText;
-      console.log("xhr.responseText: " + CurrentInfo)
+      //console.log("xhr.responseText: " + CurrentInfo)
       infoDiv.classList.remove('heartbeat')
       infoDiv.classList.add('opaque')
       if (CurrentInfo !== PreviousInfo && !isEmpty(CurrentInfo)) {
         infoDiv.innerHTML = CurrentInfo
         PreviousInfo = CurrentInfo
         animatedButtonListener()
-        console.log("CurrentInfo !== PreviousInfo" + CurrentInfo)
+        //console.log("CurrentInfo !== PreviousInfo" + CurrentInfo)
       }
       if (button.classList.contains("pushed")) {
         button.classList.remove('pushed')
