@@ -13,7 +13,8 @@ func mpdConnect(p map[string]string) (*mpd.Client,error) {
   return mpd.DialAuthenticated("tcp", host, pass)
 }
 
-func MpdStatus(cmd string,params map[string]string) map[int]map[string]string {
+func MpdStatus(cmd string,params map[string]string) map[string]map[int]map[string]string {
+  var deets map[int]map[string]string 
   conn,ror := mpdConnect(params); er(ror)
   status, ror := conn.Status(); er(ror)
   defer conn.Close()
@@ -22,30 +23,51 @@ func MpdStatus(cmd string,params map[string]string) map[int]map[string]string {
       ror := conn.Next(); er(ror)
     case "up":
       current, ror := strconv.Atoi(status["volume"]); er(ror)
+      deets = map[int]map[string]string{
+        1: map[string]string{
+          "Volume": strconv.Itoa(current),
+        },
+      }
       if current <= 95 {
         new := current + 5
         ror = conn.SetVolume(new); er(ror)
       }
     case "dn":
       current, ror := strconv.Atoi(status["volume"]); er(ror)
+      deets = map[int]map[string]string{
+        1: map[string]string{
+          "Volume": strconv.Itoa(current),
+        },
+      }
       if current >= 5 {
         new := current - 5
         ror = conn.SetVolume(new); er(ror)
       }
     case "random":
       current, ror := strconv.Atoi(status["random"]); er(ror)
+      deets = map[int]map[string]string{
+        1: map[string]string{
+          "Random": strconv.Itoa(current),
+        },
+      }
       if current == 1 {
         ror = conn.Random(false); er(ror)
+
       } else {
         ror = conn.Random(true); er(ror)
       }
     case "info":
       // nothing
-   }
-  return getStatus(conn)
+    }
+    a := map[string]map[int]map[string]string {
+      "info": getInfo(conn),
+      "deets": deets,
+    }
+  log.Println(a)
+  return a
 }
 
-func getStatus(conn *mpd.Client) map[int]map[string]string{
+func getInfo(conn *mpd.Client) map[int]map[string]string{
   var p map[int]map[string]string
   status, ror := conn.Status(); er(ror)
   song, ror := conn.CurrentSong(); er(ror)

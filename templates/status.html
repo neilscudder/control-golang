@@ -1,7 +1,12 @@
 <div id="infotainer" class="info-container">
-{{ range $index,$element := . }} 
+{{ range $index,$element := .info}} 
   {{ range $label,$value := $element }}
     <p><strong>{{ $label }}:</strong> {{ $value }}</p> 
+  {{ end }}
+{{ end }}
+{{ range $i,$e := .deets}}
+  {{ range $l,$v := $e }}
+    <p><strong>{{ $l }}:</strong> {{ $v }}</p>
   {{ end }}
 {{ end }}
   <div class="animated button released" id="insertNextTwo"> 

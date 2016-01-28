@@ -96,9 +96,6 @@ iframe {
 }
 #random {
   background-color: #d33682;
-  color: #002b36;
-  font-weight:800;
-  font-size: 3.75em;
 } 
 #tog a, a:active {
   text-decoration: none;
