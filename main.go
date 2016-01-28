@@ -39,7 +39,7 @@ func get(w http.ResponseWriter, r *http.Request) {
     return
   }
   cmd := r.FormValue("a")
-  w.Header().Set("Content-Type", "text/html")
+//  w.Header().Set("Content-Type", "text/html")
   u := mpdcacher.MpdStatus(cmd,p)
   t, ror := template.ParseFiles("templates/status.html"); er(ror)
   t.Execute(w,u)

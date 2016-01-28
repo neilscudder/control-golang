@@ -23,28 +23,27 @@ function sendCmd(id) {
   infoDiv.classList.add('heartbeat')
   var xhr = new XMLHttpRequest()
   params = getparams + "&a=" + id
+  xhr.addEventListener("load", transferComplete)
   xhr.open("GET",params,true)
   xhr.send()
-  xhr.onreadystatechange = function() {
-    //console.log("xhr.onreadystatechange")
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      //console.log("xhr.onreadystate " + xhr.readyState)
-      var CurrentInfo = xhr.responseText;
-      //console.log("xhr.responseText: " + CurrentInfo)
-      infoDiv.classList.remove('heartbeat')
-      infoDiv.classList.add('opaque')
-      if (CurrentInfo !== PreviousInfo && !isEmpty(CurrentInfo)) {
-        infoDiv.innerHTML = CurrentInfo
-        PreviousInfo = CurrentInfo
-        animatedButtonListener()
-        //console.log("CurrentInfo !== PreviousInfo" + CurrentInfo)
-      }
-      if (button.classList.contains("pushed")) {
-        button.classList.remove('pushed')
-        button.classList.add('released')
-      }
-    } 
-  } 
+  function transferComplete() {
+    var CurrentInfo = this.responseText;
+    //console.log("YO" + id)
+    infoDiv.classList.remove('heartbeat')
+    infoDiv.classList.add('opaque')
+    if (CurrentInfo !== PreviousInfo && !isEmpty(CurrentInfo)) {
+      infoDiv.innerHTML = CurrentInfo
+      PreviousInfo = CurrentInfo
+      animatedButtonListener()
+      //console.log("Different")
+    } else {
+      //console.log("Same")
+    }
+    if (button.classList.contains("pushed")) {
+      button.classList.remove('pushed')
+      button.classList.add('released')
+    }
+  }
 } 
 function isEmpty(str) {
     return (!str || 0 === str.length)
