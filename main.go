@@ -16,15 +16,16 @@ func main() {
   http.HandleFunc("/authority", setup)
   http.HandleFunc("/authorize", auth)
   http.ListenAndServe(":8080", nil)
+//  ror := http.ListenAndServeTLS(":8080", "config/server.pem", "config/server.key", nil);er(ror)
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
   var p map[string]string
   kpass := r.FormValue("KPASS")
   p,err := getParams(kpass)
-  if err != nil { 
+  if err != nil {
     log.Println(err.Error())
-    fmt.Fprintf(w, err.Error()) 
+    fmt.Fprintf(w, err.Error())
     return
   }
   t, ror := template.ParseGlob("templates/gui/*"); er(ror)
@@ -33,9 +34,9 @@ func gui(w http.ResponseWriter, r *http.Request) {
 func get(w http.ResponseWriter, r *http.Request) {
   kpass := r.FormValue("KPASS")
   p,err := getParams(kpass)
-  if err != nil { 
+  if err != nil {
     log.Println(err.Error())
-    fmt.Fprintf(w, err.Error()) 
+    fmt.Fprintf(w, err.Error())
     return
   }
   cmd := r.FormValue("a")

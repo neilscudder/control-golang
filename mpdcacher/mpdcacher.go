@@ -14,7 +14,7 @@ func mpdConnect(p map[string]string) (*mpd.Client,error) {
 }
 
 func MpdStatus(cmd string,params map[string]string) map[string]map[int]map[string]string {
-  var deets map[int]map[string]string 
+  var deets map[int]map[string]string
   conn,ror := mpdConnect(params); er(ror)
   status, ror := conn.Status(); er(ror)
   defer conn.Close()
@@ -63,7 +63,7 @@ func MpdStatus(cmd string,params map[string]string) map[string]map[int]map[strin
       "info": getInfo(conn),
       "deets": deets,
     }
-  log.Println(a)
+//  log.Println(a)
   return a
 }
 
@@ -71,6 +71,7 @@ func getInfo(conn *mpd.Client) map[int]map[string]string{
   var p map[int]map[string]string
   status, ror := conn.Status(); er(ror)
   song, ror := conn.CurrentSong(); er(ror)
+//  log.Println(song)
   if status["state"] == "play" && song["Title"] != "" {
     p = map[int]map[string]string{
       1: map[string]string{
