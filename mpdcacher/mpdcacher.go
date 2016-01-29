@@ -16,45 +16,47 @@ func mpdConnect(p map[string]string) (*mpd.Client,error) {
 func MpdStatus(cmd string,params map[string]string) map[string]map[int]map[string]string {
   var deets map[int]map[string]string
   conn,ror := mpdConnect(params); er(ror)
-  status, ror := conn.Status(); er(ror)
   defer conn.Close()
+  status, ror := conn.Status(); er(ror)
   switch cmd {
     case "fw":
       ror := conn.Next(); er(ror)
     case "up":
       current, ror := strconv.Atoi(status["volume"]); er(ror)
+      if current <= 95 {
+        current = current + 5
+        ror = conn.SetVolume(current); er(ror)
+      }
       deets = map[int]map[string]string{
         1: map[string]string{
           "Volume": strconv.Itoa(current),
         },
-      }
-      if current <= 95 {
-        new := current + 5
-        ror = conn.SetVolume(new); er(ror)
       }
     case "dn":
       current, ror := strconv.Atoi(status["volume"]); er(ror)
+      if current >= 5 {
+        current = current - 5
+        ror = conn.SetVolume(current); er(ror)
+      }
       deets = map[int]map[string]string{
         1: map[string]string{
           "Volume": strconv.Itoa(current),
         },
       }
-      if current >= 5 {
-        new := current - 5
-        ror = conn.SetVolume(new); er(ror)
-      }
     case "random":
       current, ror := strconv.Atoi(status["random"]); er(ror)
+      if current == 1 {
+        current = 0
+        ror = conn.Random(false); er(ror)
+
+      } else {
+        current = 1
+        ror = conn.Random(true); er(ror)
+      }
       deets = map[int]map[string]string{
         1: map[string]string{
           "Random": strconv.Itoa(current),
         },
-      }
-      if current == 1 {
-        ror = conn.Random(false); er(ror)
-
-      } else {
-        ror = conn.Random(true); er(ror)
       }
     case "info":
       // nothing
@@ -74,15 +76,8 @@ func getInfo(conn *mpd.Client) map[int]map[string]string{
 //  log.Println(song)
   if status["state"] == "play" && song["Title"] != "" {
     p = map[int]map[string]string{
-      1: map[string]string{
-        "Title": song["Title"],
-      },
-      2: map[string]string{
-        "Artist": song["Artist"],
-      },
-      3: map[string]string{
-        "Album": song["Album"],
-      },
+      1: song,
+      2: status,
     }
   } else if status["state"] == "play" {
     filename := path.Base(song["file"])
