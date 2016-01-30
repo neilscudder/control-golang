@@ -71,7 +71,6 @@ func MpdStatus(cmd string,params map[string]string) map[string]map[int]map[strin
         },
       },
     }
-//  log.Println(a)
   return a
 }
 
@@ -79,7 +78,6 @@ func getInfo(conn *mpd.Client) map[int]map[string]string{
   var p map[int]map[string]string
   status, ror := conn.Status(); er(ror)
   song, ror := conn.CurrentSong(); er(ror)
-//  log.Println(song)
   if status["state"] == "play" && song["Title"] != "" {
     p = map[int]map[string]string{
       1: map[string]string{
@@ -88,17 +86,7 @@ func getInfo(conn *mpd.Client) map[int]map[string]string{
       2: map[string]string{
         "Album": song["Album"] + " (" + song["Date"] + ")",
       },
-      4: map[string]string{
-        "Format": status["audio"],
-      },
-      5: map[string]string{
-        "File": song["file"],
-      },
     }
-/*    p = map[int]map[string]string{
-      1: song,
-      2: status,
-    }*/
   } else if status["state"] == "play" {
     filename := path.Base(song["file"])
     directory := path.Dir(song["file"])
@@ -110,19 +98,11 @@ func getInfo(conn *mpd.Client) map[int]map[string]string{
         "Folder": directory,
       },
     }
-    p = map[int]map[string]string{
-      1: song,
-      2: status,
-    }
   } else {
     p = map[int]map[string]string{
       1: map[string]string{
         "State": status["state"],
       },
-    }
-    p = map[int]map[string]string{
-      1: song,
-      2: status,
     }
   }
   return p
