@@ -24,7 +24,7 @@ func main() {
   if *pemfile == "" {
     ror := http.ListenAndServe(":8080", nil); er(ror)
   } else {
-    ror := http.ListenAndServeTLS(":8080",*pemfile,*keyfile,nil); er(ror)
+    ror := http.ListenAndServeTLS(":443",*pemfile,*keyfile,nil); er(ror)
   }
 }
 
