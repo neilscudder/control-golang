@@ -1,6 +1,7 @@
 package main
 
 import (
+  "flag"
   "fmt"
   "log"
   "encoding/json"
@@ -11,12 +12,20 @@ import (
 )
 
 func main() {
+
   http.HandleFunc("/", gui)
   http.HandleFunc("/get", get)
   http.HandleFunc("/authority", setup)
   http.HandleFunc("/authorize", auth)
-  http.ListenAndServe(":8080", nil)
-//  ror := http.ListenAndServeTLS(":8080", "config/server.pem", "config/server.key", nil);er(ror)
+
+  var pemfile = flag.String("pem","","Path to pem file")
+  var keyfile = flag.String("key","","Path to key file")
+  flag.Parse()
+  if *pemfile == "" {
+    ror := http.ListenAndServe(":8080", nil); er(ror)
+  } else {
+    ror := http.ListenAndServeTLS(":8080",*pemfile,*keyfile,nil); er(ror)
+  }
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
