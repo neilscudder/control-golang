@@ -13,7 +13,7 @@ getparams = getURLParameter('APIURL')
 function autoRefresh(id) {
   //console.log("Auto-Refresh: " + id)
   sendCmd('info')
-  setTimeout(function(){ autoRefresh(id) },4000)
+  setTimeout(function(){ autoRefresh(id) },1000)
 } 
 function sendCmd(id) {
   //console.log("sendCmd: " + id)
