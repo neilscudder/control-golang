@@ -6,6 +6,7 @@ import (
   "log"
   "encoding/json"
   "net/http"
+  "crypto/tls"
   "html/template"
   "github.com/neilscudder/control-golang/authority"
   "github.com/neilscudder/control-golang/mpdcacher"
@@ -24,7 +25,9 @@ func main() {
   if *pemfile == "" {
     ror := http.ListenAndServe(":8080", nil); er(ror)
   } else {
-    ror := http.ListenAndServeTLS(":443",*pemfile,*keyfile,nil); er(ror)
+    config := &tls.Config{MinVersion: tls.VersionTLS10}
+    server := &http.Server{Addr: ":443", Handler: nil, TLSConfig: config}
+    ror := server.ListenAndServeTLS(*pemfile,*keyfile); er(ror)
   }
 }
 
@@ -101,7 +104,8 @@ func auth(w http.ResponseWriter, r *http.Request) {
 }
 
 func er(ror error){
-  if ror != nil { log.Fatalln(ror) }
+//  if ror != nil { log.Fatalln(ror) }
+  if ror != nil { log.Println(ror) }
 }
 
 
