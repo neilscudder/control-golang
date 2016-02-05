@@ -109,7 +109,7 @@ func getInfo(conn *mpd.Client) map[int]map[string]string{
 }
 
 func er(ror error){
-  if ror != nil { log.Fatalln(ror) }
+  if ror != nil { log.Println(ror) }
 }
 
 
