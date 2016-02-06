@@ -71,8 +71,6 @@ func MpdStatus(cmd string, params map[string]string) map[string]map[int]map[stri
 				"Random": strconv.Itoa(current),
 			},
 		}
-	case "info":
-		// nothing
 	}
 	song, ror := conn.CurrentSong()
 	er(ror)
