@@ -36,7 +36,7 @@ func MpdStatus(cmd string, params map[string]string) map[string]map[int]map[stri
 			er(ror)
 		}
 		deets = map[int]map[string]string{
-			1: map[string]string{
+			1: {
 				"Volume": strconv.Itoa(current),
 			},
 		}
@@ -49,7 +49,7 @@ func MpdStatus(cmd string, params map[string]string) map[string]map[int]map[stri
 			er(ror)
 		}
 		deets = map[int]map[string]string{
-			1: map[string]string{
+			1: {
 				"Volume": strconv.Itoa(current),
 			},
 		}
@@ -67,7 +67,7 @@ func MpdStatus(cmd string, params map[string]string) map[string]map[int]map[stri
 			er(ror)
 		}
 		deets = map[int]map[string]string{
-			1: map[string]string{
+			1: {
 				"Random": strconv.Itoa(current),
 			},
 		}
@@ -77,8 +77,8 @@ func MpdStatus(cmd string, params map[string]string) map[string]map[int]map[stri
 	a := map[string]map[int]map[string]string{
 		"info":  getInfo(conn),
 		"deets": deets,
-		"title": map[int]map[string]string{
-			1: map[string]string{
+		"title": {
+			1: {
 				"Title": song["Title"],
 			},
 		},
@@ -94,10 +94,10 @@ func getInfo(conn *mpd.Client) map[int]map[string]string {
 	er(ror)
 	if status["state"] == "play" && song["Title"] != "" {
 		p = map[int]map[string]string{
-			1: map[string]string{
+			1: {
 				"Artist": song["Artist"],
 			},
-			2: map[string]string{
+			2: {
 				"Album": song["Album"] + " (" + song["Date"] + ")",
 			},
 		}
@@ -105,16 +105,16 @@ func getInfo(conn *mpd.Client) map[int]map[string]string {
 		filename := path.Base(song["file"])
 		directory := path.Dir(song["file"])
 		p = map[int]map[string]string{
-			1: map[string]string{
+			1: {
 				"File Name": filename,
 			},
-			2: map[string]string{
+			2: {
 				"Folder": directory,
 			},
 		}
 	} else {
 		p = map[int]map[string]string{
-			1: map[string]string{
+			1: {
 				"State": status["state"],
 			},
 		}
