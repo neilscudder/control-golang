@@ -47,7 +47,7 @@ function sendCmd(id) {
       }
       if (infoDiv.getElementsByClassName('Volume')) {
         var volume = infoDiv.getElementsByClassName('Volume')[0].id
-	if (volume >20 && volume <90){
+	if (volume > 20 && volume < 80){
 	  volume = volume * 0.01
 	  var inverse = 1 - volume
           document.getElementById("dn").style.opacity = volume
