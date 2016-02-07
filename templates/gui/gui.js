@@ -36,7 +36,15 @@ function sendCmd(id) {
       PreviousInfo = CurrentInfo
       animatedButtonListener()
 
-      //var random = infoDiv.getElementsByClassName('Random')[0].id
+      if (infoDiv.getElementsByClassName('CurrentRandom')) {
+        console.log('Chewie')
+        var currnd = infoDiv.getElementsByClassName('CurrentRandom')[0].id
+	if (currnd == '0') { 
+      	  document.getElementById("random").style.backgroundColor = "#dc322f"
+	} else {
+      	  document.getElementById("random").style.backgroundColor = "#859900"
+	}
+      }
       if (infoDiv.getElementsByClassName('Volume')) {
         var volume = infoDiv.getElementsByClassName('Volume')[0].id
 	volume = volume * 0.01
