@@ -1,15 +1,15 @@
 <div id="infotainer" class="info-container">
-{{ range $inter,$dada := .title}} 
+{{ range $inter,$dada := .Title}} 
   {{ range $yada,$title := $dada }}
     <h2>{{ $title }}</h2>
   {{ end }}
 {{ end }}
-{{ range $index,$element := .info}} 
+{{ range $index,$element := .Info}} 
   {{ range $label,$value := $element }}
     <p><strong>{{ $label }}:</strong> {{ $value }}</p> 
   {{ end }}
 {{ end }}
-{{ range $i,$e := .deets}}
+{{ range $i,$e := .Deets}}
   {{ range $l,$v := $e }}
     <p><strong>{{ $l }}:</strong> {{ $v }}</p>
   {{ end }}

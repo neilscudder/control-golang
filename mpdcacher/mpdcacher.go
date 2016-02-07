@@ -7,6 +7,10 @@ import (
 	"strconv"
 )
 
+type Status struct {
+	Info, Deets, Title map[int]map[string]string
+}
+
 func mpdConnect(p map[string]string) (*mpd.Client, error) {
 	host := p["MPDHOST"] + ":" + p["MPDPORT"]
 	pass := p["MPDPASS"]
@@ -16,8 +20,8 @@ func mpdConnect(p map[string]string) (*mpd.Client, error) {
 // MpdStatus returns a map of data for insertio to template for presentation
 // It optionally executes a command simultaneously.
 // mpd connection parameters must be supplied.
-func MpdStatus(cmd string, params map[string]string) map[string]map[int]map[string]string {
-	var deets map[int]map[string]string
+func MpdStatus(cmd string, params map[string]string) Status {
+	var s Status
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
@@ -35,7 +39,7 @@ func MpdStatus(cmd string, params map[string]string) map[string]map[int]map[stri
 			ror = conn.SetVolume(current)
 			er(ror)
 		}
-		deets = map[int]map[string]string{
+		s.Deets = map[int]map[string]string{
 			1: {
 				"Volume": strconv.Itoa(current),
 			},
@@ -48,7 +52,7 @@ func MpdStatus(cmd string, params map[string]string) map[string]map[int]map[stri
 			ror = conn.SetVolume(current)
 			er(ror)
 		}
-		deets = map[int]map[string]string{
+		s.Deets = map[int]map[string]string{
 			1: {
 				"Volume": strconv.Itoa(current),
 			},
@@ -66,7 +70,7 @@ func MpdStatus(cmd string, params map[string]string) map[string]map[int]map[stri
 			ror = conn.Random(true)
 			er(ror)
 		}
-		deets = map[int]map[string]string{
+		s.Deets = map[int]map[string]string{
 			1: {
 				"Random": strconv.Itoa(current),
 			},
@@ -74,26 +78,22 @@ func MpdStatus(cmd string, params map[string]string) map[string]map[int]map[stri
 	}
 	song, ror := conn.CurrentSong()
 	er(ror)
-	a := map[string]map[int]map[string]string{
-		"info":  getInfo(conn),
-		"deets": deets,
-		"title": {
-			1: {
-				"Title": song["Title"],
-			},
+	getInfo(conn, &s)
+	s.Title = map[int]map[string]string{
+		1: {
+			"Title": song["Title"],
 		},
 	}
-	return a
+	return s
 }
 
-func getInfo(conn *mpd.Client) map[int]map[string]string {
-	var p map[int]map[string]string
+func getInfo(conn *mpd.Client, s *Status) {
 	status, ror := conn.Status()
 	er(ror)
 	song, ror := conn.CurrentSong()
 	er(ror)
 	if status["state"] == "play" && song["Title"] != "" {
-		p = map[int]map[string]string{
+		s.Info = map[int]map[string]string{
 			1: {
 				"Artist": song["Artist"],
 			},
@@ -104,7 +104,7 @@ func getInfo(conn *mpd.Client) map[int]map[string]string {
 	} else if status["state"] == "play" {
 		filename := path.Base(song["file"])
 		directory := path.Dir(song["file"])
-		p = map[int]map[string]string{
+		s.Info = map[int]map[string]string{
 			1: {
 				"File Name": filename,
 			},
@@ -113,13 +113,12 @@ func getInfo(conn *mpd.Client) map[int]map[string]string {
 			},
 		}
 	} else {
-		p = map[int]map[string]string{
+		s.Info = map[int]map[string]string{
 			1: {
 				"State": status["state"],
 			},
 		}
 	}
-	return p
 }
 
 func er(ror error) {
