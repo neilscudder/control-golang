@@ -7,8 +7,12 @@ import (
 	"strconv"
 )
 
+// Status is for compiling the status template
+// Holds information on the currrent song and state of mpd
 type Status struct {
-	Info, Deets, Title map[int]map[string]string
+	Title string
+	Deets map[string]string
+	Info  map[int]map[string]string
 }
 
 func mpdConnect(p map[string]string) (*mpd.Client, error) {
@@ -39,10 +43,8 @@ func MpdStatus(cmd string, params map[string]string) Status {
 			ror = conn.SetVolume(current)
 			er(ror)
 		}
-		s.Deets = map[int]map[string]string{
-			1: {
-				"Volume": strconv.Itoa(current),
-			},
+		s.Deets = map[string]string{
+			"Volume": strconv.Itoa(current),
 		}
 	case "dn":
 		current, ror := strconv.Atoi(status["volume"])
@@ -52,10 +54,8 @@ func MpdStatus(cmd string, params map[string]string) Status {
 			ror = conn.SetVolume(current)
 			er(ror)
 		}
-		s.Deets = map[int]map[string]string{
-			1: {
-				"Volume": strconv.Itoa(current),
-			},
+		s.Deets = map[string]string{
+			"Volume": strconv.Itoa(current),
 		}
 	case "random":
 		current, ror := strconv.Atoi(status["random"])
@@ -70,20 +70,14 @@ func MpdStatus(cmd string, params map[string]string) Status {
 			ror = conn.Random(true)
 			er(ror)
 		}
-		s.Deets = map[int]map[string]string{
-			1: {
-				"Random": strconv.Itoa(current),
-			},
+		s.Deets = map[string]string{
+			"Random": strconv.Itoa(current),
 		}
 	}
 	song, ror := conn.CurrentSong()
 	er(ror)
 	getInfo(conn, &s)
-	s.Title = map[int]map[string]string{
-		1: {
-			"Title": song["Title"],
-		},
-	}
+	s.Title = song["Title"]
 	return s
 }
 

@@ -1,17 +1,11 @@
 <div id="infotainer" class="info-container">
-{{ range $inter,$dada := .Title}} 
-  {{ range $yada,$title := $dada }}
-    <h2>{{ $title }}</h2>
-  {{ end }}
-{{ end }}
+    <h2>{{ .Title }}</h2>
 {{ range $index,$element := .Info}} 
   {{ range $label,$value := $element }}
     <p><strong>{{ $label }}:</strong> {{ $value }}</p> 
   {{ end }}
 {{ end }}
 {{ range $i,$e := .Deets}}
-  {{ range $l,$v := $e }}
-    <p><strong>{{ $l }}:</strong> {{ $v }}</p>
-  {{ end }}
+    <p><strong>{{ $i }}:</strong> {{ $e }}</p>
 {{ end }}
 </div>
