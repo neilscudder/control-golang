@@ -23,50 +23,42 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
-	status, ror := conn.Status()
-	er(ror)
+	status, _ := conn.Status()
+	curvol, _ := strconv.Atoi(status["volume"])
+	currnd, _ := strconv.Atoi(status["random"])
 	switch cmd {
 	case "fw":
 		ror := conn.Next()
 		er(ror)
 	case "up":
-		current, ror := strconv.Atoi(status["volume"])
-		er(ror)
-		if current <= 95 {
-			current = current + 5
-			ror = conn.SetVolume(current)
+		if curvol <= 95 {
+			curvol = curvol + 5
+			ror = conn.SetVolume(curvol)
 			er(ror)
-		}
-		s.Deets = map[string]string{
-			"Volume": strconv.Itoa(current),
 		}
 	case "dn":
-		current, ror := strconv.Atoi(status["volume"])
-		er(ror)
-		if current >= 5 {
-			current = current - 5
-			ror = conn.SetVolume(current)
+		if curvol >= 5 {
+			curvol = curvol - 5
+			ror = conn.SetVolume(curvol)
 			er(ror)
 		}
-		s.Deets = map[string]string{
-			"Volume": strconv.Itoa(current),
-		}
 	case "random":
-		current, ror := strconv.Atoi(status["random"])
-		er(ror)
-		if current == 1 {
-			current = 0
+		if currnd == 1 {
+			currnd = 0
 			ror = conn.Random(false)
 			er(ror)
 
 		} else {
-			current = 1
+			currnd = 1
 			ror = conn.Random(true)
 			er(ror)
 		}
-		s.Deets = map[string]string{
-			"Random": strconv.Itoa(current),
-		}
+	}
+	s.Deets = map[string]string{
+		"Random": strconv.Itoa(currnd),
+	}
+	s.Deets = map[string]string{
+		"Volume": strconv.Itoa(curvol),
 	}
 	song, ror := conn.CurrentSong()
 	er(ror)

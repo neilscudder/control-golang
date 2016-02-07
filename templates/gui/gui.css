@@ -86,10 +86,12 @@ iframe {
   height: 430px;
 } 
 #dn {
-  background-color: #b58900;
+  opacity: 0.5;
+  background-color: #268bd2;
 }
 #up {
-  background-color: #cb4b16;
+  opacity: 0.5;
+  background-color: #268bd2;
 }
 #fw {
   background-color: #dc322f;

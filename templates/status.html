@@ -6,6 +6,6 @@
   {{ end }}
 {{ end }}
 {{ range $i,$e := .Deets}}
-    <p><strong>{{ $i }}:</strong> {{ $e }}</p>
+  <div class="{{ $i }}" id="{{ $e }}"></div>
 {{ end }}
 </div>

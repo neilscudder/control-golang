@@ -35,6 +35,15 @@ function sendCmd(id) {
       infoDiv.innerHTML = CurrentInfo
       PreviousInfo = CurrentInfo
       animatedButtonListener()
+
+      //var random = infoDiv.getElementsByClassName('Random')[0].id
+      if (infoDiv.getElementsByClassName('Volume')) {
+        var volume = infoDiv.getElementsByClassName('Volume')[0].id
+	volume = volume * 0.01
+	var inverse = 1 - volume
+        document.getElementById("dn").style.opacity = volume
+        document.getElementById("up").style.opacity = inverse
+      }
       //console.log("Different")
     } else {
       //console.log("Same")
