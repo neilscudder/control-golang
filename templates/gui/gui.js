@@ -37,7 +37,7 @@ function sendCmd(id) {
       animatedButtonListener()
 
       if (infoDiv.getElementsByClassName('CurrentRandom')) {
-        console.log('Chewie')
+        console.log(CurrentInfo)
         var currnd = infoDiv.getElementsByClassName('CurrentRandom')[0].id
 	if (currnd == '0') { 
       	  document.getElementById("random").style.backgroundColor = "#dc322f"
@@ -47,10 +47,12 @@ function sendCmd(id) {
       }
       if (infoDiv.getElementsByClassName('Volume')) {
         var volume = infoDiv.getElementsByClassName('Volume')[0].id
-	volume = volume * 0.01
-	var inverse = 1 - volume
-        document.getElementById("dn").style.opacity = volume
-        document.getElementById("up").style.opacity = inverse
+	if (volume >20 && volume <90){
+	  volume = volume * 0.01
+	  var inverse = 1 - volume
+          document.getElementById("dn").style.opacity = volume
+          document.getElementById("up").style.opacity = inverse
+	}
       }
       //console.log("Different")
     } else {

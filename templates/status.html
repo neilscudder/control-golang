@@ -5,7 +5,7 @@
     <p><strong>{{ $label }}:</strong> {{ $value }}</p> 
   {{ end }}
 {{ end }}
-{{ range $i,$e := .Deets}}
-  <div class="{{ $i }}" id="{{ $e }}"></div>
+{{ range $c,$i := .Deets}}
+  <div class="{{ $c }}" id="{{ $i }}"></div>
 {{ end }}
 </div>

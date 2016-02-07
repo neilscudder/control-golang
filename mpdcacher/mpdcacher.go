@@ -56,9 +56,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	}
 	s.Deets = map[string]string{
 		"CurrentRandom": strconv.Itoa(currnd),
-	}
-	s.Deets = map[string]string{
-		"Volume": strconv.Itoa(curvol),
+		"Volume":        strconv.Itoa(curvol),
 	}
 	song, ror := conn.CurrentSong()
 	er(ror)
