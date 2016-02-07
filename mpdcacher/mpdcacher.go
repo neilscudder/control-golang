@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-// Status is for compiling the status template
+// Status is for compiling the status html template
 // Holds information on the currrent song and state of mpd
 type Status struct {
 	Title string
@@ -15,13 +15,7 @@ type Status struct {
 	Info  map[int]map[string]string
 }
 
-func mpdConnect(p map[string]string) (*mpd.Client, error) {
-	host := p["MPDHOST"] + ":" + p["MPDPORT"]
-	pass := p["MPDPASS"]
-	return mpd.DialAuthenticated("tcp", host, pass)
-}
-
-// MpdStatus returns a map of data for insertio to template for presentation
+// MpdStatus returns a map of data for html template
 // It optionally executes a command simultaneously.
 // mpd connection parameters must be supplied.
 func MpdStatus(cmd string, params map[string]string) Status {
@@ -113,6 +107,12 @@ func getInfo(conn *mpd.Client, s *Status) {
 			},
 		}
 	}
+}
+
+func mpdConnect(p map[string]string) (*mpd.Client, error) {
+	host := p["MPDHOST"] + ":" + p["MPDPORT"]
+	pass := p["MPDPASS"]
+	return mpd.DialAuthenticated("tcp", host, pass)
 }
 
 func er(ror error) {
