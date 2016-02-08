@@ -1,6 +1,6 @@
 {{define "JS"}}
 <script>
-var clickEventType = ((document.ontouchstart!==null)?'click':'touchstart')
+var ClickEventType = ((document.ontouchstart!==null)?'click':'touchstart')
 var PreviousInfo
 var AutoToggle = true
 function getURLParameter(name) {
@@ -85,7 +85,7 @@ function animatedButtonListener() {
     }
   }
   for(i = 0; i<buttons.length; i++) {
-      buttons[i].addEventListener(clickEventType, pusher, false)
+      buttons[i].addEventListener(ClickEventType, pusher, false)
   }
 }
 initialise()
