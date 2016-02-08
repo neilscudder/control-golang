@@ -12,8 +12,8 @@ getparams = getURLParameter('APIURL')
   + "?KPASS=" + getURLParameter('KPASS');
 
 function autoRefresh(id) {
-  if (AutoToggle == true){ sendCmd(id) }
-  setTimeout(function(){ autoRefresh(id) },1000)
+  if (AutoToggle){ sendCmd(id) }
+  setTimeout(function(){ autoRefresh(id) },3000)
 } 
 function sendCmd(id) {
   AutoToggle = false
