@@ -5,6 +5,7 @@ import (
 	"log"
 	"path"
 	"strconv"
+	"time"
 )
 
 // Status is for compiling the status html template
@@ -28,19 +29,29 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	currnd, _ := strconv.Atoi(status["random"])
 	switch cmd {
 	case "fw":
-		ror := conn.Next()
-		er(ror)
+		resetvol := curvol
+		for curvol >= 5 {
+			curvol = curvol - 5
+			conn.SetVolume(curvol)
+			time.Sleep(20 * time.Millisecond)
+		}
+		conn.Next()
+		conn.SetVolume(resetvol)
 	case "up":
-		if curvol <= 95 {
-			curvol = curvol + 5
-			ror = conn.SetVolume(curvol)
-			er(ror)
+		if curvol <= 90 {
+			for i := 0; i < 5; i++ {
+				curvol = curvol + 2
+				conn.SetVolume(curvol)
+				time.Sleep(20 * time.Millisecond)
+			}
 		}
 	case "dn":
-		if curvol >= 5 {
-			curvol = curvol - 5
-			ror = conn.SetVolume(curvol)
-			er(ror)
+		if curvol >= 10 {
+			for i := 0; i < 5; i++ {
+				curvol = curvol - 2
+				conn.SetVolume(curvol)
+				time.Sleep(20 * time.Millisecond)
+			}
 		}
 	case "random":
 		if currnd == 1 {
