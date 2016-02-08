@@ -1,7 +1,7 @@
 {{define "JS"}}
-<script>var clickEventType = ((document.ontouchstart!==null)?'click':'touchstart')
+<script>
+var clickEventType = ((document.ontouchstart!==null)?'click':'touchstart')
 var PreviousInfo
-// TODO fallback to APIALT if necessary
 function getURLParameter(name) {
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
 }
@@ -11,12 +11,10 @@ getparams = getURLParameter('APIURL')
   + "?KPASS=" + getURLParameter('KPASS');
 
 function autoRefresh(id) {
-  //console.log("Auto-Refresh: " + id)
   sendCmd('info')
   setTimeout(function(){ autoRefresh(id) },1000)
 } 
 function sendCmd(id) {
-  //console.log("sendCmd: " + id)
   var button = document.getElementById(id)
   var infoDiv = document.getElementById('info')
   infoDiv.classList.remove('opaque')
@@ -28,7 +26,6 @@ function sendCmd(id) {
   xhr.send()
   function transferComplete() {
     var CurrentInfo = this.responseText;
-    //console.log("YO" + id)
     infoDiv.classList.remove('heartbeat')
     infoDiv.classList.add('opaque')
     if (CurrentInfo !== PreviousInfo && !isEmpty(CurrentInfo)) {
@@ -37,7 +34,6 @@ function sendCmd(id) {
       animatedButtonListener()
 
       if (infoDiv.getElementsByClassName('CurrentRandom')) {
-        console.log(CurrentInfo)
         var currnd = infoDiv.getElementsByClassName('CurrentRandom')[0].id
 	if (currnd == '0') { 
       	  document.getElementById("random").style.backgroundColor = "#dc322f"
@@ -47,16 +43,11 @@ function sendCmd(id) {
       }
       if (infoDiv.getElementsByClassName('Volume')) {
         var volume = infoDiv.getElementsByClassName('Volume')[0].id
-	if (volume > 20 && volume < 80){
-	  volume = volume * 0.01
-	  var inverse = 1 - volume
-          document.getElementById("dn").style.opacity = volume
-          document.getElementById("up").style.opacity = inverse
-	}
+	volume = volume * 0.01
+	var inverse = 1 - volume
+        document.getElementById("dn").style.opacity = volume
+        document.getElementById("up").style.opacity = inverse
       }
-      //console.log("Different")
-    } else {
-      //console.log("Same")
     }
     if (button.classList.contains("pushed")) {
       button.classList.remove('pushed')
