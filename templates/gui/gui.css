@@ -87,20 +87,20 @@ iframe {
 } 
 #dn {
   opacity: 0.5;
-  background-color: #268bd2;
+  background-color: #859900;
 }
 #up {
   opacity: 0.5;
-  background-color: #268bd2;
+  background-color: #859900;
 }
 #random {
-  background-color: #d33682;
+  background-color: #268bd2;
 } 
 #browser {
   background-color: #d33682;
 } 
 #play {
-  background-color: #268bd2;
+  background-color: #d33682;
 }
 #repeat {
   background-color: #268bd2;

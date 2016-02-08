@@ -13,7 +13,7 @@ getparams = getURLParameter('APIURL')
 
 function autoRefresh(id) {
   if (AutoToggle){ sendCmd(id) }
-  setTimeout(function(){ autoRefresh(id) },3000)
+  setTimeout(function(){ autoRefresh(id) },1500)
 } 
 function sendCmd(id) {
   AutoToggle = false
@@ -39,9 +39,9 @@ function sendCmd(id) {
       if (infoDiv.getElementsByClassName('CurrentRandom')) {
         var currnd = infoDiv.getElementsByClassName('CurrentRandom')[0].id
 	if (currnd == '0') { 
-      	  document.getElementById("random").style.backgroundColor = "#dc322f"
+      	  document.getElementById("random").style.backgroundColor = "#839496"
 	} else {
-      	  document.getElementById("random").style.backgroundColor = "#859900"
+      	  document.getElementById("random").style.backgroundColor = "#268bd2"
 	}
       }
       if (infoDiv.getElementsByClassName('Volume')) {
