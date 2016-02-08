@@ -25,73 +25,73 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	er(ror)
 	defer conn.Close()
 	status, _ := conn.Status()
-	curvol, _ := strconv.Atoi(status["volume"])
-	currnd, _ := strconv.Atoi(status["random"])
-	currpt, _ := strconv.Atoi(status["repeat"])
-	curply, _ := status["state"]
+	cVol, _ := strconv.Atoi(status["volume"])
+	cRnd, _ := strconv.Atoi(status["random"])
+	cRpt, _ := strconv.Atoi(status["repeat"])
+	cPlay, _ := status["state"]
 	switch cmd {
 	case "fw":
-		vol := curvol
+		vol := cVol
 		for vol >= 5 {
 			vol = vol - 5
 			conn.SetVolume(vol)
 			time.Sleep(20 * time.Millisecond)
 		}
 		conn.Next()
-		conn.SetVolume(curvol)
+		conn.SetVolume(cVol)
 	case "bk":
-		vol := curvol
+		vol := cVol
 		for vol >= 5 {
 			vol = vol - 5
 			conn.SetVolume(vol)
 			time.Sleep(20 * time.Millisecond)
 		}
 		conn.Previous()
-		conn.SetVolume(curvol)
+		conn.SetVolume(cVol)
 	case "up":
-		if curvol <= 90 {
+		if cVol <= 90 {
 			for i := 0; i < 5; i++ {
-				curvol = curvol + 2
-				conn.SetVolume(curvol)
+				cVol = cVol + 2
+				conn.SetVolume(cVol)
 				time.Sleep(20 * time.Millisecond)
 			}
 		}
 	case "dn":
-		if curvol >= 10 {
+		if cVol >= 10 {
 			for i := 0; i < 5; i++ {
-				curvol = curvol - 2
-				conn.SetVolume(curvol)
+				cVol = cVol - 2
+				conn.SetVolume(cVol)
 				time.Sleep(20 * time.Millisecond)
 			}
 		}
 	case "repeat":
-		if currpt == 1 {
-			currpt = 0
+		if cRpt == 1 {
+			cRpt = 0
 			conn.Repeat(false)
 
 		} else {
-			currpt = 1
+			cRpt = 1
 			conn.Repeat(true)
 		}
 	case "random":
-		if currnd == 1 {
-			currnd = 0
+		if cRnd == 1 {
+			cRnd = 0
 			conn.Random(false)
 		} else {
-			currnd = 1
+			cRnd = 1
 			conn.Random(true)
 		}
 	case "play":
-		if curply == "play" {
+		if cPlay == "play" {
 			conn.Pause(true)
-		} else if curply == "pause" {
+		} else if cPlay == "pause" {
 			conn.Pause(false)
 		}
 	}
 	s.Deets = map[string]string{
-		"CurrentRandom": strconv.Itoa(currnd),
-		"Repeat":        strconv.Itoa(currpt),
-		"Volume":        strconv.Itoa(curvol),
+		"CurrentRandom": strconv.Itoa(cRnd),
+		"Repeat":        strconv.Itoa(cRpt),
+		"Volume":        strconv.Itoa(cVol),
 	}
 	song, ror := conn.CurrentSong()
 	er(ror)
