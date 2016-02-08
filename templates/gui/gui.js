@@ -36,6 +36,13 @@ function sendCmd(id) {
       PreviousInfo = CurrentInfo
       animatedButtonListener()
 
+
+      if (document.getElementById("BannerText")) {
+ 	var BannerText = document.getElementById("BannerText")
+	var banner = document.getElementById("BannerArea")
+	banner.innerHTML = BannerText.dataset.content 
+      }
+
       if (infoDiv.getElementsByClassName('CurrentRandom')) {
         var currnd = infoDiv.getElementsByClassName('CurrentRandom')[0].id
 	if (currnd == '0') { 

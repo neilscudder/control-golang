@@ -11,9 +11,10 @@ import (
 // Status is for compiling the status html template
 // Holds information on the currrent song and state of mpd
 type Status struct {
-	Title string
-	Deets map[string]string
-	Info  map[int]map[string]string
+	Title  string
+	Banner string
+	Deets  map[string]string
+	Info   map[int]map[string]string
 }
 
 // MpdStatus returns a map of data for html template
@@ -25,6 +26,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	er(ror)
 	defer conn.Close()
 	status, _ := conn.Status()
+	username := params["USERNAME"]
 	cVol, _ := strconv.Atoi(status["volume"])
 	cRnd, _ := strconv.Atoi(status["random"])
 	cRpt, _ := strconv.Atoi(status["repeat"])
@@ -87,6 +89,9 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		} else if cPlay == "pause" {
 			conn.Pause(false)
 		}
+	}
+	if cmd != "info" {
+		s.Banner = username
 	}
 	s.Deets = map[string]string{
 		"CurrentRandom": strconv.Itoa(cRnd),
