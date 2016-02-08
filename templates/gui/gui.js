@@ -2,6 +2,7 @@
 <script>
 var clickEventType = ((document.ontouchstart!==null)?'click':'touchstart')
 var PreviousInfo
+var AutoToggle = true
 function getURLParameter(name) {
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
 }
@@ -11,10 +12,11 @@ getparams = getURLParameter('APIURL')
   + "?KPASS=" + getURLParameter('KPASS');
 
 function autoRefresh(id) {
-  sendCmd('info')
+  if (AutoToggle == true){ sendCmd(id) }
   setTimeout(function(){ autoRefresh(id) },1000)
 } 
 function sendCmd(id) {
+  AutoToggle = false
   var button = document.getElementById(id)
   var infoDiv = document.getElementById('info')
   infoDiv.classList.remove('opaque')
@@ -28,6 +30,7 @@ function sendCmd(id) {
     var CurrentInfo = this.responseText;
     infoDiv.classList.remove('heartbeat')
     infoDiv.classList.add('opaque')
+    AutoToggle = true
     if (CurrentInfo !== PreviousInfo && !isEmpty(CurrentInfo)) {
       infoDiv.innerHTML = CurrentInfo
       PreviousInfo = CurrentInfo

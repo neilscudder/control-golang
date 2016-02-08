@@ -29,14 +29,14 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	currnd, _ := strconv.Atoi(status["random"])
 	switch cmd {
 	case "fw":
-		resetvol := curvol
-		for curvol >= 5 {
-			curvol = curvol - 5
-			conn.SetVolume(curvol)
+		vol := curvol
+		for vol >= 5 {
+			vol = vol - 5
+			conn.SetVolume(vol)
 			time.Sleep(20 * time.Millisecond)
 		}
 		conn.Next()
-		conn.SetVolume(resetvol)
+		conn.SetVolume(curvol)
 	case "up":
 		if curvol <= 90 {
 			for i := 0; i < 5; i++ {
