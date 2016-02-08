@@ -82,13 +82,14 @@ func setup(w http.ResponseWriter, r *http.Request) {
 
 func auth(w http.ResponseWriter, r *http.Request) {
 	p := map[string]string{
-		"APIURL":  r.FormValue("APIURL"),
-		"LABEL":   r.FormValue("LABEL"),
-		"EMAIL":   r.FormValue("EMAIL"),
-		"MPDPORT": r.FormValue("MPDPORT"),
-		"MPDHOST": r.FormValue("MPDHOST"),
-		"MPDPASS": r.FormValue("MPDPASS"),
-		"KPASS":   r.FormValue("KPASS"),
+		"APIURL":   r.FormValue("APIURL"),
+		"LABEL":    r.FormValue("LABEL"),
+		"EMAIL":    r.FormValue("EMAIL"),
+		"USERNAME": r.FormValue("USERNAME"),
+		"MPDPORT":  r.FormValue("MPDPORT"),
+		"MPDHOST":  r.FormValue("MPDHOST"),
+		"MPDPASS":  r.FormValue("MPDPASS"),
+		"KPASS":    r.FormValue("KPASS"),
 	}
 	cURL := r.FormValue("GUIURL") + "/?"
 	if p["APIURL"] != "" {
