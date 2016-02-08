@@ -75,7 +75,7 @@ nav {
   line-height: 20px;
 } 
 #info{
-  padding-top: 100px;
+  padding-top: 130px;
 }
 .info-container{
         margin: 0px auto 30px auto;
@@ -93,16 +93,24 @@ iframe {
   opacity: 0.5;
   background-color: #268bd2;
 }
-#fw {
-  background-color: #b58900;
-}
 #random {
   background-color: #d33682;
 } 
-#tog a, a:active {
-  text-decoration: none;
-  color: #002b36;
+#browser {
+  background-color: #d33682;
 } 
+#play {
+  background-color: #268bd2;
+}
+#repeat {
+  background-color: #268bd2;
+}
+#bk {
+  background-color: #b58900;
+}
+#fw {
+  background-color: #b58900;
+}
 .quarter {
   display: table-cell;
   height: 60px;
