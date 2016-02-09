@@ -18,24 +18,36 @@ type Status struct {
 	Info   map[int]map[string]string
 }
 
-var bannerText map[string]string
+var statusBuffer = make(map[string]Status)
+var bannerText = make(map[string]string)
 
 // MpdStatus returns a map of data for html template
 // It optionally executes a command simultaneously.
 // mpd connection parameters must be supplied.
 func MpdStatus(cmd string, params map[string]string) Status {
-	var s Status
-	var uLog string
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
-	status, _ := conn.Status()
+
+	var uLog string
 	username := params["USERNAME"]
 	playnode := params["LABEL"]
+
+	song, _ := conn.CurrentSong()
+	status, _ := conn.Status()
 	cVol, _ := strconv.Atoi(status["volume"])
 	cRnd, _ := strconv.Atoi(status["random"])
 	cRpt, _ := strconv.Atoi(status["repeat"])
 	cPlay, _ := status["state"]
+
+	/*	if statusBuffer[playnode] != nil {
+			s := statusBuffer[playnode]
+		} else {
+			var s *Status
+			statusBuffer[playnode] = s
+		}
+	*/
+	var s Status
 	switch cmd {
 	case "fw":
 		vol := cVol
@@ -107,16 +119,15 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	if cmd != "info" {
 		userLog(playnode, uLog)
 	}
+	s.Title = song["Title"]
 	s.Banner = bannerText[playnode]
 	s.Deets = map[string]string{
 		"CurrentRandom": strconv.Itoa(cRnd),
 		"Repeat":        strconv.Itoa(cRpt),
 		"Volume":        strconv.Itoa(cVol),
 	}
-	song, ror := conn.CurrentSong()
-	er(ror)
 	getInfo(conn, &s)
-	s.Title = song["Title"]
+	statusBuffer[playnode] = s
 	return s
 }
 
@@ -130,7 +141,7 @@ func userLog(playnode, details string) {
 	defer f.Close()
 	log.SetOutput(f)
 	log.Println(details)
-	bannerText = map[string]string{playnode: details}
+	bannerText[playnode] = details
 }
 
 func getInfo(conn *mpd.Client, s *Status) {
