@@ -51,13 +51,15 @@ function sendCmd(id) {
       	  document.getElementById("random").style.backgroundColor = "#268bd2"
 	}
       }
-      if (infoDiv.getElementsByClassName('Volume')) {
+/*      if (infoDiv.getElementsByClassName('Volume')) {
         var volume = infoDiv.getElementsByClassName('Volume')[0].id
 	volume = volume * 0.01
 	var inverse = 1 - volume
-        document.getElementById("dn").style.opacity = volume
-        document.getElementById("up").style.opacity = inverse
-      }
+	volume = volume + 0.3
+	inverse = inverse + 0.3
+        document.getElementById("dnsvg").style.opacity = volume
+        document.getElementById("upsvg").style.opacity = inverse
+      }*/
     }
     if (button.classList.contains("pushed")) {
       button.classList.remove('pushed')
