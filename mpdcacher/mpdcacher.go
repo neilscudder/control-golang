@@ -12,10 +12,11 @@ import (
 // Status is for compiling the status html template
 // Holds information on the currrent song and state of mpd
 type Status struct {
-	Title  string
-	Banner string
-	Deets  map[string]string
-	Info   map[int]map[string]string
+	Timestamp int64
+	Title     string
+	Banner    string
+	Deets     map[string]string
+	Info      map[int]map[string]string
 }
 
 var statusBuffer = make(map[string]Status)
@@ -116,18 +117,40 @@ func MpdStatus(cmd string, params map[string]string) Status {
 			uLog = username + " (resumed playback)"
 		}
 	}
-	if cmd != "info" {
+	_, present := statusBuffer[playnode]
+	if cmd == "info" && present {
+		b := statusBuffer[playnode]
+		t := time.Now()
+		n := t.Unix()
+		age := n - b.Timestamp
+		if age >= 59 {
+			s.Timestamp = n
+			s.Title = song["Title"]
+			s.Banner = bannerText[playnode]
+			s.Deets = map[string]string{
+				"CurrentRandom": strconv.Itoa(cRnd),
+				"Repeat":        strconv.Itoa(cRpt),
+				"Volume":        strconv.Itoa(cVol),
+			}
+			getInfo(conn, &s)
+			statusBuffer[playnode] = s
+		} else {
+			s = statusBuffer[playnode]
+		}
+	} else {
 		userLog(playnode, uLog)
+		t := time.Now()
+		s.Timestamp = t.Unix()
+		s.Title = song["Title"]
+		s.Banner = bannerText[playnode]
+		s.Deets = map[string]string{
+			"CurrentRandom": strconv.Itoa(cRnd),
+			"Repeat":        strconv.Itoa(cRpt),
+			"Volume":        strconv.Itoa(cVol),
+		}
+		getInfo(conn, &s)
+		statusBuffer[playnode] = s
 	}
-	s.Title = song["Title"]
-	s.Banner = bannerText[playnode]
-	s.Deets = map[string]string{
-		"CurrentRandom": strconv.Itoa(cRnd),
-		"Repeat":        strconv.Itoa(cRpt),
-		"Volume":        strconv.Itoa(cVol),
-	}
-	getInfo(conn, &s)
-	statusBuffer[playnode] = s
 	return s
 }
 
