@@ -18,7 +18,7 @@ type Status struct {
 	Info   map[int]map[string]string
 }
 
-var bannerText = ""
+var bannerText map[string]string
 
 // MpdStatus returns a map of data for html template
 // It optionally executes a command simultaneously.
@@ -65,7 +65,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 				time.Sleep(20 * time.Millisecond)
 			}
 		}
-		uLog = username + " (raised volume)"
+		uLog = username + " (raised volume to " + strconv.Itoa(cVol) + ")"
 	case "dn":
 		if cVol >= 10 {
 			for i := 0; i < 5; i++ {
@@ -74,7 +74,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 				time.Sleep(20 * time.Millisecond)
 			}
 		}
-		uLog = username + " (lowered volume)"
+		uLog = username + " (lowered volume to " + strconv.Itoa(cVol) + ")"
 	case "repeat":
 		if cRpt == 1 {
 			cRpt = 0
@@ -98,16 +98,16 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	case "play":
 		if cPlay == "play" {
 			conn.Pause(true)
-			uLog = username + " (resumed playback)"
+			uLog = username + " (paused playback)"
 		} else if cPlay == "pause" {
 			conn.Pause(false)
-			uLog = username + " (paused playback)"
+			uLog = username + " (resumed playback)"
 		}
 	}
 	if cmd != "info" {
 		userLog(playnode, uLog)
 	}
-	s.Banner = bannerText
+	s.Banner = bannerText[playnode]
 	s.Deets = map[string]string{
 		"CurrentRandom": strconv.Itoa(cRnd),
 		"Repeat":        strconv.Itoa(cRpt),
@@ -130,7 +130,7 @@ func userLog(playnode, details string) {
 	defer f.Close()
 	log.SetOutput(f)
 	log.Println(details)
-	bannerText = details
+	bannerText = map[string]string{playnode: details}
 }
 
 func getInfo(conn *mpd.Client, s *Status) {
