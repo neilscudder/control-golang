@@ -3,6 +3,7 @@ package mpdcacher
 import (
 	"github.com/fhs/gompd/mpd"
 	"log"
+	"os"
 	"path"
 	"strconv"
 	"time"
@@ -17,16 +18,20 @@ type Status struct {
 	Info   map[int]map[string]string
 }
 
+var bannerText = ""
+
 // MpdStatus returns a map of data for html template
 // It optionally executes a command simultaneously.
 // mpd connection parameters must be supplied.
 func MpdStatus(cmd string, params map[string]string) Status {
 	var s Status
+	var uLog string
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
 	status, _ := conn.Status()
 	username := params["USERNAME"]
+	playnode := params["LABEL"]
 	cVol, _ := strconv.Atoi(status["volume"])
 	cRnd, _ := strconv.Atoi(status["random"])
 	cRpt, _ := strconv.Atoi(status["repeat"])
@@ -41,6 +46,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		}
 		conn.Next()
 		conn.SetVolume(cVol)
+		uLog = username + " (skipped forward)"
 	case "bk":
 		vol := cVol
 		for vol >= 5 {
@@ -50,6 +56,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		}
 		conn.Previous()
 		conn.SetVolume(cVol)
+		uLog = username + " (skipped back)"
 	case "up":
 		if cVol <= 90 {
 			for i := 0; i < 5; i++ {
@@ -58,6 +65,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 				time.Sleep(20 * time.Millisecond)
 			}
 		}
+		uLog = username + " (raised volume)"
 	case "dn":
 		if cVol >= 10 {
 			for i := 0; i < 5; i++ {
@@ -66,33 +74,40 @@ func MpdStatus(cmd string, params map[string]string) Status {
 				time.Sleep(20 * time.Millisecond)
 			}
 		}
+		uLog = username + " (lowered volume)"
 	case "repeat":
 		if cRpt == 1 {
 			cRpt = 0
 			conn.Repeat(false)
-
+			uLog = username + " (disabled repeat)"
 		} else {
 			cRpt = 1
 			conn.Repeat(true)
+			uLog = username + " (enabled repeat)"
 		}
 	case "random":
 		if cRnd == 1 {
 			cRnd = 0
 			conn.Random(false)
+			uLog = username + " (disabled random)"
 		} else {
 			cRnd = 1
 			conn.Random(true)
+			uLog = username + " (enabled random)"
 		}
 	case "play":
 		if cPlay == "play" {
 			conn.Pause(true)
+			uLog = username + " (resumed playback)"
 		} else if cPlay == "pause" {
 			conn.Pause(false)
+			uLog = username + " (paused playback)"
 		}
 	}
 	if cmd != "info" {
-		s.Banner = username
+		userLog(playnode, uLog)
 	}
+	s.Banner = bannerText
 	s.Deets = map[string]string{
 		"CurrentRandom": strconv.Itoa(cRnd),
 		"Repeat":        strconv.Itoa(cRpt),
@@ -103,6 +118,19 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	getInfo(conn, &s)
 	s.Title = song["Title"]
 	return s
+}
+
+// userLog returns the newest entry of user activity as a string
+// if parameter is not nil, add new entry then return it
+// one log file per playnode
+func userLog(playnode, details string) {
+	filename := "data/" + "log." + playnode
+	f, ror := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	er(ror)
+	defer f.Close()
+	log.SetOutput(f)
+	log.Println(details)
+	bannerText = details
 }
 
 func getInfo(conn *mpd.Client, s *Status) {
