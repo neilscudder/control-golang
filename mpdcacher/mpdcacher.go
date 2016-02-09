@@ -123,7 +123,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		t := time.Now()
 		n := t.Unix()
 		age := n - b.Timestamp
-		if age >= 59 {
+		if age >= 2 {
 			s.Timestamp = n
 			s.Title = song["Title"]
 			s.Banner = bannerText[playnode]
