@@ -51,6 +51,18 @@ function sendCmd(id) {
       	  document.getElementById("random").style.backgroundColor = "#268bd2"
 	}
       }
+      if (infoDiv.getElementsByClassName('PlayState')) {
+        var curply = infoDiv.getElementsByClassName('PlayState')[0].id
+        var playSVG = document.getElementById('playsvg')
+        if (curply == 'play') {
+          var pausePaths = '<path fill=\"#002B36\ "d=\"M6 19h4V5H6v14zm8-14v14h4V5h-4z\"></path><path d=\"M0 0h24v24H0z\" fill=\"none\"></path>'
+          playsvg.innerHTML = pausePaths
+        } else {
+          var playPaths = '<path fill=\"#002B36\" d=\"M8 5v14l11-7z\" ></path><path fill=\"none\" d=\"M0 0h24v24H0z\"></path>'
+          playsvg.innerHTML = playPaths
+        }
+
+      }
 /*      if (infoDiv.getElementsByClassName('Volume')) {
         var volume = infoDiv.getElementsByClassName('Volume')[0].id
 	volume = volume * 0.01
