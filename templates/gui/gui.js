@@ -38,6 +38,7 @@ function sendCmd(id) {
         animatedButtonListener()
       }
     } else {
+      if (id != "state") { sendCmd('info')}
       var CurrentState = this.responseText
       var button = document.getElementById(id)
       var banner = document.getElementById('BannerArea')
@@ -75,8 +76,7 @@ function isEmpty(str) {
     return (!str || 0 === str.length)
 }
 function initialise() {
-  var id = document.getElementsByTagName('section')[0].id
-  autoRefresh(id, 1500)
+  autoRefresh('info', 3000)
   autoRefresh("state", 300)
   animatedButtonListener()
 }

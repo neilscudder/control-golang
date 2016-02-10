@@ -52,24 +52,24 @@ func MpdState(cmd string, params map[string]string) State {
 	switch cmd {
 	case "fw":
 		vol := cVol
-		for vol >= 5 {
-			vol = vol - 5
+		for vol >= 10 {
+			vol = vol - 10
 			conn.SetVolume(vol)
-			time.Sleep(20 * time.Millisecond)
+			//	time.Sleep(10 * time.Millisecond)
 		}
 		conn.Next()
 		conn.SetVolume(cVol)
-		uLog = username + " (skipped forward)"
+		uLog = username + " skipped forward"
 	case "bk":
 		vol := cVol
-		for vol >= 5 {
-			vol = vol - 5
+		for vol >= 10 {
+			vol = vol - 10
 			conn.SetVolume(vol)
-			time.Sleep(20 * time.Millisecond)
+			//	time.Sleep(10 * time.Millisecond)
 		}
 		conn.Previous()
 		conn.SetVolume(cVol)
-		uLog = username + " (skipped back)"
+		uLog = username + " skipped back"
 	case "up":
 		if cVol <= 90 {
 			for i := 0; i < 5; i++ {
@@ -78,7 +78,7 @@ func MpdState(cmd string, params map[string]string) State {
 				time.Sleep(20 * time.Millisecond)
 			}
 		}
-		uLog = username + " (raised volume to " + strconv.Itoa(cVol) + ")"
+		uLog = username + " raised volume to " + strconv.Itoa(cVol)
 	case "dn":
 		if cVol >= 10 {
 			for i := 0; i < 5; i++ {
@@ -87,54 +87,40 @@ func MpdState(cmd string, params map[string]string) State {
 				time.Sleep(20 * time.Millisecond)
 			}
 		}
-		uLog = username + " (lowered volume to " + strconv.Itoa(cVol) + ")"
+		uLog = username + " lowered volume to " + strconv.Itoa(cVol)
 	case "repeat":
 		if cRpt == 1 {
 			cRpt = 0
 			conn.Repeat(false)
-			uLog = username + " (disabled repeat)"
+			uLog = username + " disabled repeat"
 		} else {
 			cRpt = 1
 			conn.Repeat(true)
-			uLog = username + " (enabled repeat)"
+			uLog = username + " enabled repeat"
 		}
 	case "random":
 		if cRnd == 1 {
 			cRnd = 0
 			conn.Random(false)
-			uLog = username + " (disabled random)"
+			uLog = username + " disabled random"
 		} else {
 			cRnd = 1
 			conn.Random(true)
-			uLog = username + " (enabled random)"
+			uLog = username + " enabled random"
 		}
 	case "play":
 		if cPlay == "play" {
 			conn.Pause(true)
 			cPlay = "pause"
-			uLog = username + " (paused playback)"
+			uLog = username + " paused playback"
 		} else if cPlay == "pause" {
 			conn.Pause(false)
 			cPlay = "play"
-			uLog = username + " (resumed playback)"
+			uLog = username + " resumed playback"
 		}
 	}
 	_, bufExists := stateBuffer[playnode]
 	if bufExists && cmd == "state" {
-		/*
-			b := stateBuffer[playnode]
-			t := time.Now()
-			n := t.Unix()
-			age := n - b.Timestamp
-			if age >= 1 {
-				t := time.Now()
-				s.Timestamp = t.Unix()
-				s.Banner = uLog
-				s.Random = cRnd
-				s.Repeat = cRpt
-				s.Volume = cVol
-				s.Play = cPlay
-		*/
 		s = stateBuffer[playnode]
 	} else {
 		userLog(playnode, uLog)
