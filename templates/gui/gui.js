@@ -12,9 +12,9 @@ getparams = getURLParameter('APIURL')
   + "get"
   + "?KPASS=" + getURLParameter('KPASS');
 
-function autoRefresh(id) {
+function autoRefresh(id,interval) {
   if (AutoToggle){ sendCmd(id) }
-  setTimeout(function(){ autoRefresh(id) },1000)
+  setTimeout(function(){ autoRefresh(id,interval) },interval)
 } 
 function sendCmd(id) {
 //  AutoToggle = false
@@ -76,8 +76,8 @@ function isEmpty(str) {
 }
 function initialise() {
   var id = document.getElementsByTagName('section')[0].id
-  autoRefresh(id)
-  autoRefresh("state")
+  autoRefresh(id, 1500)
+  autoRefresh("state", 300)
   animatedButtonListener()
 }
 
