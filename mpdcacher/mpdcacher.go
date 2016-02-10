@@ -104,11 +104,11 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	case "play":
 		if cPlay == "play" {
 			conn.Pause(true)
-                        cPlay = "pause" 
+			cPlay = "pause"
 			uLog = username + " (paused playback)"
 		} else if cPlay == "pause" {
 			conn.Pause(false)
-                        cPlay = "play"
+			cPlay = "play"
 			uLog = username + " (resumed playback)"
 		}
 	}
@@ -127,7 +127,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 				"CurrentRandom": strconv.Itoa(cRnd),
 				"Repeat":        strconv.Itoa(cRpt),
 				"Volume":        strconv.Itoa(cVol),
-				"PlayState":       cPlay,
+				"PlayState":     cPlay,
 			}
 			getInfo(conn, &s)
 			statusBuffer[playnode] = s
@@ -145,7 +145,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 			"CurrentRandom": strconv.Itoa(cRnd),
 			"Repeat":        strconv.Itoa(cRpt),
 			"Volume":        strconv.Itoa(cVol),
-			"PlayState":       cPlay,
+			"PlayState":     cPlay,
 		}
 		getInfo(conn, &s)
 		statusBuffer[playnode] = s
