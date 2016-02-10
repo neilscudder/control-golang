@@ -169,8 +169,6 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		age := n - b.Timestamp
 		if age >= 1 {
 			s.Timestamp = n
-			song, _ := conn.CurrentSong()
-			s.Title = song["Title"]
 			getInfo(conn, &s)
 			statusBuffer[playnode] = s
 		} else {
@@ -179,8 +177,6 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	} else {
 		t := time.Now()
 		s.Timestamp = t.Unix()
-		song, _ := conn.CurrentSong()
-		s.Title = song["Title"]
 		getInfo(conn, &s)
 		statusBuffer[playnode] = s
 	}
@@ -204,6 +200,7 @@ func getInfo(conn *mpd.Client, s *Status) {
 	er(ror)
 	song, ror := conn.CurrentSong()
 	er(ror)
+	s.Title = song["Title"]
 	if song["Title"] != "" {
 		s.Info = map[int]map[string]string{
 			1: {
@@ -228,6 +225,9 @@ func getInfo(conn *mpd.Client, s *Status) {
 				"Folder": directory,
 			},
 		}
+		searchParams := filename
+		encQuery := url.QueryEscape(searchParams)
+		s.YouTube = "https://www.youtube.com/embed?fs=0&controls=0&listType=search&list=" + encQuery
 	} else {
 		s.Info = map[int]map[string]string{
 			1: {
