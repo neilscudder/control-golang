@@ -41,7 +41,7 @@ svg.play {
 }
 svg.toolbar {
   pointer-events: none;
-  height: 60px;
+  height: 50px;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -75,7 +75,7 @@ nav {
   line-height: 20px;
 } 
 #info{
-  padding-top: 150px;
+  padding-top: 130px;
 }
 .info-container{
         margin: 0px auto 30px auto;
@@ -111,8 +111,8 @@ iframe {
 }
 .quarter {
   display: table-cell;
-  height: 60px;
-  line-height: 60px;
+  height: 50px;
+  line-height: 50px;
   width: 25%;
   border-radius: 15px;
   border: 3px solid #002b36;
@@ -125,8 +125,8 @@ iframe {
 .button {
   display: table-cell;
   width: 200px;
-  height: 60px;
-  line-height: 60px;
+  height: 50px;
+  line-height: 50px;
   background-color: #268bd2;
   border: 3px solid #002b36;
   border-radius: 16px;
