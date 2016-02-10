@@ -3,6 +3,7 @@ package mpdcacher
 import (
 	"github.com/fhs/gompd/mpd"
 	"log"
+	"net/url"
 	"os"
 	"path"
 	"strconv"
@@ -15,6 +16,7 @@ type Status struct {
 	Timestamp int64
 	Title     string
 	Banner    string
+	YouTube   string
 	Deets     map[string]string
 	Info      map[int]map[string]string
 }
@@ -180,6 +182,9 @@ func getInfo(conn *mpd.Client, s *Status) {
 				"Album": song["Album"] + " (" + song["Date"] + ")",
 			},
 		}
+		searchParams := song["Artist"] + "" + song["title"]
+		encQuery := url.QueryEscape(searchParams)
+		s.YouTube = "https://www.youtube.com/embed?fs=0&controls=0&listType=search&list=" + encQuery
 	} else if status["state"] == "play" {
 		filename := path.Base(song["file"])
 		directory := path.Dir(song["file"])

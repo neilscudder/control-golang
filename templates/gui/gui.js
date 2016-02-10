@@ -48,7 +48,7 @@ function sendCmd(id) {
 	if (currnd == '0') { 
       	  document.getElementById("random").style.backgroundColor = "#586e75"
 	} else {
-      	  document.getElementById("random").style.backgroundColor = "#268bd2"
+      	  document.getElementById("random").style.backgroundColor = "#839496"
 	}
       }
       if (infoDiv.getElementsByClassName('Repeat')) {
@@ -56,7 +56,7 @@ function sendCmd(id) {
 	if (cRpt == '0') { 
       	  document.getElementById("repeat").style.backgroundColor = "#586e75"
 	} else {
-      	  document.getElementById("repeat").style.backgroundColor = "#268bd2"
+      	  document.getElementById("repeat").style.backgroundColor = "#839496"
 	}
       }
       if (infoDiv.getElementsByClassName('PlayState')) {
