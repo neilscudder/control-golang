@@ -25,10 +25,10 @@ type Status struct {
 var statusBuffer = make(map[string]Status)
 var bannerText = make(map[string]string)
 
-// MpdStatus returns a map of data for html template
-// It optionally executes a command simultaneously.
+// MpdState returns a map of data for button states
+// It executes a command simultaneously.
 // mpd connection parameters must be supplied.
-func MpdStatus(cmd string, params map[string]string) Status {
+func MpdState(cmd string, params map[string]string) Status {
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
@@ -115,8 +115,42 @@ func MpdStatus(cmd string, params map[string]string) Status {
 			uLog = username + " (resumed playback)"
 		}
 	}
+	userLog(playnode, uLog)
+	t := time.Now()
+	s.Timestamp = t.Unix()
+	song, _ := conn.CurrentSong()
+	s.Title = song["Title"]
+	s.Banner = bannerText[playnode]
+	s.Deets = map[string]string{
+		"CurrentRandom": strconv.Itoa(cRnd),
+		"Repeat":        strconv.Itoa(cRpt),
+		"Volume":        strconv.Itoa(cVol),
+		"PlayState":     cPlay,
+	}
+	getInfo(conn, &s)
+	return s
+}
+
+// MpdStatus returns a map of data for html template
+// mpd connection parameters must be supplied.
+func MpdStatus(cmd string, params map[string]string) Status {
+	conn, ror := mpdConnect(params)
+	er(ror)
+	defer conn.Close()
+
+	var s Status
+	var uLog string
+	s.Deets = make(map[string]string)
+
+	playnode := params["LABEL"]
+
+	status, _ := conn.Status()
+	cVol, _ := strconv.Atoi(status["volume"])
+	cRnd, _ := strconv.Atoi(status["random"])
+	cRpt, _ := strconv.Atoi(status["repeat"])
+	cPlay, _ := status["state"]
 	_, bufExists := statusBuffer[playnode]
-	if cmd == "info" && bufExists {
+	if bufExists {
 		b := statusBuffer[playnode]
 		t := time.Now()
 		n := t.Unix()
@@ -155,6 +189,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	}
 	return s
 }
+
 
 // userLog returns the newest entry of user activity as a string
 // if parameter is not nil, add new entry then return it
