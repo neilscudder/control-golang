@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	http.Handle("/res/", http.FileServer(http.Dir("res/")))
 	http.HandleFunc("/", gui)
 	http.HandleFunc("/get", get)
 	http.HandleFunc("/authority", setup)
