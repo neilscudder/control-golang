@@ -46,9 +46,17 @@ function sendCmd(id) {
       if (infoDiv.getElementsByClassName('CurrentRandom')) {
         var currnd = infoDiv.getElementsByClassName('CurrentRandom')[0].id
 	if (currnd == '0') { 
-      	  document.getElementById("random").style.backgroundColor = "#839496"
+      	  document.getElementById("random").style.backgroundColor = "#586e75"
 	} else {
       	  document.getElementById("random").style.backgroundColor = "#268bd2"
+	}
+      }
+      if (infoDiv.getElementsByClassName('Repeat')) {
+        var cRpt = infoDiv.getElementsByClassName('Repeat')[0].id
+	if (cRpt == '0') { 
+      	  document.getElementById("repeat").style.backgroundColor = "#586e75"
+	} else {
+      	  document.getElementById("repeat").style.backgroundColor = "#268bd2"
 	}
       }
       if (infoDiv.getElementsByClassName('PlayState')) {
