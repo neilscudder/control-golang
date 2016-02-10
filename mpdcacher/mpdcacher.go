@@ -30,6 +30,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	er(ror)
 	defer conn.Close()
 
+	var s Status
 	var uLog string
 	username := params["USERNAME"]
 	playnode := params["LABEL"]
@@ -40,14 +41,6 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	cRpt, _ := strconv.Atoi(status["repeat"])
 	cPlay, _ := status["state"]
 
-	/*	if statusBuffer[playnode] != nil {
-			s := statusBuffer[playnode]
-		} else {
-			var s *Status
-			statusBuffer[playnode] = s
-		}
-	*/
-	var s Status
 	switch cmd {
 	case "fw":
 		vol := cVol
@@ -116,8 +109,8 @@ func MpdStatus(cmd string, params map[string]string) Status {
 			uLog = username + " (resumed playback)"
 		}
 	}
-	_, present := statusBuffer[playnode]
-	if cmd == "info" && present {
+	_, bufExists := statusBuffer[playnode]
+	if cmd == "info" && bufExists {
 		b := statusBuffer[playnode]
 		t := time.Now()
 		n := t.Unix()
