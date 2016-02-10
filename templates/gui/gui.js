@@ -17,7 +17,7 @@ function autoRefresh(id) {
   setTimeout(function(){ autoRefresh(id) },1000)
 } 
 function sendCmd(id) {
-  AutoToggle = false
+//  AutoToggle = false
   var xhr = new XMLHttpRequest()
   params = getparams + "&a=" + id
   xhr.addEventListener("load", transferComplete)
@@ -77,7 +77,7 @@ function isEmpty(str) {
 function initialise() {
   var id = document.getElementsByTagName('section')[0].id
   autoRefresh(id)
-  autoRefresh("status")
+  autoRefresh("state")
   animatedButtonListener()
 }
 

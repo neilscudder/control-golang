@@ -8,10 +8,4 @@
 {{ if .YouTube }}
   <iframe src="{{ .YouTube }}" frameborder="0"></iframe>
 {{ end }}
-{{ range $c,$i := .Deets}}
-  <div class="{{ $c }}" id="{{ $i }}"></div>
-{{ end }}
-{{ if .Banner }}
-  <div id="BannerText" data-content="{{ .Banner }}"></div>
-{{ end }}
 </div>

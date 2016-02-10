@@ -29,7 +29,6 @@ type State struct {
 
 var statusBuffer = make(map[string]Status)
 var stateBuffer = make(map[string]State)
-var bannerText = make(map[string]string)
 
 // MpdState returns a map of data for button states
 // It executes a command simultaneously.
@@ -120,32 +119,33 @@ func MpdState(cmd string, params map[string]string) State {
 			uLog = username + " (resumed playback)"
 		}
 	}
-	userLog(playnode, uLog)
 	_, bufExists := stateBuffer[playnode]
-	if bufExists {
-		b := stateBuffer[playnode]
-		t := time.Now()
-		n := t.Unix()
-		age := n - b.Timestamp
-		if age >= 1 {
+	if bufExists && cmd == "state" {
+		/*
+			b := stateBuffer[playnode]
 			t := time.Now()
-			s.Timestamp = t.Unix()
-			s.Banner = bannerText[playnode]
-			s.Random = cRnd
-			s.Repeat = cRpt
-			s.Volume = cVol
-			s.Play = cPlay
-		} else {
-			s = stateBuffer[playnode]
-		}
+			n := t.Unix()
+			age := n - b.Timestamp
+			if age >= 1 {
+				t := time.Now()
+				s.Timestamp = t.Unix()
+				s.Banner = uLog
+				s.Random = cRnd
+				s.Repeat = cRpt
+				s.Volume = cVol
+				s.Play = cPlay
+		*/
+		s = stateBuffer[playnode]
 	} else {
+		userLog(playnode, uLog)
 		t := time.Now()
 		s.Timestamp = t.Unix()
-		s.Banner = bannerText[playnode]
+		s.Banner = uLog
 		s.Random = cRnd
 		s.Repeat = cRpt
 		s.Volume = cVol
 		s.Play = cPlay
+		stateBuffer[playnode] = s
 	}
 	return s
 }
@@ -158,7 +158,6 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	defer conn.Close()
 
 	var s Status
-	var uLog string
 
 	playnode := params["LABEL"]
 
@@ -178,7 +177,6 @@ func MpdStatus(cmd string, params map[string]string) Status {
 			s = statusBuffer[playnode]
 		}
 	} else {
-		userLog(playnode, uLog)
 		t := time.Now()
 		s.Timestamp = t.Unix()
 		song, _ := conn.CurrentSong()
@@ -199,7 +197,6 @@ func userLog(playnode, details string) {
 	defer f.Close()
 	log.SetOutput(f)
 	log.Println(details)
-	bannerText[playnode] = details
 }
 
 func getInfo(conn *mpd.Client, s *Status) {
@@ -207,7 +204,7 @@ func getInfo(conn *mpd.Client, s *Status) {
 	er(ror)
 	song, ror := conn.CurrentSong()
 	er(ror)
-	if status["state"] == "play" && song["Title"] != "" {
+	if song["Title"] != "" {
 		s.Info = map[int]map[string]string{
 			1: {
 				"Artist": song["Artist"],
