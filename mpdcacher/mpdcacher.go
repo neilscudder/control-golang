@@ -16,26 +16,31 @@ import (
 type Status struct {
 	Timestamp int64
 	Title     string
-	Banner    string
 	YouTube   string
-	Deets     map[string]string
 	Info      map[int]map[string]string
 }
 
+type State struct {
+	Timestamp              int64
+	Random, Repeat, Volume int
+	Play                   string
+	Banner                 string
+}
+
 var statusBuffer = make(map[string]Status)
+var stateBuffer = make(map[string]State)
 var bannerText = make(map[string]string)
 
 // MpdState returns a map of data for button states
 // It executes a command simultaneously.
 // mpd connection parameters must be supplied.
-func MpdState(cmd string, params map[string]string) Status {
+func MpdState(cmd string, params map[string]string) State {
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
 
-	var s Status
+	var s State
 	var uLog string
-	s.Deets = make(map[string]string)
 
 	username := params["USERNAME"]
 	playnode := params["LABEL"]
@@ -116,18 +121,32 @@ func MpdState(cmd string, params map[string]string) Status {
 		}
 	}
 	userLog(playnode, uLog)
-	t := time.Now()
-	s.Timestamp = t.Unix()
-	song, _ := conn.CurrentSong()
-	s.Title = song["Title"]
-	s.Banner = bannerText[playnode]
-	s.Deets = map[string]string{
-		"CurrentRandom": strconv.Itoa(cRnd),
-		"Repeat":        strconv.Itoa(cRpt),
-		"Volume":        strconv.Itoa(cVol),
-		"PlayState":     cPlay,
+	_, bufExists := stateBuffer[playnode]
+	if bufExists {
+		b := stateBuffer[playnode]
+		t := time.Now()
+		n := t.Unix()
+		age := n - b.Timestamp
+		if age >= 1 {
+			t := time.Now()
+			s.Timestamp = t.Unix()
+			s.Banner = bannerText[playnode]
+			s.Random = cRnd
+			s.Repeat = cRpt
+			s.Volume = cVol
+			s.Play = cPlay
+		} else {
+			s = stateBuffer[playnode]
+		}
+	} else {
+		t := time.Now()
+		s.Timestamp = t.Unix()
+		s.Banner = bannerText[playnode]
+		s.Random = cRnd
+		s.Repeat = cRpt
+		s.Volume = cVol
+		s.Play = cPlay
 	}
-	getInfo(conn, &s)
 	return s
 }
 
@@ -140,32 +159,19 @@ func MpdStatus(cmd string, params map[string]string) Status {
 
 	var s Status
 	var uLog string
-	s.Deets = make(map[string]string)
 
 	playnode := params["LABEL"]
 
-	status, _ := conn.Status()
-	cVol, _ := strconv.Atoi(status["volume"])
-	cRnd, _ := strconv.Atoi(status["random"])
-	cRpt, _ := strconv.Atoi(status["repeat"])
-	cPlay, _ := status["state"]
 	_, bufExists := statusBuffer[playnode]
 	if bufExists {
 		b := statusBuffer[playnode]
 		t := time.Now()
 		n := t.Unix()
 		age := n - b.Timestamp
-		if age >= 2 {
+		if age >= 1 {
 			s.Timestamp = n
 			song, _ := conn.CurrentSong()
 			s.Title = song["Title"]
-			s.Banner = bannerText[playnode]
-			s.Deets = map[string]string{
-				"CurrentRandom": strconv.Itoa(cRnd),
-				"Repeat":        strconv.Itoa(cRpt),
-				"Volume":        strconv.Itoa(cVol),
-				"PlayState":     cPlay,
-			}
 			getInfo(conn, &s)
 			statusBuffer[playnode] = s
 		} else {
@@ -177,19 +183,11 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		s.Timestamp = t.Unix()
 		song, _ := conn.CurrentSong()
 		s.Title = song["Title"]
-		s.Banner = bannerText[playnode]
-		s.Deets = map[string]string{
-			"CurrentRandom": strconv.Itoa(cRnd),
-			"Repeat":        strconv.Itoa(cRpt),
-			"Volume":        strconv.Itoa(cVol),
-			"PlayState":     cPlay,
-		}
 		getInfo(conn, &s)
 		statusBuffer[playnode] = s
 	}
 	return s
 }
-
 
 // userLog returns the newest entry of user activity as a string
 // if parameter is not nil, add new entry then return it

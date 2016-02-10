@@ -64,7 +64,8 @@ func get(w http.ResponseWriter, r *http.Request) {
 	} else {
 		s := mpdcacher.MpdState(cmd, p)
 		state, _ := json.Marshal(s)
-		fmt.Fprint(w, state)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(state)
 	}
 }
 

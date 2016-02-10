@@ -14,7 +14,7 @@ getparams = getURLParameter('APIURL')
 
 function autoRefresh(id) {
   if (AutoToggle){ sendCmd(id) }
-  setTimeout(function(){ autoRefresh(id) },1500)
+  setTimeout(function(){ autoRefresh(id) },1000)
 } 
 function sendCmd(id) {
   AutoToggle = false
