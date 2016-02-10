@@ -34,7 +34,6 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	username := params["USERNAME"]
 	playnode := params["LABEL"]
 
-	song, _ := conn.CurrentSong()
 	status, _ := conn.Status()
 	cVol, _ := strconv.Atoi(status["volume"])
 	cRnd, _ := strconv.Atoi(status["random"])
@@ -125,6 +124,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		age := n - b.Timestamp
 		if age >= 2 {
 			s.Timestamp = n
+			song, _ := conn.CurrentSong()
 			s.Title = song["Title"]
 			s.Banner = bannerText[playnode]
 			s.Deets = map[string]string{
@@ -141,6 +141,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		userLog(playnode, uLog)
 		t := time.Now()
 		s.Timestamp = t.Unix()
+		song, _ := conn.CurrentSong()
 		s.Title = song["Title"]
 		s.Banner = bannerText[playnode]
 		s.Deets = map[string]string{
