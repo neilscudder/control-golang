@@ -1,7 +1,7 @@
 package mpdcacher
 
 import (
-	//	"fmt"
+	"fmt"
 	"github.com/fhs/gompd/mpd"
 	"log"
 	"net/url"
@@ -20,6 +20,7 @@ type Status struct {
 	Info      map[int]map[string]string
 }
 
+// State stores button states and banner text per playnode
 type State struct {
 	Timestamp              int64
 	Random, Repeat, Volume int
@@ -52,7 +53,7 @@ func MpdState(cmd string, params map[string]string) State {
 	switch cmd {
 	case "fw":
 		vol := cVol
-		for vol >= 10 {
+		for vol >= 50 {
 			vol = vol - 10
 			conn.SetVolume(vol)
 			//	time.Sleep(10 * time.Millisecond)
@@ -62,7 +63,7 @@ func MpdState(cmd string, params map[string]string) State {
 		uLog = username + " skipped forward"
 	case "bk":
 		vol := cVol
-		for vol >= 10 {
+		for vol >= 50 {
 			vol = vol - 10
 			conn.SetVolume(vol)
 			//	time.Sleep(10 * time.Millisecond)
@@ -76,18 +77,26 @@ func MpdState(cmd string, params map[string]string) State {
 				cVol = cVol + 2
 				conn.SetVolume(cVol)
 				time.Sleep(20 * time.Millisecond)
+				uLog = username + " raised volume to " + strconv.Itoa(cVol)
 			}
+		} else if cVol != 100 {
+			cVol = 100
+			conn.SetVolume(cVol)
+			uLog = username + " raised volume to " + strconv.Itoa(cVol)
 		}
-		uLog = username + " raised volume to " + strconv.Itoa(cVol)
 	case "dn":
 		if cVol >= 10 {
 			for i := 0; i < 5; i++ {
 				cVol = cVol - 2
 				conn.SetVolume(cVol)
 				time.Sleep(20 * time.Millisecond)
+				uLog = username + " lowered volume to " + strconv.Itoa(cVol)
 			}
+		} else if cVol != 0 {
+			cVol = 0
+			conn.SetVolume(cVol)
+			uLog = username + " lowered volume to " + strconv.Itoa(cVol)
 		}
-		uLog = username + " lowered volume to " + strconv.Itoa(cVol)
 	case "repeat":
 		if cRpt == 1 {
 			cRpt = 0
@@ -123,10 +132,13 @@ func MpdState(cmd string, params map[string]string) State {
 	if bufExists && cmd == "state" {
 		s = stateBuffer[playnode]
 	} else {
-		userLog(playnode, uLog)
+		s = stateBuffer[playnode]
+		if uLog != "" {
+			userLog(playnode, uLog)
+			s.Banner = uLog
+		}
 		t := time.Now()
 		s.Timestamp = t.Unix()
-		s.Banner = uLog
 		s.Random = cRnd
 		s.Repeat = cRpt
 		s.Volume = cVol
@@ -187,6 +199,21 @@ func getInfo(conn *mpd.Client, s *Status) {
 	song, ror := conn.CurrentSong()
 	er(ror)
 	s.Title = song["Title"]
+	filename := path.Base(song["file"])
+	directory := path.Dir(song["file"])
+	thisDir, _ := conn.ListInfo(directory)
+	var listing string
+	for i := 0; i < len(thisDir); i++ {
+		m := thisDir[i]
+		p := m["file"]
+		t := m["title"]
+		f := path.Base(p)
+		if f == filename {
+			t = "> " + t
+		}
+		fmt.Println(t)
+		listing = listing + t
+	}
 	if song["Title"] != "" {
 		s.Info = map[int]map[string]string{
 			1: {
@@ -195,14 +222,21 @@ func getInfo(conn *mpd.Client, s *Status) {
 			2: {
 				"Album": song["Album"] + " (" + song["Date"] + ")",
 			},
+			3: {
+				"File Name": filename,
+			},
+			4: {
+				"Folder": directory,
+			},
+			5: {
+				"Listing": listing,
+			},
 		}
 		searchParams := song["Artist"] + " music " + song["Title"]
 		encQuery := url.QueryEscape(searchParams)
 		s.YouTube = "https://www.youtube.com/embed?fs=0&controls=0&listType=search&list=" + encQuery
 		//		fmt.Println(encQuery)
 	} else if status["state"] == "play" {
-		filename := path.Base(song["file"])
-		directory := path.Dir(song["file"])
 		s.Info = map[int]map[string]string{
 			1: {
 				"File Name": filename,
