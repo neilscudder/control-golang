@@ -3,21 +3,24 @@
 {{ range $index,$item := .List}} 
   {{ if $item.Current }}
     <li>
-    <div id = "current">
-	  <h2>{{ $item.Label }}</h2>
+    <div id = "scrollTo">
+	  <h3 class = "playing">{{ $item.Label }}</h3>
     </div>
-      <p id = "details">
-      &nbsp;&nbsp;by {{ $item.Artist }}<br>
-      &nbsp;&nbsp;from {{ $item.Album }}
+      <p>
+      {{ if $item.Artist }}
+        <div class="label">&nbsp;&nbsp;by</div> 
+        <div class = "details">{{ $item.Artist }}</div>
+      {{ end }}
+      {{ if $item.Album }}
+        <div class="label">&nbsp;&nbsp;from</div> 
+        <div class = "details">{{ $item.Album }}</div>
+      {{ end }}
       </p> 
     </li>
   {{ else }}
-  <li class="title">
-	  <div class="index">
-		  {{ $index }}
-	  </div>
-	  {{ $item.Label }}
-	  <div class="artist">
+  <li class="notPlaying">
+	    &nbsp;&nbsp;{{ $item.Label }}
+	  <div class="notPlaying artist">
 		  &nbsp;{{ $item.Artist }}
 	  </div>
   </li>

@@ -46,7 +46,7 @@ function sendCmd(id) {
         infoDiv.innerHTML = CurrentInfo
         PreviousInfo = CurrentInfo
         animatedButtonListener()
-	window.scroll(0,findPos(document.getElementById("current")))
+	window.scroll(0,findPos(document.getElementById("scrollTo")))
       }
     } else {
       var CurrentState = this.responseText
