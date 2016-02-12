@@ -59,7 +59,7 @@ func MpdState(cmd string, params map[string]string) State {
 	switch cmd {
 	case "fw":
 		vol := cVol
-		for vol >= 50 {
+		for vol >= 30 {
 			vol = vol - 10
 			conn.SetVolume(vol)
 			//	time.Sleep(10 * time.Millisecond)
@@ -69,7 +69,7 @@ func MpdState(cmd string, params map[string]string) State {
 		uLog = username + " skipped forward"
 	case "bk":
 		vol := cVol
-		for vol >= 50 {
+		for vol >= 30 {
 			vol = vol - 10
 			conn.SetVolume(vol)
 			//	time.Sleep(10 * time.Millisecond)
