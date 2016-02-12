@@ -8,12 +8,12 @@
     </div>
       <p>
       {{ if $item.Artist }}
-        <div class="label">&nbsp;&nbsp;by</div> 
-        <div class = "details">{{ $item.Artist }}</div>
+        <div class="by">&nbsp;&nbsp;by</div> 
+        <div class = "artist">{{ $item.Artist }}</div>
       {{ end }}
       {{ if $item.Album }}
-        <div class="label">&nbsp;&nbsp;from</div> 
-        <div class = "details">{{ $item.Album }}</div>
+        <div class="from">&nbsp;&nbsp;from</div> 
+        <div class = "artist">{{ $item.Album }}</div>
       {{ end }}
       </p> 
     </li>

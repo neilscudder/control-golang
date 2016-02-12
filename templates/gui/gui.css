@@ -29,33 +29,38 @@ li {
   padding: 0;
 }
 h3.playing {
-  color: #93a1a1 ;
+  color: #eee8d5 ;
+  font-weight: normal;
   margin-bottom: -15px 
 }
-.details {
-  color: #93a1a1;
+.artist {
+  color: #268bd2;
   display: inline-block;
   font-size: 90%;
 }
-.label {
-    opacity: 0.5;
+.album {
+  color: #b58900;
+  display: inline-block;
+  font-size: 90%;
+}
+.by {
+    display: inline-block;
+    font-size: 80%;
+}
+.from {
     display: inline-block;
     font-size: 80%;
 }
 li.notPlaying {
-    color: #586e75;
     opacity: 0.5;
-    font-size: 90%;
+    font-size: 80%;
 }
 .notPlaying.artist {
-    color: #586e75;
-    opacity: 0.5;
     display: inline-block;
-    font-size: 80%;
+    font-size: 90%;
 }
 .notPlaying.index {
     color: #586e75;
-    opacity: 0.5;
     display: inline-block;
     font-size: 65%;
     text-align: right;
