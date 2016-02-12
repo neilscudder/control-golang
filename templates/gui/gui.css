@@ -21,10 +21,10 @@ body {
 }
 ul {
   border: 0;
-  margin: 90px 0 0 0;
   padding: 0;
 }
 li {
+  line-height: 40px;
   border-top: 1px solid #073642;
   padding: 0;
 }

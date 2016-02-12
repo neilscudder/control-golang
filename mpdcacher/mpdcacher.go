@@ -1,7 +1,7 @@
 package mpdcacher
 
 import (
-	"fmt"
+	//"fmt"
 	"github.com/fhs/gompd/mpd"
 	"log"
 	"net/url"
@@ -18,6 +18,7 @@ type Status struct {
 	Title     string
 	YouTube   string
 	Info      map[int]map[string]string
+	List      []NowList
 }
 
 // State stores button states and banner text per playnode
@@ -26,6 +27,11 @@ type State struct {
 	Random, Repeat, Volume int
 	Play                   string
 	Banner                 string
+}
+
+type NowList struct {
+	Current bool
+	Label   string
 }
 
 var statusBuffer = make(map[string]Status)
@@ -83,6 +89,8 @@ func MpdState(cmd string, params map[string]string) State {
 			cVol = 100
 			conn.SetVolume(cVol)
 			uLog = username + " raised volume to " + strconv.Itoa(cVol)
+		} else {
+			uLog = "Volume at max"
 		}
 	case "dn":
 		if cVol >= 10 {
@@ -96,6 +104,8 @@ func MpdState(cmd string, params map[string]string) State {
 			cVol = 0
 			conn.SetVolume(cVol)
 			uLog = username + " lowered volume to " + strconv.Itoa(cVol)
+		} else {
+			uLog = "Volume at min"
 		}
 	case "repeat":
 		if cRpt == 1 {
@@ -202,18 +212,22 @@ func getInfo(conn *mpd.Client, s *Status) {
 	filename := path.Base(song["file"])
 	directory := path.Dir(song["file"])
 	thisDir, _ := conn.ListInfo(directory)
-	var listing string
+	var listing = make([]NowList, len(thisDir))
 	for i := 0; i < len(thisDir); i++ {
 		m := thisDir[i]
 		p := m["file"]
 		t := m["title"]
 		f := path.Base(p)
 		if f == filename {
-			t = "> " + t
+			listing[i].Current = true
 		}
-		fmt.Println(t)
-		listing = listing + t
+		if t != "" {
+			listing[i].Label = t
+		} else {
+			listing[i].Label = f
+		}
 	}
+	s.List = listing
 	if song["Title"] != "" {
 		s.Info = map[int]map[string]string{
 			1: {
@@ -221,15 +235,6 @@ func getInfo(conn *mpd.Client, s *Status) {
 			},
 			2: {
 				"Album": song["Album"] + " (" + song["Date"] + ")",
-			},
-			3: {
-				"File Name": filename,
-			},
-			4: {
-				"Folder": directory,
-			},
-			5: {
-				"Listing": listing,
 			},
 		}
 		searchParams := song["Artist"] + " music " + song["Title"]
@@ -239,9 +244,6 @@ func getInfo(conn *mpd.Client, s *Status) {
 	} else if status["state"] == "play" {
 		s.Info = map[int]map[string]string{
 			1: {
-				"File Name": filename,
-			},
-			2: {
 				"Folder": directory,
 			},
 		}
