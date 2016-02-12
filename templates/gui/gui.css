@@ -27,6 +27,13 @@ h2{ margin-bottom: -15px }
 li.nowlist {
   color: #586e75;
 }
+div.index {
+	width: 10px;
+	color: #000914;
+	display: inline-block;
+	font-size: 70%;
+	font-weight: bold;
+}
 li {
   line-height: 30px;
   border-top: 1px solid #073642;
