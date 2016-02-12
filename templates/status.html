@@ -8,20 +8,20 @@
     </div>
       <p>
       {{ if $item.Artist }}
-        <div class="by">&nbsp;&nbsp;by</div> 
+        <div class="by">by</div> 
         <div class = "artist">{{ $item.Artist }}</div>
       {{ end }}
       {{ if $item.Album }}
-        <div class="from">&nbsp;&nbsp;from</div> 
+        <div class="from">from</div> 
         <div class = "artist">{{ $item.Album }}</div>
       {{ end }}
       </p> 
     </li>
   {{ else }}
   <li class="notPlaying">
-	    &nbsp;&nbsp;{{ $item.Label }}
+	    {{ $item.Label }}
 	  <div class="notPlaying artist">
-		  &nbsp;{{ $item.Artist }}
+            &nbsp;{{ $item.Artist }}
 	  </div>
   </li>
   {{ end }}

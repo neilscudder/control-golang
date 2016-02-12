@@ -16,7 +16,7 @@ body {
   background-color: #002b36 ;
   color: #93a1a1 ;
   font-family: sans-serif;
-  font-size: 100%;
+  font-size: 110%;
   font-weight: 400;
 }
 ul {
@@ -24,7 +24,7 @@ ul {
   padding: 0;
 }
 li {
-  line-height: 28px;
+  line-height: 24px;
   border-top: 1px solid #073642;
   padding: 0;
 }
@@ -35,27 +35,23 @@ h3.playing {
 }
 .artist {
   color: #268bd2;
-  display: inline-block;
-  font-size: 90%;
-}
-.album {
-  color: #b58900;
-  display: inline-block;
-  font-size: 90%;
+  display: inline;
+  font-size: 80%;
 }
 .by {
     display: inline-block;
-    font-size: 80%;
+    font-size: 70%;
 }
 .from {
     display: inline-block;
-    font-size: 80%;
+    font-size: 70%;
 }
 li.notPlaying {
     opacity: 0.5;
     font-size: 80%;
 }
 .notPlaying.artist {
+    color: #586e75;
     display: inline-block;
     font-size: 90%;
 }
