@@ -33,6 +33,7 @@ type NowList struct {
 	Current bool
 	Label   string
 	Artist  string
+	Album   string
 }
 
 var statusBuffer = make(map[string]Status)
@@ -59,24 +60,10 @@ func MpdState(cmd string, params map[string]string) State {
 	cPlay, _ := status["state"]
 	switch cmd {
 	case "fw":
-		vol := cVol
-		for vol >= 30 {
-			vol = vol - 10
-			conn.SetVolume(vol)
-			//	time.Sleep(10 * time.Millisecond)
-		}
 		conn.Next()
-		conn.SetVolume(cVol)
 		uLog = username + " skipped forward"
 	case "bk":
-		vol := cVol
-		for vol >= 30 {
-			vol = vol - 10
-			conn.SetVolume(vol)
-			//	time.Sleep(10 * time.Millisecond)
-		}
 		conn.Previous()
-		conn.SetVolume(cVol)
 		uLog = username + " skipped back"
 	case "up":
 		if cVol <= 90 {
@@ -84,8 +71,8 @@ func MpdState(cmd string, params map[string]string) State {
 				cVol = cVol + 2
 				conn.SetVolume(cVol)
 				time.Sleep(20 * time.Millisecond)
-				uLog = username + " raised volume to " + strconv.Itoa(cVol)
 			}
+			uLog = username + " raised volume to " + strconv.Itoa(cVol)
 		} else if cVol != 100 {
 			cVol = 100
 			conn.SetVolume(cVol)
@@ -99,8 +86,8 @@ func MpdState(cmd string, params map[string]string) State {
 				cVol = cVol - 2
 				conn.SetVolume(cVol)
 				time.Sleep(20 * time.Millisecond)
-				uLog = username + " lowered volume to " + strconv.Itoa(cVol)
 			}
+			uLog = username + " lowered volume to " + strconv.Itoa(cVol)
 		} else if cVol != 0 {
 			cVol = 0
 			conn.SetVolume(cVol)
@@ -218,17 +205,24 @@ func getInfo(conn *mpd.Client, s *Status) {
 		m := thisDir[i]
 		p := m["file"]
 		t := m["title"]
+		d := path.Dir(p)
 		f := path.Base(p)
 		if f == "." {
 			continue
 		}
-		if f == filename {
-			listing[i].Current = true
-			listing[i].Artist = m["artist"]
-		}
 		if t != "" {
+			if f == filename {
+				listing[i].Current = true
+				listing[i].Artist = m["artist"]
+				listing[i].Album = m["album"]
+			}
 			listing[i].Label = t
 		} else {
+			if f == filename {
+				listing[i].Current = true
+				listing[i].Artist = m["artist"]
+				listing[i].Album = d
+			}
 			listing[i].Label = f
 		}
 	}

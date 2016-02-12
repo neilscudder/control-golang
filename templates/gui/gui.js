@@ -16,6 +16,16 @@ function autoRefresh(id,interval) {
   if (AutoToggle){ sendCmd(id) }
   setTimeout(function(){ autoRefresh(id,interval) },interval)
 } 
+//Finds y value of given object
+function findPos(obj) {
+  var curtop = 0
+    if (obj.offsetParent) {
+      do {
+        curtop += obj.offsetTop
+      } while (obj = obj.offsetParent)
+      return [curtop - 210]
+    }
+}
 function sendCmd(id) {
 //  AutoToggle = false
   var xhr = new XMLHttpRequest()
@@ -36,9 +46,9 @@ function sendCmd(id) {
         infoDiv.innerHTML = CurrentInfo
         PreviousInfo = CurrentInfo
         animatedButtonListener()
+	window.scroll(0,findPos(document.getElementById("current")))
       }
     } else {
-      if (id != "state") { sendCmd('info')}
       var CurrentState = this.responseText
       var button = document.getElementById(id)
       var banner = document.getElementById('BannerArea')
@@ -69,6 +79,7 @@ function sendCmd(id) {
         	button.classList.add('released')
         }
       }
+      if (id != "state") { sendCmd('info')}
     }
   }
 } 
@@ -76,8 +87,8 @@ function isEmpty(str) {
     return (!str || 0 === str.length)
 }
 function initialise() {
-  autoRefresh('info', 3000)
-  autoRefresh("state", 300)
+  autoRefresh('info', 1500)
+  autoRefresh("state", 600)
   animatedButtonListener()
 }
 

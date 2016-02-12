@@ -2,16 +2,16 @@
 <ul>
 {{ range $index,$item := .List}} 
   {{ if $item.Current }}
-    <li><h2>{{ $item.Label }}</h2></li>
-    <p>&nbsp;&nbsp;by {{ $item.Artist }}</p> 
+    <li>
+    <div id = "current"><h2>{{ $item.Label }}</h2></div>
+      <p id = "details">
+      &nbsp;&nbsp;by {{ $item.Artist }}<br>
+      &nbsp;&nbsp;from {{ $item.Album }}
+      </p> 
+    </li>
   {{ else }}
-    <li>{{ $item.Label }}</li>
+    <li class="nowlist">{{ $item.Label }}</li>
   {{ end }}
 {{ end }}
 </ul>
-{{ range $i,$element := .Info}} 
-  {{ range $label,$value := $element }}
-    <p><strong>{{ $label }}:</strong> {{ $value }}</p> 
-  {{ end }}
-{{ end }}
 </div>
