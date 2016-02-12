@@ -2,13 +2,14 @@
 <ul>
 {{ range $index,$item := .List}} 
   {{ if $item.Current }}
-    <li><h3>{{ $item.Label }}</h3></li>
+    <li><h2>{{ $item.Label }}</h2></li>
+    <p>&nbsp;&nbsp;by {{ $item.Artist }}</p> 
   {{ else }}
     <li>{{ $item.Label }}</li>
   {{ end }}
 {{ end }}
 </ul>
-{{ range $index,$element := .Info}} 
+{{ range $i,$element := .Info}} 
   {{ range $label,$value := $element }}
     <p><strong>{{ $label }}:</strong> {{ $value }}</p> 
   {{ end }}

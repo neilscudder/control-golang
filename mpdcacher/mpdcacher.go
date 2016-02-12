@@ -32,6 +32,7 @@ type State struct {
 type NowList struct {
 	Current bool
 	Label   string
+	Artist  string
 }
 
 var statusBuffer = make(map[string]Status)
@@ -218,8 +219,12 @@ func getInfo(conn *mpd.Client, s *Status) {
 		p := m["file"]
 		t := m["title"]
 		f := path.Base(p)
+		if f == "." {
+			continue
+		}
 		if f == filename {
 			listing[i].Current = true
+			listing[i].Artist = m["artist"]
 		}
 		if t != "" {
 			listing[i].Label = t
