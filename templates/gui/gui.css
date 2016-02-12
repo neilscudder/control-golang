@@ -35,6 +35,7 @@ h3.playing {
 .details {
   color: #93a1a1;
   display: inline-block;
+  font-size: 90%;
 }
 .label {
     opacity: 0.5;
