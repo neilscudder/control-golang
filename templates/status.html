@@ -3,15 +3,23 @@
 {{ range $index,$item := .List}} 
   {{ if $item.Current }}
     <li>
-    <div id = "current"><h2>{{ $item.Label }}</h2></div>
+    <div id = "current">
+	  <h2>{{ $item.Label }}</h2>
+    </div>
       <p id = "details">
       &nbsp;&nbsp;by {{ $item.Artist }}<br>
       &nbsp;&nbsp;from {{ $item.Album }}
       </p> 
     </li>
   {{ else }}
-  <li class="nowlist">
+  <li class="title">
+	  <div class="index">
+		  {{ $index }}
+	  </div>
 	  {{ $item.Label }}
+	  <div class="artist">
+		  &nbsp;{{ $item.Artist }}
+	  </div>
   </li>
   {{ end }}
 {{ end }}

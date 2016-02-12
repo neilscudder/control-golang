@@ -213,16 +213,16 @@ func getInfo(conn *mpd.Client, s *Status) {
 		if t != "" {
 			if f == filename {
 				listing[i].Current = true
-				listing[i].Artist = m["artist"]
 				listing[i].Album = m["album"]
 			}
+			listing[i].Artist = m["artist"]
 			listing[i].Label = t
 		} else {
 			if f == filename {
 				listing[i].Current = true
-				listing[i].Artist = m["artist"]
 				listing[i].Album = d
 			}
+			listing[i].Artist = m["artist"]
 			listing[i].Label = f
 		}
 	}

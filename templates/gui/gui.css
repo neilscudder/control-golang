@@ -24,15 +24,21 @@ ul {
   padding: 0;
 }
 h2{ margin-bottom: -15px }
-li.nowlist {
-  color: #586e75;
+li.title {
+  	color: #657b83;
+}
+div.artist {
+	opacity: 0.5;
+  	color: #586e75;
+	display: inline-block;
+	font-size: 80%;
 }
 div.index {
-	width: 10px;
-	color: #000914;
+	width: 11px;
+	opacity: 0.5;
+  	color: #586e75;
 	display: inline-block;
-	font-size: 70%;
-	font-weight: bold;
+	font-size: 65%;
 }
 li {
   line-height: 30px;
