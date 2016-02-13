@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-// Status is for compiling the status html template
-// Holds information on the currrent song and state of mpd
+// Status is for compiling the status html template.
+// Holds information on the currrent song and state of mpd.
 type Status struct {
 	Timestamp int64
 	Title     string
@@ -21,7 +21,7 @@ type Status struct {
 	List      []NowList
 }
 
-// NowList holds items for the tracklist surrounding the current track
+// NowList holds items for the tracklist surrounding the current track.
 type NowList struct {
 	Current bool
 	Label   string
@@ -29,7 +29,7 @@ type NowList struct {
 	Album   string
 }
 
-// State of buttons and banner text per playnode
+// State of buttons and banner text per playnode.
 type State struct {
 	Timestamp              int64
 	Random, Repeat, Volume int
@@ -40,7 +40,7 @@ type State struct {
 var statusBuffer = make(map[string]Status)
 var stateBuffer = make(map[string]State)
 
-// MpdState returns a map of data for button states
+// MpdState returns a map of data for button states and banner text.
 // It executes a command simultaneously.
 // mpd connection parameters must be supplied.
 func MpdState(cmd string, params map[string]string) State {
@@ -159,7 +159,7 @@ func MpdState(cmd string, params map[string]string) State {
 	return s
 }
 
-// MpdStatus returns a map of data for html template
+// MpdStatus returns a map of data for html template.
 // mpd connection parameters must be supplied.
 func MpdStatus(cmd string, params map[string]string) Status {
 	conn, ror := mpdConnect(params)
@@ -178,6 +178,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		if age >= 1 {
 			s.Timestamp = n
 			getInfo(conn, &s)
+			getListing(conn, &s)
 			statusBuffer[playnode] = s
 		} else {
 			s = statusBuffer[playnode]
@@ -186,6 +187,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		t := time.Now()
 		s.Timestamp = t.Unix()
 		getInfo(conn, &s)
+		getListing(conn, &s)
 		statusBuffer[playnode] = s
 	}
 	return s
@@ -203,14 +205,44 @@ func userLog(playnode, details string) {
 	log.Println(details)
 }
 
+// getInfo formats details for the current track
 func getInfo(conn *mpd.Client, s *Status) {
 	song, _ := conn.CurrentSong()
 	s.Title = song["Title"]
 	filename := path.Base(song["file"])
 	directory := path.Dir(song["file"])
+	var searchParams string
+
+	if song["Title"] != "" {
+		s.Info = map[int]map[string]string{
+			1: {
+				"Artist": song["Artist"],
+			},
+			2: {
+				"Album": song["Album"] + " (" + song["Date"] + ")",
+			},
+		}
+		searchParams = song["Artist"] + " music " + song["Title"]
+	} else {
+		s.Info = map[int]map[string]string{
+			1: {
+				"Folder": directory,
+			},
+		}
+		searchParams = filename
+	}
+	encQuery := url.QueryEscape(searchParams)
+	tldr := "https://www.youtube.com/embed?fs=0&controls=0&listType=search&list="
+	s.YouTube = tldr + encQuery
+}
+
+// getListing stores other tracks from same folder as current track
+func getListing(conn *mpd.Client, s *Status) {
+	song, _ := conn.CurrentSong()
+	filename := path.Base(song["file"])
+	directory := path.Dir(song["file"])
 	thisDir, _ := conn.ListInfo(directory)
 	var listing = make([]NowList, len(thisDir))
-	var searchParams string
 
 	for i := 0; i < len(thisDir); i++ {
 		m := thisDir[i]
@@ -238,27 +270,6 @@ func getInfo(conn *mpd.Client, s *Status) {
 		}
 	}
 	s.List = listing
-	if song["Title"] != "" {
-		s.Info = map[int]map[string]string{
-			1: {
-				"Artist": song["Artist"],
-			},
-			2: {
-				"Album": song["Album"] + " (" + song["Date"] + ")",
-			},
-		}
-		searchParams = song["Artist"] + " music " + song["Title"]
-	} else {
-		s.Info = map[int]map[string]string{
-			1: {
-				"Folder": directory,
-			},
-		}
-		searchParams = filename
-	}
-	encQuery := url.QueryEscape(searchParams)
-	tldr := "https://www.youtube.com/embed?fs=0&controls=0&listType=search&list="
-	s.YouTube = tldr + encQuery
 }
 
 func mpdConnect(p map[string]string) (*mpd.Client, error) {
