@@ -76,11 +76,14 @@ function sendCmd(id) {
     	  }
       }
       if (id != "state") { 
-		if (button.classList.contains("pushed")) {
-			button.classList.remove('pushed')
-			button.classList.add('released')
-		}
-	      sendCmd('info')
+    		if (button.classList.contains("pushed")) {
+    			button.classList.remove('pushed')
+    			button.classList.add('released')
+    		}
+	      if (id == "fw" || id == "bk") {
+          setTimeout(function(){ sendCmd('info') }, 600)
+          // This should have a callback to set button state to released ^^
+        }
       }
     }
   }
