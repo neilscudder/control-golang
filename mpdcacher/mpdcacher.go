@@ -61,6 +61,10 @@ func MpdState(cmd string, params map[string]string) State {
 
 	_, bufExists := stateBuffer[playnode]
 
+	if bufExists && cmd == "state" {
+		s = stateBuffer[playnode]
+		return s
+	}
 	if cPlay == "pause" && cmd != "play" && cmd != "state" {
 		if bufExists {
 			s = stateBuffer[playnode]
@@ -144,22 +148,16 @@ func MpdState(cmd string, params map[string]string) State {
 		}
 	}
 
-	if bufExists && cmd == "state" {
-		s = stateBuffer[playnode]
-	} else {
-		s = stateBuffer[playnode]
-		if uLog != "" {
-			userLog(playnode, uLog)
-			s.Banner = uLog
-		}
-		t := time.Now()
-		s.Timestamp = t.Unix()
-		s.Random = cRnd
-		s.Repeat = cRpt
-		s.Volume = cVol
-		s.Play = cPlay
-		stateBuffer[playnode] = s
+	s = stateBuffer[playnode]
+	if uLog != "" {
+		userLog(playnode, uLog)
+		s.Banner = uLog
 	}
+	s.Random = cRnd
+	s.Repeat = cRpt
+	s.Volume = cVol
+	s.Play = cPlay
+	stateBuffer[playnode] = s
 	return s
 }
 
