@@ -85,10 +85,9 @@ func MpdState(cmd string, params map[string]string) State {
 		uLog = username + " skipped back"
 	case "up":
 		if cVol <= 90 {
-			for i := 0; i < 5; i++ {
-				cVol = cVol + 2
+			for i := 0; i < 3; i++ {
+				cVol = cVol + 3
 				conn.SetVolume(cVol)
-				time.Sleep(20 * time.Millisecond)
 			}
 			uLog = username + " raised volume to " + strconv.Itoa(cVol)
 		} else if cVol != 100 {
@@ -100,10 +99,9 @@ func MpdState(cmd string, params map[string]string) State {
 		}
 	case "dn":
 		if cVol >= 10 {
-			for i := 0; i < 5; i++ {
-				cVol = cVol - 2
+			for i := 0; i < 3; i++ {
+				cVol = cVol - 3
 				conn.SetVolume(cVol)
-				time.Sleep(20 * time.Millisecond)
 			}
 			uLog = username + " lowered volume to " + strconv.Itoa(cVol)
 		} else if cVol != 0 {
@@ -177,7 +175,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		age := n - b.Timestamp
 		if age >= 1 {
 			s.Timestamp = n
-			getInfo(conn, &s)
+			//getInfo(conn, &s)
 			getListing(conn, &s)
 			statusBuffer[playnode] = s
 		} else {
@@ -186,7 +184,7 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	} else {
 		t := time.Now()
 		s.Timestamp = t.Unix()
-		getInfo(conn, &s)
+		//getInfo(conn, &s)
 		getListing(conn, &s)
 		statusBuffer[playnode] = s
 	}
