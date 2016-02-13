@@ -21,19 +21,20 @@ type Status struct {
 	List      []NowList
 }
 
-// State stores button states and banner text per playnode
-type State struct {
-	Timestamp              int64
-	Random, Repeat, Volume int
-	Play                   string
-	Banner                 string
-}
-
+// NowList holds items for the tracklist surrounding the current track
 type NowList struct {
 	Current bool
 	Label   string
 	Artist  string
 	Album   string
+}
+
+// State of buttons and banner text per playnode
+type State struct {
+	Timestamp              int64
+	Random, Repeat, Volume int
+	Play                   string
+	Banner                 string
 }
 
 var statusBuffer = make(map[string]Status)
