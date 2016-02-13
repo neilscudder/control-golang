@@ -61,11 +61,7 @@ func MpdState(cmd string, params map[string]string) State {
 
 	_, bufExists := stateBuffer[playnode]
 
-	if bufExists && cmd == "state" {
-		s = stateBuffer[playnode]
-		return s
-	}
-	if cPlay == "pause" && cmd != "play" && cmd != "state" {
+	if cPlay == "pause" && cmd != "play" {
 		if bufExists {
 			s = stateBuffer[playnode]
 		} else {
@@ -158,6 +154,7 @@ func MpdState(cmd string, params map[string]string) State {
 	s.Volume = cVol
 	s.Play = cPlay
 	stateBuffer[playnode] = s
+
 	return s
 }
 
