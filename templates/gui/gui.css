@@ -84,6 +84,9 @@ svg.toolbar {
   margin-left: auto;
   margin-right: auto;
 }
+.buttonPath {
+  fill: #073642;
+}
 .playPath {
   fill: #93A1A1;
 }
