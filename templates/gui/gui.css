@@ -29,26 +29,29 @@ li {
   padding: 0;
 }
 h3.playing {
-  color: #eee8d5 ;
-  font-weight: normal;
+/*  color: #eee8d5 ;
+  font-weight: normal; */
+  font-size: 93%;
   margin-bottom: -15px 
 }
 .artist {
-  color: #268bd2;
+  color: #2aa198;
   display: inline;
-  font-size: 80%;
+  font-size: 73%;
 }
 .by {
+    color: #586e75;
     display: inline-block;
-    font-size: 70%;
+    font-size: 60%;
 }
 .from {
+    color: #586e75;
     display: inline-block;
-    font-size: 70%;
+    font-size: 60%;
 }
 li.notPlaying {
     opacity: 0.5;
-    font-size: 75%;
+    font-size: 63%;
 }
 .notPlaying.artist {
     color: #586e75;
@@ -106,9 +109,10 @@ nav {
 .banner h3 {
   padding: 3px;
   margin: 0;
-  font-size: .6em;
+  font-size: 65%;
   line-height: 20px;
   text-align:right;
+  border-bottom: 1px solid #002b36;
 } 
 #info{
   padding-top: 130px;

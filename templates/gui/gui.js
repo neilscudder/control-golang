@@ -74,12 +74,14 @@ function sendCmd(id) {
     	    var playPaths = '<path fill=\"#002B36\" d=\"M8 5v14l11-7z\" ></path><path fill=\"none\" d=\"M0 0h24v24H0z\"></path>'
     	    playsvg.innerHTML = playPaths
     	  }
-        if (button.classList.contains("pushed")) {
-        	button.classList.remove('pushed')
-        	button.classList.add('released')
-        }
       }
-      if (id != "state") { sendCmd('info')}
+      if (id != "state") { 
+		if (button.classList.contains("pushed")) {
+			button.classList.remove('pushed')
+			button.classList.add('released')
+		}
+	      sendCmd('info')
+      }
     }
   }
 } 
@@ -88,7 +90,7 @@ function isEmpty(str) {
 }
 function initialise() {
   autoRefresh('info', 1500)
-  autoRefresh("state", 600)
+  autoRefresh("state", 3000)
   animatedButtonListener()
 }
 

@@ -60,12 +60,21 @@ func MpdState(cmd string, params map[string]string) State {
 	cPlay, _ := status["state"]
 	switch cmd {
 	case "fw":
+		if cPlay == "pause" {
+			break
+		}
 		conn.Next()
 		uLog = username + " skipped forward"
 	case "bk":
+		if cPlay == "pause" {
+			break
+		}
 		conn.Previous()
 		uLog = username + " skipped back"
 	case "up":
+		if cPlay == "pause" {
+			break
+		}
 		if cVol <= 90 {
 			for i := 0; i < 5; i++ {
 				cVol = cVol + 2
@@ -81,6 +90,9 @@ func MpdState(cmd string, params map[string]string) State {
 			uLog = "Volume at max"
 		}
 	case "dn":
+		if cPlay == "pause" {
+			break
+		}
 		if cVol >= 10 {
 			for i := 0; i < 5; i++ {
 				cVol = cVol - 2
@@ -96,6 +108,9 @@ func MpdState(cmd string, params map[string]string) State {
 			uLog = "Volume at min"
 		}
 	case "repeat":
+		if cPlay == "pause" {
+			break
+		}
 		if cRpt == 1 {
 			cRpt = 0
 			conn.Repeat(false)
@@ -106,6 +121,9 @@ func MpdState(cmd string, params map[string]string) State {
 			uLog = username + " enabled repeat"
 		}
 	case "random":
+		if cPlay == "pause" {
+			break
+		}
 		if cRnd == 1 {
 			cRnd = 0
 			conn.Random(false)
