@@ -18,12 +18,14 @@
       </p> 
     </li>
   {{ else }}
-  <li class="notPlaying">
-	    {{ $item.Label }} 
-	  <div class="notPlaying artist">
-            {{ $item.Artist }}
-	  </div>
-  </li>
+	  {{ if $item.Label }}
+	  <li class="notPlaying">
+		    {{ $item.Label }} 
+		  <div class="notPlaying artist">
+		    {{ $item.Artist }}
+		  </div>
+	  </li>
+	  {{ end }}
   {{ end }}
 {{ end }}
 </ul>

@@ -225,7 +225,7 @@ func getInfo(conn *mpd.Client, s *Status) {
 		t := m["title"]
 		d := path.Dir(p)
 		f := path.Base(p)
-		if f == "." {
+		if f == "." || f == "" {
 			continue
 		}
 		if t != "" {
