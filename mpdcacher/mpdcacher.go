@@ -58,23 +58,31 @@ func MpdState(cmd string, params map[string]string) State {
 	cRnd, _ := strconv.Atoi(status["random"])
 	cRpt, _ := strconv.Atoi(status["repeat"])
 	cPlay, _ := status["state"]
+
+	_, bufExists := stateBuffer[playnode]
+
+	if cPlay == "pause" && cmd != "play" && cmd != "state" {
+		if bufExists {
+			s = stateBuffer[playnode]
+		} else {
+			s = stateBuffer[playnode]
+			s.Random = cRnd
+			s.Repeat = cRpt
+			s.Volume = cVol
+			s.Play = cPlay
+			stateBuffer[playnode] = s
+		}
+		return s
+	}
+
 	switch cmd {
 	case "fw":
-		if cPlay == "pause" {
-			break
-		}
 		conn.Next()
 		uLog = username + " skipped forward"
 	case "bk":
-		if cPlay == "pause" {
-			break
-		}
 		conn.Previous()
 		uLog = username + " skipped back"
 	case "up":
-		if cPlay == "pause" {
-			break
-		}
 		if cVol <= 90 {
 			for i := 0; i < 5; i++ {
 				cVol = cVol + 2
@@ -90,9 +98,6 @@ func MpdState(cmd string, params map[string]string) State {
 			uLog = "Volume at max"
 		}
 	case "dn":
-		if cPlay == "pause" {
-			break
-		}
 		if cVol >= 10 {
 			for i := 0; i < 5; i++ {
 				cVol = cVol - 2
@@ -108,9 +113,6 @@ func MpdState(cmd string, params map[string]string) State {
 			uLog = "Volume at min"
 		}
 	case "repeat":
-		if cPlay == "pause" {
-			break
-		}
 		if cRpt == 1 {
 			cRpt = 0
 			conn.Repeat(false)
@@ -121,9 +123,6 @@ func MpdState(cmd string, params map[string]string) State {
 			uLog = username + " enabled repeat"
 		}
 	case "random":
-		if cPlay == "pause" {
-			break
-		}
 		if cRnd == 1 {
 			cRnd = 0
 			conn.Random(false)
@@ -144,7 +143,7 @@ func MpdState(cmd string, params map[string]string) State {
 			uLog = username + " resumed playback"
 		}
 	}
-	_, bufExists := stateBuffer[playnode]
+
 	if bufExists && cmd == "state" {
 		s = stateBuffer[playnode]
 	} else {
@@ -172,10 +171,9 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	defer conn.Close()
 
 	var s Status
-
 	playnode := params["LABEL"]
-
 	_, bufExists := statusBuffer[playnode]
+
 	if bufExists {
 		b := statusBuffer[playnode]
 		t := time.Now()
@@ -197,28 +195,27 @@ func MpdStatus(cmd string, params map[string]string) Status {
 	return s
 }
 
-// userLog returns the newest entry of user activity as a string
-// if parameter is not nil, add new entry then return it
-// one log file per playnode
+// userLog stores the newest entry of user activity.
+// One log file per playnode.
 func userLog(playnode, details string) {
 	filename := "data/" + "log." + playnode
 	f, ror := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	er(ror)
 	defer f.Close()
+
 	log.SetOutput(f)
 	log.Println(details)
 }
 
 func getInfo(conn *mpd.Client, s *Status) {
-	status, ror := conn.Status()
-	er(ror)
-	song, ror := conn.CurrentSong()
-	er(ror)
+	song, _ := conn.CurrentSong()
 	s.Title = song["Title"]
 	filename := path.Base(song["file"])
 	directory := path.Dir(song["file"])
 	thisDir, _ := conn.ListInfo(directory)
 	var listing = make([]NowList, len(thisDir))
+	var searchParams string
+
 	for i := 0; i < len(thisDir); i++ {
 		m := thisDir[i]
 		p := m["file"]
@@ -254,26 +251,18 @@ func getInfo(conn *mpd.Client, s *Status) {
 				"Album": song["Album"] + " (" + song["Date"] + ")",
 			},
 		}
-		searchParams := song["Artist"] + " music " + song["Title"]
-		encQuery := url.QueryEscape(searchParams)
-		s.YouTube = "https://www.youtube.com/embed?fs=0&controls=0&listType=search&list=" + encQuery
-		//		fmt.Println(encQuery)
-	} else if status["state"] == "play" {
+		searchParams = song["Artist"] + " music " + song["Title"]
+	} else {
 		s.Info = map[int]map[string]string{
 			1: {
 				"Folder": directory,
 			},
 		}
-		searchParams := filename
-		encQuery := url.QueryEscape(searchParams)
-		s.YouTube = "https://www.youtube.com/embed?fs=0&controls=0&listType=search&list=" + encQuery
-	} else {
-		s.Info = map[int]map[string]string{
-			1: {
-				"State": status["state"],
-			},
-		}
+		searchParams = filename
 	}
+	encQuery := url.QueryEscape(searchParams)
+	tldr := "https://www.youtube.com/embed?fs=0&controls=0&listType=search&list="
+	s.YouTube = tldr + encQuery
 }
 
 func mpdConnect(p map[string]string) (*mpd.Client, error) {
