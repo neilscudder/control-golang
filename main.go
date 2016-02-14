@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/NYTimes/gziphandler"
 	"github.com/neilscudder/control-golang/authority"
 	"github.com/neilscudder/control-golang/mpdcacher"
 	"html/template"
@@ -13,11 +14,23 @@ import (
 )
 
 func main() {
-	http.Handle("/res/", http.FileServer(http.Dir("res/")))
-	http.HandleFunc("/", gui)
-	http.HandleFunc("/get", get)
-	http.HandleFunc("/authority", setup)
-	http.HandleFunc("/authorize", auth)
+	resH := http.Handler(http.FileServer(http.Dir("res/")))
+	guiH := http.HandlerFunc(gui)
+	getH := http.HandlerFunc(get)
+	setupH := http.HandlerFunc(setup)
+	authH := http.HandlerFunc(auth)
+
+	resGz := gziphandler.GzipHandler(resH)
+	guiGz := gziphandler.GzipHandler(guiH)
+	getGz := gziphandler.GzipHandler(getH)
+	setupGz := gziphandler.GzipHandler(setupH)
+	authGz := gziphandler.GzipHandler(authH)
+
+	http.Handle("/res/", resGz)
+	http.Handle("/", guiGz)
+	http.Handle("/get", getGz)
+	http.Handle("/authority", setupGz)
+	http.Handle("/authorize", authGz)
 
 	var pemfile = flag.String("pem", "", "Path to pem file")
 	var keyfile = flag.String("key", "", "Path to key file")
@@ -34,6 +47,8 @@ func main() {
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Encoding", "gzip")
+	w.Header().Set("Content-Type", "text/html")
 	var p map[string]string
 	kpass := r.FormValue("KPASS")
 	p, err := getParams(kpass)
@@ -47,6 +62,7 @@ func gui(w http.ResponseWriter, r *http.Request) {
 	t.ExecuteTemplate(w, "GUI", p)
 }
 func get(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Encoding", "gzip")
 	kpass := r.FormValue("KPASS")
 	p, err := getParams(kpass)
 	if err != nil {
@@ -56,7 +72,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 	}
 	cmd := r.FormValue("a")
 	if cmd == "info" {
-		//  w.Header().Set("Content-Type", "text/html")
+		w.Header().Set("Content-Type", "text/html")
 		u := mpdcacher.MpdStatus(cmd, p)
 		t, ror := template.ParseFiles("templates/status.html")
 		er(ror)
@@ -80,6 +96,7 @@ func getParams(kpass string) (map[string]string, error) {
 }
 
 func setup(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Encoding", "gzip")
 	p := map[string]string{
 		"dummy": r.FormValue("dummy"),
 	}
@@ -89,6 +106,7 @@ func setup(w http.ResponseWriter, r *http.Request) {
 }
 
 func auth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Encoding", "gzip")
 	p := map[string]string{
 		"APIURL":   r.FormValue("APIURL"),
 		"LABEL":    r.FormValue("LABEL"),

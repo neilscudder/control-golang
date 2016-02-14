@@ -80,7 +80,7 @@ function sendCmd(id) {
     			button.classList.remove('pushed')
     			button.classList.add('released')
     		}
-	      if (id == "fw" || id == "bk") {
+        if (id == "fw" || id == "bk") {
           setTimeout(function(){ sendCmd('info') }, 600)
           // This should have a callback to set button state to released ^^
         }
