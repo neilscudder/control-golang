@@ -97,6 +97,7 @@ func getParams(kpass string) (map[string]string, error) {
 
 func setup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")
+	w.Header().Set("Content-Type", "text/html")
 	p := map[string]string{
 		"dummy": r.FormValue("dummy"),
 	}
@@ -107,6 +108,7 @@ func setup(w http.ResponseWriter, r *http.Request) {
 
 func auth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")
+	w.Header().Set("Content-Type", "text/html")
 	p := map[string]string{
 		"APIURL":   r.FormValue("APIURL"),
 		"LABEL":    r.FormValue("LABEL"),
