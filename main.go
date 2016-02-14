@@ -19,18 +19,21 @@ func main() {
 	getH := http.HandlerFunc(get)
 	setupH := http.HandlerFunc(setup)
 	authH := http.HandlerFunc(auth)
+	searchH := http.HandlerFunc(search)
 
 	resGz := gziphandler.GzipHandler(resH)
 	guiGz := gziphandler.GzipHandler(guiH)
 	getGz := gziphandler.GzipHandler(getH)
 	setupGz := gziphandler.GzipHandler(setupH)
 	authGz := gziphandler.GzipHandler(authH)
+	searchGz := gziphandler.GzipHandler(searchH)
 
 	http.Handle("/res/", resGz)
 	http.Handle("/", guiGz)
 	http.Handle("/get", getGz)
 	http.Handle("/authority", setupGz)
 	http.Handle("/authorize", authGz)
+	http.Handle("/search", searchGz)
 
 	var pemfile = flag.String("pem", "", "Path to pem file")
 	var keyfile = flag.String("key", "", "Path to key file")
@@ -44,6 +47,24 @@ func main() {
 		ror := server.ListenAndServeTLS(*pemfile, *keyfile)
 		er(ror)
 	}
+}
+
+func search(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Encoding", "gzip")
+	w.Header().Set("Content-Type", "text/html")
+	var p map[string]string
+	kpass := r.FormValue("KPASS")
+	p, err := getParams(kpass)
+	if err != nil {
+		log.Println(err.Error())
+		fmt.Fprintf(w, err.Error())
+		return
+	}
+	results := mpdcacher.Search("artist \"David Bowie\"", p)
+	t, ror := template.ParseFiles("templates/search.html")
+	er(ror)
+	//fmt.Println(results)
+	t.Execute(w, results)
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {

@@ -2,7 +2,7 @@ package mpdcacher
 
 import (
 	//"fmt"
-	"github.com/fhs/gompd/mpd"
+	"github.com/neilscudder/gompd/mpd"
 	"log"
 	"net/url"
 	"os"
@@ -39,6 +39,17 @@ type State struct {
 
 var statusBuffer = make(map[string]Status)
 var stateBuffer = make(map[string]State)
+
+
+func Search(query string, params map[string]string) []mpd.Attrs{
+	conn, ror := mpdConnect(params)
+	er(ror)
+	results, ror := conn.Find(query)
+	er(ror)
+	defer conn.Close()
+	return results
+}
+
 
 // MpdState returns a map of data for button states and banner text.
 // It executes a command simultaneously.
