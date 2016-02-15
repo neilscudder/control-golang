@@ -83,7 +83,9 @@ func (this ByTrack) Len() int {
 	return len(this)
 }
 func (this ByTrack) Less(i, j int) bool {
-	return this[i]["Track"] < this[j]["Track"]
+	high, _ := strconv.Atoi(this[j]["Track"])
+	low, _ := strconv.Atoi(this[i]["Track"])
+	return low < high
 }
 func (this ByTrack) Swap(i, j int) {
 	this[i], this[j] = this[j], this[i]
@@ -97,9 +99,34 @@ func Search(query string, params map[string]string) []mpd.Attrs {
 	er(ror)
 
 	sort.Sort(ByArtist(results))
-	sort.Sort(ByTrack(results))
 	sort.Sort(ByAlbum(results))
-	fmt.Println(results)
+
+	var newResults = make([][]mpd.Attrs, 100)
+
+	for range results {
+		start := 0
+		end := 0
+		c := 0
+		a := ""
+		for i := end; i < len(results); i++ {
+			if a == results[i]["Album"] {
+				continue
+			} else if a == "" {
+				start = i
+				a = results[i]["Album"]
+			} else {
+				a = results[i]["Album"]
+				end = i
+				newResults[c] = results[start:end]
+				c++
+				start = end
+			}
+		}
+	}
+	for _, element := range newResults {
+		sort.Sort(ByTrack(element))
+	}
+	fmt.Println(newResults[1][0]["Album"])
 	return results
 }
 
