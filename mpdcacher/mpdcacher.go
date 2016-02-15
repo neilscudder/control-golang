@@ -1,7 +1,7 @@
 package mpdcacher
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/neilscudder/gompd/mpd"
 	"log"
 	"net/url"
@@ -9,6 +9,7 @@ import (
 	"path"
 	"strconv"
 	"time"
+	"sort"
 )
 
 // Status is for compiling the status html template.
@@ -40,13 +41,27 @@ type State struct {
 var statusBuffer = make(map[string]Status)
 var stateBuffer = make(map[string]State)
 
+type ByAlbum []mpd.Attrs
+
+func (this ByAlbum) Len() int {
+  return len(this)
+}
+func (this ByAlbum) Less(i, j int) bool {
+  return this[i]["Album"] < this[j]["Album"] 
+}
+func (this ByAlbum) Swap(i, j int) {
+  this[i], this[j] = this[j], this[i]
+}
 
 func Search(query string, params map[string]string) []mpd.Attrs{
 	conn, ror := mpdConnect(params)
 	er(ror)
+	defer conn.Close()
 	results, ror := conn.Find(query)
 	er(ror)
-	defer conn.Close()
+	
+	sort.Sort(ByAlbum(results))
+	fmt.Println(results)
 	return results
 }
 
