@@ -7,9 +7,9 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"sort"
 	"strconv"
 	"time"
-	"sort"
 )
 
 // Status is for compiling the status html template.
@@ -41,30 +41,67 @@ type State struct {
 var statusBuffer = make(map[string]Status)
 var stateBuffer = make(map[string]State)
 
+type ByArtist []mpd.Attrs
+
+func (this ByArtist) Len() int {
+	return len(this)
+}
+func (this ByArtist) Less(i, j int) bool {
+	return this[i]["Artist"] < this[j]["Artist"]
+}
+func (this ByArtist) Swap(i, j int) {
+	this[i], this[j] = this[j], this[i]
+}
+
 type ByAlbum []mpd.Attrs
 
 func (this ByAlbum) Len() int {
-  return len(this)
+	return len(this)
 }
 func (this ByAlbum) Less(i, j int) bool {
-  return this[i]["Album"] < this[j]["Album"] 
+	return this[i]["Album"] < this[j]["Album"]
 }
 func (this ByAlbum) Swap(i, j int) {
-  this[i], this[j] = this[j], this[i]
+	this[i], this[j] = this[j], this[i]
 }
 
-func Search(query string, params map[string]string) []mpd.Attrs{
+type ByTitle []mpd.Attrs
+
+func (this ByTitle) Len() int {
+	return len(this)
+}
+func (this ByTitle) Less(i, j int) bool {
+	return this[i]["Title"] < this[j]["Title"]
+}
+func (this ByTitle) Swap(i, j int) {
+	this[i], this[j] = this[j], this[i]
+}
+
+type ByTrack []mpd.Attrs
+
+func (this ByTrack) Len() int {
+	return len(this)
+}
+func (this ByTrack) Less(i, j int) bool {
+	return this[i]["Track"] < this[j]["Track"]
+}
+func (this ByTrack) Swap(i, j int) {
+	this[i], this[j] = this[j], this[i]
+}
+
+func Search(query string, params map[string]string) []mpd.Attrs {
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
 	results, ror := conn.Find(query)
 	er(ror)
-	
+
+	sort.Sort(ByArtist(results))
+	sort.Sort(ByTrack(results))
 	sort.Sort(ByAlbum(results))
 	fmt.Println(results)
 	return results
 }
-
 
 // MpdState returns a map of data for button states and banner text.
 // It executes a command simultaneously.
