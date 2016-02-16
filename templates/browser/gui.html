@@ -83,7 +83,7 @@
       </div>
     </nav>
     <main>
-      <form action="search">
+      <form enctype="multipart/form-data" method="post" name="search">
         <input type="text" name="search">
 	<input type="hidden" name="KPASS" value="{{ .KPASS }}">
       </form>
