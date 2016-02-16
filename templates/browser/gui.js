@@ -13,8 +13,9 @@ getparams = getURLParameter('APIURL')
   + "?KPASS=" + getURLParameter('KPASS');
 
 var form = document.forms.namedItem("search");
-form.addEventListener('submit', function(ev) {
+form.addEventListener('submit', goSearch, false)
 
+function goSearch(ev) {
   var oOutput = document.getElementById('searchResults'),
       oData = new FormData(form);
 
@@ -32,7 +33,7 @@ form.addEventListener('submit', function(ev) {
 
   xhr.send(oData);
   ev.preventDefault();
-}, false);
+}
 
 function autoRefresh(id,interval) {
   if (AutoToggle){ sendCmd(id) }
@@ -107,7 +108,8 @@ function sendCmd(id) {
           // This should have a callback to set button state to released ^^
         }
       }
-      var burl = '/' + "?KPASS=" + getURLParameter('KPASS');
+      var burl = '/' + "?KPASS=" + getURLParameter('KPASS') + "&APIURL=" + getURLParameter('APIURL')
+;
       if (id == "browser") {window.location.replace(burl)}
       if (id == "main") {window.location.replace(burl)}
     }
