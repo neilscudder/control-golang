@@ -112,18 +112,40 @@ function sendCmd(id) {
     }
   }
 } 
+
+function playCmd(event) {
+  var id = e.currentTarget.id
+  var x = document.getElementById(id)
+  var target = x.dataset.target
+
+  apiurl = getURLParameter('APIURL')
+  var xhr = new XMLHttpRequest()
+  params = "a=" + id
+  params += "&b=" + target
+  params += "&KPASS=" + getURLParameter('KPASS')
+  xhr.addEventListener("load", transferComplete)
+  xhr.open("POST",apiurl,true)
+  xhr.send(params)
+  function transferComplete() {
+    var gui = '/' + "?" + params
+    window.location.replace(gui)
+  }
+} 
+
 function isEmpty(str) {
     return (!str || 0 === str.length)
 }
 function initialise() {
   autoRefresh("state", 3000)
   animatedButtonListener()
+  playButtonListener()
 }
 
 function pushed(id){
     document.getElementById(id).classList.add('pushed')
     document.getElementById(id).classList.remove('released')
 }
+
 function animatedButtonListener() {
   var buttons = document.getElementsByClassName("animated")
   function pusher(e){
@@ -141,6 +163,14 @@ function animatedButtonListener() {
       buttons[i].addEventListener(ClickEventType, pusher, false)
   }
 }
+
+function playButtonListener() {
+  var buttons = document.getElementsByClassName("play")
+  for(i = 0; i<buttons.length; i++) {
+      buttons[i].addEventListener(ClickEventType, playCmd, false)
+  }
+}
+
 initialise()
 
 </script>
