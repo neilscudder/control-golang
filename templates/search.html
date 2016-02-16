@@ -3,7 +3,11 @@
 	<ul>
 	{{ range $index,$item := . }}
 	    <li>
-	        {{ $item.Track }} - {{ $item.Title }} 
+		{{ if $item.Title }}
+		  {{ $item.Album }} - {{ $item.Title }}
+		{{ else }}
+		  {{ $item.file }}
+		{{ end }}
 		  </li>
 	{{ end }}
 	</ul>

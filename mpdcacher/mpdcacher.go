@@ -83,9 +83,7 @@ func (this ByTrack) Len() int {
 	return len(this)
 }
 func (this ByTrack) Less(i, j int) bool {
-	high, _ := strconv.Atoi(this[j]["Track"])
-	low, _ := strconv.Atoi(this[i]["Track"])
-	return low < high
+	return this[i]["file"] < this[j]["file"]
 }
 func (this ByTrack) Swap(i, j int) {
 	this[i], this[j] = this[j], this[i]
