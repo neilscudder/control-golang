@@ -60,7 +60,10 @@ func search(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 		return
 	}
-	results := mpdcacher.Search("artist \"David Bowie\"", p)
+	query := "any \""
+	query += r.FormValue("search")
+	query += "\""
+	results := mpdcacher.Search(query, p)
 	t, ror := template.ParseFiles("templates/search.html")
 	er(ror)
 	//fmt.Println(results)

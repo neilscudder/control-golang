@@ -1,9 +1,11 @@
 <div id="infotainer" class="info-container">
-<ul>
-{{ range $index,$item := . }}
-    <li>
-        ({{ $item.Track }} - 	{{ $item.Album }}) {{ $item.Title }} 
-	  </li>
+{{ if . }}
+	<ul>
+	{{ range $index,$item := . }}
+	    <li>
+	        ({{ $item.Track }} - 	{{ $item.Album }}) {{ $item.Title }} 
+		  </li>
+	{{ end }}
+	</ul>
 {{ end }}
-</ul>
 </div>
