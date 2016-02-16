@@ -34,7 +34,6 @@ function sendCmd(id) {
   xhr.open("GET",params,true)
   xhr.send()
   var infoDiv = document.getElementById('info')
-  B
   infoDiv.classList.remove('opaque')
   infoDiv.classList.add('heartbeat')
   function transferComplete() {
