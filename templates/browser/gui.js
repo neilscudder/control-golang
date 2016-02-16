@@ -12,6 +12,28 @@ getparams = getURLParameter('APIURL')
   + "get"
   + "?KPASS=" + getURLParameter('KPASS');
 
+var form = document.forms.namedItem("search");
+form.addEventListener('submit', function(ev) {
+
+  var oOutput = document.getElementById('searchResults'),
+      oData = new FormData(form);
+
+  oData.append("KPASS", getURLParameter('KPASS'));
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "search", true);
+  xhr.onload = function(oEvent) {
+    if (xhr.status == 200) {
+      oOutput.innerHTML = xhr.responseText;
+    } else {
+      oOutput.innerHTML = "Error " + xhr.status + " occurred when trying to upload your file.<br \/>";
+    }
+  };
+
+  xhr.send(oData);
+  ev.preventDefault();
+}, false);
+
 function autoRefresh(id,interval) {
   if (AutoToggle){ sendCmd(id) }
   setTimeout(function(){ autoRefresh(id,interval) },interval)
