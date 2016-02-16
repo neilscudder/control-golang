@@ -78,6 +78,7 @@ func browser(w http.ResponseWriter, r *http.Request) {
 	var p map[string]string
 	kpass := r.FormValue("KPASS")
 	p, err := getParams(kpass)
+	p["KPASS"] = kpass
 	if err != nil {
 		log.Println(err.Error())
 		fmt.Fprintf(w, err.Error())
@@ -159,7 +160,6 @@ func auth(w http.ResponseWriter, r *http.Request) {
 		"MPDPORT":  r.FormValue("MPDPORT"),
 		"MPDHOST":  r.FormValue("MPDHOST"),
 		"MPDPASS":  r.FormValue("MPDPASS"),
-		"KPASS":    r.FormValue("KPASS"),
 	}
 	cURL := r.FormValue("GUIURL") + "/?"
 	if p["APIURL"] != "" {
