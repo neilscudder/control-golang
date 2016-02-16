@@ -107,6 +107,9 @@ function sendCmd(id) {
           // This should have a callback to set button state to released ^^
         }
       }
+      var burl = '/' + "?KPASS=" + getURLParameter('KPASS');
+      if (id == "browser") {window.location.replace(burl)}
+      if (id == "main") {window.location.replace(burl)}
     }
   }
 } 

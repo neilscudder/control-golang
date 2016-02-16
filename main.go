@@ -95,6 +95,7 @@ func gui(w http.ResponseWriter, r *http.Request) {
 	var p map[string]string
 	kpass := r.FormValue("KPASS")
 	p, err := getParams(kpass)
+	p["KPASS"] = kpass
 	if err != nil {
 		log.Println(err.Error())
 		fmt.Fprintf(w, err.Error())
