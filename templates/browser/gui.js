@@ -56,9 +56,6 @@ function sendCmd(id) {
   xhr.addEventListener("load", transferComplete)
   xhr.open("GET",params,true)
   xhr.send()
-  var infoDiv = document.getElementById('info')
-  infoDiv.classList.remove('opaque')
-  infoDiv.classList.add('heartbeat')
   function transferComplete() {
     AutoToggle = true
     if (id == "info") {
