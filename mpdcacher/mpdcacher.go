@@ -102,15 +102,15 @@ func Search(query string, params map[string]string) []mpd.Attrs {
 	sort.Sort(ByAlbum(results))
 
 	// results is an array of maps like this:
-	// map[Time:347 
-	// Album:Blackstar 
-	// Track:7 
-	// Last-Modified:2016-01-11T23:55:59Z 
-	// Title:I Can't Give Everything Away 
-	// Artist:David Bowie 
-	// Disc:1 
-	// Date:2016 
-	// file:filepath]
+	// map[Time:347
+	// Album:Blackstar
+	// Track:7
+	// Last-Modified:2016-01-11T23:55:59Z
+	// Title:I Can't Give Everything Away
+	// Artist:David Bowie
+	// Disc:1
+	// Date:2016
+	// file:REDACTED]
 
 	fmt.Println(results[0])
 
@@ -139,7 +139,7 @@ func Search(query string, params map[string]string) []mpd.Attrs {
 	for _, album := range tracksByAlbum {
 		sort.Sort(ByTrack(album))
 	}
-	
+
 	// All that work modified the original data, so
 	return results
 }

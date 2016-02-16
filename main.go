@@ -16,6 +16,7 @@ import (
 func main() {
 	resH := http.Handler(http.FileServer(http.Dir("res/")))
 	guiH := http.HandlerFunc(gui)
+	browserH := http.HandlerFunc(browser)
 	getH := http.HandlerFunc(get)
 	setupH := http.HandlerFunc(setup)
 	authH := http.HandlerFunc(auth)
@@ -23,6 +24,7 @@ func main() {
 
 	resGz := gziphandler.GzipHandler(resH)
 	guiGz := gziphandler.GzipHandler(guiH)
+	browserGz := gziphandler.GzipHandler(browserH)
 	getGz := gziphandler.GzipHandler(getH)
 	setupGz := gziphandler.GzipHandler(setupH)
 	authGz := gziphandler.GzipHandler(authH)
@@ -30,6 +32,7 @@ func main() {
 
 	http.Handle("/res/", resGz)
 	http.Handle("/", guiGz)
+	http.Handle("/browser", browserGz)
 	http.Handle("/get", getGz)
 	http.Handle("/authority", setupGz)
 	http.Handle("/authorize", authGz)
@@ -68,6 +71,21 @@ func search(w http.ResponseWriter, r *http.Request) {
 	er(ror)
 	//fmt.Println(results)
 	t.Execute(w, results)
+}
+func browser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Encoding", "gzip")
+	w.Header().Set("Content-Type", "text/html")
+	var p map[string]string
+	kpass := r.FormValue("KPASS")
+	p, err := getParams(kpass)
+	if err != nil {
+		log.Println(err.Error())
+		fmt.Fprintf(w, err.Error())
+		return
+	}
+	t, ror := template.ParseGlob("templates/browser/*")
+	er(ror)
+	t.ExecuteTemplate(w, "GUI", p)
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
