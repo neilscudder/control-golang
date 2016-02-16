@@ -3,7 +3,7 @@
 	<ul>
 	{{ range $index,$item := . }}
 	    <li>
-	        ({{ $item.Track }} - 	{{ $item.Album }}) {{ $item.Title }} 
+	        {{ $item.Track }} - {{ $item.Title }} 
 		  </li>
 	{{ end }}
 	</ul>

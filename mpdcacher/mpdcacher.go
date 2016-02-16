@@ -95,7 +95,7 @@ func Search(query string, params map[string]string) []mpd.Attrs {
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
-	results, ror := conn.Find(query)
+	results, ror := conn.Search(query)
 	er(ror)
 
 	sort.Sort(ByArtist(results))
