@@ -120,7 +120,7 @@ function playCmd(e) {
 
   apiurl = getURLParameter('APIURL')
   var xhr = new XMLHttpRequest()
-  params = "a=" + id
+  params = "a=" + "play"
   params += "&b=" + target
   params += "&KPASS=" + getURLParameter('KPASS')
   xhr.addEventListener("load", transferComplete)
