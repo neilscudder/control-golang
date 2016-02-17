@@ -115,9 +115,7 @@ function sendCmd(id) {
 } 
 
 function playCmd(e) {  
-  var id = e.currentTarget.id
-  console.log("push" + id)
-  var x = document.getElementById(id)
+  var x = e.currentTarget
   var target = x.dataset.target
 
   apiurl = getURLParameter('APIURL')
