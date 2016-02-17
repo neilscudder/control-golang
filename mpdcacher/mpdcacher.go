@@ -15,11 +15,11 @@ import (
 // Status is for compiling the status html template.
 // Holds information on the currrent song and state of mpd.
 type Status struct {
-	Timestamp int64
-	Title     string
-	YouTube   string
-	Info      map[int]map[string]string
-	List      []NowList
+	Timestamp 		int64
+	Title     		string
+	YouTube   		string
+	Info      		map[int]map[string]string
+	List      		[]NowList
 }
 
 // NowList holds items for the tracklist surrounding the current track.
@@ -28,6 +28,12 @@ type NowList struct {
 	Label   string
 	Artist  string
 	Album   string
+}
+
+// SearchResults holds the latest search results.
+type SearchResults struct {
+	Results []mpd.Attrs
+	Files	[]string
 }
 
 // State of buttons and banner text per playnode.
@@ -101,10 +107,11 @@ func (this ByTrack) Swap(i, j int) {
 	this[i], this[j] = this[j], this[i]
 }
 
-func Search(query string, params map[string]string) []mpd.Attrs {
+func Search(query string, params map[string]string) SearchResults {
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
+	var s SearchResults
 	results, ror := conn.Search(query)
 	er(ror)
 
@@ -112,6 +119,7 @@ func Search(query string, params map[string]string) []mpd.Attrs {
 	sort.Sort(ByAlbum(results))
 
 	var tracksByAlbum = make([][]mpd.Attrs, 100)
+	var files = make([]string, len(results))
 
 	for range results {
 		start := 0
@@ -136,9 +144,17 @@ func Search(query string, params map[string]string) []mpd.Attrs {
 	for _, album := range tracksByAlbum {
 		sort.Sort(ByTrack(album))
 	}
-
+	counter := 0
+	for i:=0; i < len(tracksByAlbum); i++ {
+		for j:=0; j < len(tracksByAlbum[i]); j++ {
+			files[counter] = tracksByAlbum[i][j]["file"]
+			counter++
+		}
+	}
+	s.Files = files
 	// All that work modified the original data, so
-	return results
+	s.Results = results
+	return s
 }
 
 // MpdState returns a map of data for button states and banner text.
@@ -378,8 +394,8 @@ func getPlaylist(conn *mpd.Client, s *Status) {
 	status, _ := conn.Status()
 	filename := path.Base(song["file"])
 	curPos, _ := strconv.Atoi(status["song"])
-	first := curPos - 3
-	last := curPos + 15
+	first := curPos - 20
+	last := curPos + 20
 	playlist, _ := conn.PlaylistInfo(first, last)
 	var listing = make([]NowList, len(playlist))
 

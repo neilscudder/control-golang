@@ -13,6 +13,8 @@ import (
 	"net/http"
 )
 
+var searchBuffer = make(map[string][]string)
+
 func main() {
 	resH := http.Handler(http.FileServer(http.Dir("res/")))
 	guiH := http.HandlerFunc(gui)
@@ -69,11 +71,12 @@ func search(w http.ResponseWriter, r *http.Request) {
 	query := "any \""
 	query += r.FormValue("search")
 	query += "\""
-	results := mpdcacher.Search(query, p)
+	s := mpdcacher.Search(query, p)
+	searchBuffer[kpass] = s.Files
 	t, ror := template.ParseFiles("templates/search.html")
 	er(ror)
-	//fmt.Println(results)
-	t.Execute(w, results)
+	fmt.Println(s)
+	t.Execute(w, s)
 }
 func browser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")

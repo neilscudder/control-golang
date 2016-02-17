@@ -1,7 +1,7 @@
 <div id="infotainer" class="info-container">
-{{ if . }}
+{{ if .Results }}
 	<ul>
-	{{ range $index,$item := . }}
+	{{ range $index,$item := .Results }}
 	    <li>
 		{{ if $item.Title }}
 		  <div class="play" data-target="{{ $item.file }}">
