@@ -118,7 +118,7 @@ function playCmd(e) {
   var x = e.currentTarget
   var target = x.dataset.target
 
-  apiurl = getURLParameter('APIURL')
+  apiurl = getURLParameter('APIURL') + "post"
   var xhr = new XMLHttpRequest()
   params = "a=" + "play"
   params += "&b=" + target
