@@ -4,9 +4,13 @@
 	{{ range $index,$item := . }}
 	    <li>
 		{{ if $item.Title }}
-		  {{ $item.Album }} - {{ $item.Title }}
+		  <div class="play" data-target="{{ $item.file }}">
+  		    {{ $item.Album }} - {{ $item.Title }}
+		  </div>
 		{{ else }}
-		  {{ $item.file }}
+		  <div class="play" data-target="{{ $item.file }}">
+  		    {{ $item.file }}
+		  </div>
 		{{ end }}
 		  </li>
 	{{ end }}
