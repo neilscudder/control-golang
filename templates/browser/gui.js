@@ -116,18 +116,22 @@ function sendCmd(id) {
 
 function playCmd(e) {  
   var x = e.currentTarget
-  var target = x.dataset.target
-
+  var target = encodeURI(x.dataset.target)
   apiurl = getURLParameter('APIURL') + "post"
   var xhr = new XMLHttpRequest()
-  params = "a=" + "play"
+//  xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+  params = "KPASS=" + getURLParameter('KPASS')
+  params += "&a=" + "play"
   params += "&b=" + target
-  params += "&KPASS=" + getURLParameter('KPASS')
   xhr.addEventListener("load", transferComplete)
+  alert(apiurl)
   xhr.open("POST",apiurl,true)
   xhr.send(params)
   function transferComplete() {
-    var gui = '/' + "?" + params
+    alert(params)
+    p = "?APIURL=" + getURLParameter('APIURL')
+    p += "&KPASS=" + getURLParameter('KPASS')
+    var gui = '/' + p
     window.location.replace(gui)
   }
 } 

@@ -40,6 +40,7 @@ type State struct {
 
 // MpdPlay replaces the playlist with target and starts playback
 func MpdPlay(params map[string]string, target string) error {
+	fmt.Println(target)
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
@@ -108,19 +109,6 @@ func Search(query string, params map[string]string) []mpd.Attrs {
 
 	sort.Sort(ByArtist(results))
 	sort.Sort(ByAlbum(results))
-
-	// results is an array of maps like this:
-	// map[Time:347
-	// Album:Blackstar
-	// Track:7
-	// Last-Modified:2016-01-11T23:55:59Z
-	// Title:I Can't Give Everything Away
-	// Artist:David Bowie
-	// Disc:1
-	// Date:2016
-	// file:REDACTED]
-
-	fmt.Println(results[0])
 
 	var tracksByAlbum = make([][]mpd.Attrs, 100)
 
