@@ -26,8 +26,9 @@ function goSearch(ev) {
   xhr.onload = function(oEvent) {
     if (xhr.status == 200) {
       oOutput.innerHTML = xhr.responseText;
+      playButtonListener()
     } else {
-      oOutput.innerHTML = "Error " + xhr.status + " occurred when trying to upload your file.<br \/>";
+      oOutput.innerHTML = "Error " + xhr.status + " occurred.";
     }
   };
 
@@ -113,8 +114,9 @@ function sendCmd(id) {
   }
 } 
 
-function playCmd(event) {
+function playCmd(e) {  
   var id = e.currentTarget.id
+  console.log("push" + id)
   var x = document.getElementById(id)
   var target = x.dataset.target
 
@@ -138,7 +140,6 @@ function isEmpty(str) {
 function initialise() {
   autoRefresh("state", 3000)
   animatedButtonListener()
-  playButtonListener()
 }
 
 function pushed(id){
@@ -165,6 +166,7 @@ function animatedButtonListener() {
 }
 
 function playButtonListener() {
+  console.log("add listener")
   var buttons = document.getElementsByClassName("play")
   for(i = 0; i<buttons.length; i++) {
       buttons[i].addEventListener(ClickEventType, playCmd, false)
