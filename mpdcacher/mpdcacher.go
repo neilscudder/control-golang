@@ -38,6 +38,16 @@ type State struct {
 	Banner                 string
 }
 
+// MpdPlay replaces the playlist with target and starts playback
+func MpdPlay(params map[string]string, target string) error {
+	conn, ror := mpdConnect(params)
+	er(ror)
+	defer conn.Close()
+	conn.Clear()
+	conn.Add(target)
+	return conn.Play(0)
+}
+
 var statusBuffer = make(map[string]Status)
 var stateBuffer = make(map[string]State)
 

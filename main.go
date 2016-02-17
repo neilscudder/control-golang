@@ -21,6 +21,7 @@ func main() {
 	setupH := http.HandlerFunc(setup)
 	authH := http.HandlerFunc(auth)
 	searchH := http.HandlerFunc(search)
+	postH := http.HandlerFunc(post)
 
 	resGz := gziphandler.GzipHandler(resH)
 	guiGz := gziphandler.GzipHandler(guiH)
@@ -29,6 +30,7 @@ func main() {
 	setupGz := gziphandler.GzipHandler(setupH)
 	authGz := gziphandler.GzipHandler(authH)
 	searchGz := gziphandler.GzipHandler(searchH)
+	postGz := gziphandler.GzipHandler(postH)
 
 	http.Handle("/res/", resGz)
 	http.Handle("/", guiGz)
@@ -37,6 +39,7 @@ func main() {
 	http.Handle("/authority", setupGz)
 	http.Handle("/authorize", authGz)
 	http.Handle("/search", searchGz)
+	http.Handle("/post", postGz)
 
 	var pemfile = flag.String("pem", "", "Path to pem file")
 	var keyfile = flag.String("key", "", "Path to key file")
@@ -129,6 +132,21 @@ func get(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Encoding", "gzip")
+	kpass := r.FormValue("KPASS")
+	p, err := getParams(kpass)
+	if err != nil {
+		log.Println(err.Error())
+		fmt.Fprintf(w, err.Error())
+		return
+	}
+	target := r.FormValue("b")
+	w.Header().Set("Content-Type", "text/html")
+	mpdcacher.MpdPlay(p, target)
+	ok := []byte("ok")
+	w.Write(ok)
+}
 func getParams(kpass string) (map[string]string, error) {
 	var p map[string]string
 	byteP, err := authority.Authenticate(kpass)
