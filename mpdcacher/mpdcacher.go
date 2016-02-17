@@ -52,6 +52,7 @@ func MpdPlay(params map[string]string, target string) error {
 var statusBuffer = make(map[string]Status)
 var stateBuffer = make(map[string]State)
 
+// All these are for sorting search results:
 type ByArtist []mpd.Attrs
 
 func (this ByArtist) Len() int {
@@ -276,7 +277,8 @@ func MpdStatus(cmd string, params map[string]string) Status {
 		if age >= 1 {
 			s.Timestamp = n
 			//getInfo(conn, &s)
-			getListing(conn, &s)
+			// getListing(conn, &s)
+			getPlaylist(conn, &s)
 			statusBuffer[playnode] = s
 		} else {
 			s = statusBuffer[playnode]
@@ -369,6 +371,46 @@ func getListing(conn *mpd.Client, s *Status) {
 	}
 	s.List = listing
 }
+
+// getPlaylist stores other tracks from current playlist
+func getPlaylist(conn *mpd.Client, s *Status) {
+	song, _ := conn.CurrentSong()
+	status, _ := conn.Status()
+	filename := path.Base(song["file"])
+	curPos, _ := strconv.Atoi(status["song"])
+	first := curPos - 3
+	last := curPos + 15
+	playlist, _ := conn.PlaylistInfo(first, last)
+	var listing = make([]NowList, len(playlist))
+
+	for i := 0; i < len(playlist); i++ {
+		m := playlist[i]
+		p := m["file"]
+		t := m["title"]
+		d := path.Dir(p)
+		f := path.Base(p)
+		if f == "." || f == "" {
+			continue
+		}
+		if t != "" {
+			if f == filename {
+				listing[i].Current = true
+				listing[i].Album = m["album"]
+			}
+			listing[i].Artist = m["artist"]
+			listing[i].Label = t
+		} else {
+			if f == filename {
+				listing[i].Current = true
+				listing[i].Album = d
+			}
+			listing[i].Artist = m["artist"]
+			listing[i].Label = f
+		}
+	}
+	s.List = listing
+}
+
 
 func mpdConnect(p map[string]string) (*mpd.Client, error) {
 	host := p["MPDHOST"] + ":" + p["MPDPORT"]
