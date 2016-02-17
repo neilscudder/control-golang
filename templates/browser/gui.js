@@ -174,7 +174,7 @@ function playButtonListener() {
   console.log("add listener")
   var buttons = document.getElementsByClassName("play")
   for(i = 0; i<buttons.length; i++) {
-      buttons[i].addEventListener(ClickEventType, playCmd, false)
+      buttons[i].addEventListener("click", playCmd, false)
   }
 }
 
