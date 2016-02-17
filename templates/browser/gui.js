@@ -114,27 +114,30 @@ function sendCmd(id) {
   }
 } 
 
-function playCmd(e) {  
-  var x = e.currentTarget
-  var target = encodeURI(x.dataset.target)
-  apiurl = getURLParameter('APIURL') + "post"
+function playCmd(ev) {
+  var x = ev.currentTarget
+  var target = x.dataset.target
+  var apiURL = getURLParameter('APIURL')
+  apiURL = apiURL + "post"
+  var oOutput = document.getElementById('browser'),
+      oData = new FormData()
+  oData.append("KPASS", getURLParameter('KPASS'))
+  oData.append("a", "play")
+  oData.append("b", target)
   var xhr = new XMLHttpRequest()
-//  xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
-  params = "KPASS=" + getURLParameter('KPASS')
-  params += "&a=" + "play"
-  params += "&b=" + target
-  xhr.addEventListener("load", transferComplete)
-  alert(apiurl)
-  xhr.open("POST",apiurl,true)
-  xhr.send(params)
-  function transferComplete() {
-    alert(params)
-    p = "?APIURL=" + getURLParameter('APIURL')
-    p += "&KPASS=" + getURLParameter('KPASS')
-    var gui = '/' + p
-    window.location.replace(gui)
+
+  xhr.open("POST", apiURL, true)
+  xhr.onload = function(oEvent) {
+    if (xhr.status == 200) {
+      var gui = '/' + "?KPASS=" + getURLParameter('KPASS') + "&APIURL=" + getURLParameter('APIURL')
+      window.location.replace(gui)
+    } else {
+      oOutput.innerHTML = "Error " + xhr.status + " occurred."
+    }
   }
-} 
+  xhr.send(oData)
+  ev.preventDefault()
+}
 
 function isEmpty(str) {
     return (!str || 0 === str.length)

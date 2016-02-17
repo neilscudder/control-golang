@@ -134,15 +134,15 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 func post(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")
-	kpass := r.PostFormValue("KPASS")
+	kpass := r.FormValue("KPASS")
 	p, err := getParams(kpass)
-	fmt.Println(r)
+	// fmt.Println(r.FormValue("KPASS"))
 	if err != nil {
 		log.Println(err.Error())
 		fmt.Fprintf(w, err.Error())
 		return
 	}
-	target := r.PostFormValue("b")
+	target := r.FormValue("b")
 	w.Header().Set("Content-Type", "text/html")
 	mpdcacher.MpdPlay(p, target)
 	fmt.Println(target)
