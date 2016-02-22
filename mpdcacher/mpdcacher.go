@@ -15,11 +15,11 @@ import (
 // Status is for compiling the status html template.
 // Holds information on the currrent song and state of mpd.
 type Status struct {
-	Timestamp 		int64
-	Title     		string
-	YouTube   		string
-	Info      		map[int]map[string]string
-	List      		[]NowList
+	Timestamp int64
+	Title     string
+	YouTube   string
+	Info      map[int]map[string]string
+	List      []NowList
 }
 
 // NowList holds items for the tracklist surrounding the current track.
@@ -33,7 +33,7 @@ type NowList struct {
 // SearchResults holds the latest search results.
 type SearchResults struct {
 	Results []mpd.Attrs
-	Files	[]string
+	Files   []string
 }
 
 // State of buttons and banner text per playnode.
@@ -45,13 +45,21 @@ type State struct {
 }
 
 // MpdPlay replaces the playlist with target and starts playback
-func MpdPlay(params map[string]string, target string) error {
-	fmt.Println(target)
+func MpdPlay(params map[string]string, targets []string) error {
+	//	fmt.Println(target)
 	conn, ror := mpdConnect(params)
 	er(ror)
 	defer conn.Close()
 	conn.Clear()
-	conn.Add(target)
+	counter := 0
+	for _, target := range targets {
+		if target != "" {
+			conn.Add(target)
+			counter++
+			//	fmt.Println(target)
+		}
+	}
+	fmt.Println("Added ", counter)
 	return conn.Play(0)
 }
 
@@ -145,8 +153,8 @@ func Search(query string, params map[string]string) SearchResults {
 		sort.Sort(ByTrack(album))
 	}
 	counter := 0
-	for i:=0; i < len(tracksByAlbum); i++ {
-		for j:=0; j < len(tracksByAlbum[i]); j++ {
+	for i := 0; i < len(tracksByAlbum); i++ {
+		for j := 0; j < len(tracksByAlbum[i]); j++ {
 			files[counter] = tracksByAlbum[i][j]["file"]
 			counter++
 		}
@@ -426,7 +434,6 @@ func getPlaylist(conn *mpd.Client, s *Status) {
 	}
 	s.List = listing
 }
-
 
 func mpdConnect(p map[string]string) (*mpd.Client, error) {
 	host := p["MPDHOST"] + ":" + p["MPDPORT"]

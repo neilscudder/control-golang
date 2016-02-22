@@ -127,6 +127,9 @@ nav {
   text-align:right;
   border-bottom: 1px solid #002b36;
 } 
+#searchResults{
+  padding-top: 130px;
+}
 #info{
   padding-top: 130px;
 }

@@ -16,23 +16,14 @@ import (
 var searchBuffer = make(map[string][]string)
 
 func main() {
-	resH := http.Handler(http.FileServer(http.Dir("res/")))
-	guiH := http.HandlerFunc(gui)
-	browserH := http.HandlerFunc(browser)
-	getH := http.HandlerFunc(get)
-	setupH := http.HandlerFunc(setup)
-	authH := http.HandlerFunc(auth)
-	searchH := http.HandlerFunc(search)
-	postH := http.HandlerFunc(post)
-
-	resGz := gziphandler.GzipHandler(resH)
-	guiGz := gziphandler.GzipHandler(guiH)
-	browserGz := gziphandler.GzipHandler(browserH)
-	getGz := gziphandler.GzipHandler(getH)
-	setupGz := gziphandler.GzipHandler(setupH)
-	authGz := gziphandler.GzipHandler(authH)
-	searchGz := gziphandler.GzipHandler(searchH)
-	postGz := gziphandler.GzipHandler(postH)
+	resGz := gziphandler.GzipHandler(http.FileServer(http.Dir("res/")))
+	guiGz := gziphandler.GzipHandler(http.HandlerFunc(gui))
+	browserGz := gziphandler.GzipHandler(http.HandlerFunc(browser))
+	getGz := gziphandler.GzipHandler(http.HandlerFunc(get))
+	setupGz := gziphandler.GzipHandler(http.HandlerFunc(setup))
+	authGz := gziphandler.GzipHandler(http.HandlerFunc(auth))
+	searchGz := gziphandler.GzipHandler(http.HandlerFunc(search))
+	postGz := gziphandler.GzipHandler(http.HandlerFunc(post))
 
 	http.Handle("/res/", resGz)
 	http.Handle("/", guiGz)
@@ -75,7 +66,6 @@ func search(w http.ResponseWriter, r *http.Request) {
 	searchBuffer[kpass] = s.Files
 	t, ror := template.ParseFiles("templates/search.html")
 	er(ror)
-	fmt.Println(s)
 	t.Execute(w, s)
 }
 func browser(w http.ResponseWriter, r *http.Request) {
@@ -98,7 +88,7 @@ func browser(w http.ResponseWriter, r *http.Request) {
 func gui(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Type", "text/html")
-	var p map[string]string
+	var p = make(map[string]string)
 	kpass := r.FormValue("KPASS")
 	p, err := getParams(kpass)
 	p["KPASS"] = kpass
@@ -145,10 +135,11 @@ func post(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 		return
 	}
-	target := r.FormValue("b")
+	//target := r.FormValue("b")
+	targets := searchBuffer[kpass]
 	w.Header().Set("Content-Type", "text/html")
-	mpdcacher.MpdPlay(p, target)
-	fmt.Println(target)
+	mpdcacher.MpdPlay(p, targets)
+	//fmt.Println(targets)
 	ok := []byte("ok")
 	w.Write(ok)
 }

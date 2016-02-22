@@ -119,7 +119,7 @@ function playCmd(ev) {
   var target = x.dataset.target
   var apiURL = getURLParameter('APIURL')
   apiURL = apiURL + "post"
-  var oOutput = document.getElementById('browser'),
+  var oOutput = document.getElementById('searchResults'),
       oData = new FormData()
   oData.append("KPASS", getURLParameter('KPASS'))
   oData.append("a", "play")
@@ -174,7 +174,7 @@ function playButtonListener() {
   console.log("add listener")
   var buttons = document.getElementsByClassName("play")
   for(i = 0; i<buttons.length; i++) {
-      buttons[i].addEventListener("click", playCmd, false)
+      buttons[i].addEventListener("touchend", playCmd, false)
   }
 }
 
