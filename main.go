@@ -18,20 +18,16 @@ var searchBuffer = make(map[string][]string)
 func main() {
 	resGz := gz.GzipHandler(http.FileServer(http.Dir("res/")))
 	guiGz := gz.GzipHandler(http.HandlerFunc(gui))
-	browserGz := gz.GzipHandler(http.HandlerFunc(browser))
 	getGz := gz.GzipHandler(http.HandlerFunc(get))
 	setupGz := gz.GzipHandler(http.HandlerFunc(setup))
 	authGz := gz.GzipHandler(http.HandlerFunc(auth))
-	searchGz := gz.GzipHandler(http.HandlerFunc(search))
 	postGz := gz.GzipHandler(http.HandlerFunc(post))
 
 	http.Handle("/res/", resGz)
 	http.Handle("/", guiGz)
-	http.Handle("/browser", browserGz)
 	http.Handle("/get", getGz)
 	http.Handle("/authority", setupGz)
 	http.Handle("/authorize", authGz)
-	http.Handle("/search", searchGz)
 	http.Handle("/post", postGz)
 
 	var pemfile = flag.String("pem", "", "Path to pem file")
@@ -46,43 +42,6 @@ func main() {
 		ror := server.ListenAndServeTLS(*pemfile, *keyfile)
 		er(ror)
 	}
-}
-
-func search(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Encoding", "gzip")
-	w.Header().Set("Content-Type", "text/html")
-	var p map[string]string
-	kpass := r.FormValue("KPASS")
-	p, err := getParams(kpass)
-	if err != nil {
-		log.Println(err.Error())
-		fmt.Fprintf(w, err.Error())
-		return
-	}
-	query := "any \""
-	query += r.FormValue("search")
-	query += "\""
-	s := mpdcacher.Search(query, p)
-	searchBuffer[kpass] = s.Files
-	t, ror := template.ParseFiles("templates/search.html")
-	er(ror)
-	t.Execute(w, s)
-}
-func browser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Encoding", "gzip")
-	w.Header().Set("Content-Type", "text/html")
-	var p map[string]string
-	kpass := r.FormValue("KPASS")
-	p, err := getParams(kpass)
-	p["KPASS"] = kpass
-	if err != nil {
-		log.Println(err.Error())
-		fmt.Fprintf(w, err.Error())
-		return
-	}
-	t, ror := template.ParseGlob("templates/browser/*")
-	er(ror)
-	t.ExecuteTemplate(w, "GUI", p)
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {

@@ -20,9 +20,10 @@ function goSearch(ev) {
       oData = new FormData(form);
 
   oData.append("KPASS", getURLParameter('KPASS'));
+  oData.append("a", "search");
 
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "search", true);
+  xhr.open("POST", "/", true);
   xhr.onload = function(oEvent) {
     if (xhr.status == 200) {
       oOutput.innerHTML = xhr.responseText;

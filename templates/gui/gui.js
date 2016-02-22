@@ -85,7 +85,7 @@ function sendCmd(id) {
           // This should have a callback to set button state to released ^^
         }
       }
-      var burl = '/browser' + "?KPASS=" + getURLParameter('KPASS') + "&APIURL=" + getURLParameter('APIURL')
+      var burl = '?a=browser' + "&KPASS=" + getURLParameter('KPASS') + "&APIURL=" + getURLParameter('APIURL')
 ;
       if (id == "browser") {window.location.replace(burl)}
       if (id == "main") {window.location.replace(burl)}
