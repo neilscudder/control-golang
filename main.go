@@ -97,9 +97,25 @@ func gui(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 		return
 	}
-	t, ror := template.ParseGlob("templates/gui/*")
-	er(ror)
-	t.ExecuteTemplate(w, "GUI", p)
+	switch r.FormValue("a") {
+	case "search":
+		query := "any \""
+		query += r.FormValue("search")
+		query += "\""
+		s := mpdcacher.Search(query, p)
+		searchBuffer[kpass] = s.Files
+		t, ror := template.ParseFiles("templates/search.html")
+		er(ror)
+		t.Execute(w, s)
+	case "browser":
+		t, ror := template.ParseGlob("templates/browser/*")
+		er(ror)
+		t.ExecuteTemplate(w, "GUI", p)
+	default:
+		t, ror := template.ParseGlob("templates/gui/*")
+		er(ror)
+		t.ExecuteTemplate(w, "GUI", p)
+	}
 }
 func get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")
