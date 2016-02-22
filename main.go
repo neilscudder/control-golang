@@ -20,7 +20,7 @@ func main() {
 	guiGz := gz.GzipHandler(http.HandlerFunc(gui))
 	getGz := gz.GzipHandler(http.HandlerFunc(get))
 	setupGz := gz.GzipHandler(http.HandlerFunc(setup))
-	authGz := gz.GzipHandler(http.HandlerFunc(auth))
+	authGz := gz.GzipHandler(http.HandlerFunc(setup))
 	postGz := gz.GzipHandler(http.HandlerFunc(post))
 
 	http.Handle("/res/", resGz)
@@ -131,45 +131,43 @@ func getParams(kpass string) (map[string]string, error) {
 func setup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Type", "text/html")
-	p := map[string]string{
-		"dummy": r.FormValue("dummy"),
+	if r.FormValue("APIURL") == "" {
+		p := map[string]string{
+			"dummy": "dummy",
+		}
+		t, ror := template.ParseFiles("templates/authority.html")
+		er(ror)
+		t.Execute(w, p)
+	} else {
+		p := map[string]string{
+			"APIURL":   r.FormValue("APIURL"),
+			"LABEL":    r.FormValue("LABEL"),
+			"EMAIL":    r.FormValue("EMAIL"),
+			"USERNAME": r.FormValue("USERNAME"),
+			"MPDPORT":  r.FormValue("MPDPORT"),
+			"MPDHOST":  r.FormValue("MPDHOST"),
+			"MPDPASS":  r.FormValue("MPDPASS"),
+		}
+		cURL := r.FormValue("GUIURL") + "/?"
+		if p["APIURL"] != "" {
+			cURL += "&APIURL=" + p["APIURL"]
+		}
+		rURL := cURL
+		cURL += "&KPASS="
+		rURL += "&RPASS="
+		byteP, ror := json.Marshal(p)
+		er(ror)
+		kpass, rpass := authority.Authorize(byteP)
+		cURL += kpass
+		rURL += rpass
+		u := map[string]string{
+			"controlURL": cURL,
+			"resetURL":   rURL,
+		}
+		t, ror := template.ParseFiles("templates/authorize.html")
+		er(ror)
+		t.Execute(w, u)
 	}
-	t, ror := template.ParseFiles("templates/authority.html")
-	er(ror)
-	t.Execute(w, p)
-}
-
-func auth(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Encoding", "gzip")
-	w.Header().Set("Content-Type", "text/html")
-	p := map[string]string{
-		"APIURL":   r.FormValue("APIURL"),
-		"LABEL":    r.FormValue("LABEL"),
-		"EMAIL":    r.FormValue("EMAIL"),
-		"USERNAME": r.FormValue("USERNAME"),
-		"MPDPORT":  r.FormValue("MPDPORT"),
-		"MPDHOST":  r.FormValue("MPDHOST"),
-		"MPDPASS":  r.FormValue("MPDPASS"),
-	}
-	cURL := r.FormValue("GUIURL") + "/?"
-	if p["APIURL"] != "" {
-		cURL += "&APIURL=" + p["APIURL"]
-	}
-	rURL := cURL
-	cURL += "&KPASS="
-	rURL += "&RPASS="
-	byteP, ror := json.Marshal(p)
-	er(ror)
-	kpass, rpass := authority.Authorize(byteP)
-	cURL += kpass
-	rURL += rpass
-	u := map[string]string{
-		"controlURL": cURL,
-		"resetURL":   rURL,
-	}
-	t, ror := template.ParseFiles("templates/authorize.html")
-	er(ror)
-	t.Execute(w, u)
 }
 
 func er(ror error) {
