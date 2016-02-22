@@ -17,18 +17,18 @@ var searchBuffer = make(map[string][]string)
 
 func main() {
 	resGz := gz.GzipHandler(http.FileServer(http.Dir("res/")))
-	guiGz := gz.GzipHandler(http.HandlerFunc(gui))
 	getGz := gz.GzipHandler(http.HandlerFunc(get))
 	setupGz := gz.GzipHandler(http.HandlerFunc(setup))
 	authGz := gz.GzipHandler(http.HandlerFunc(setup))
 	postGz := gz.GzipHandler(http.HandlerFunc(post))
+	guiGz := gz.GzipHandler(http.HandlerFunc(gui))
 
 	http.Handle("/res/", resGz)
-	http.Handle("/", guiGz)
 	http.Handle("/get", getGz)
 	http.Handle("/authority", setupGz)
 	http.Handle("/authorize", authGz)
 	http.Handle("/post", postGz)
+	http.Handle("/", guiGz)
 
 	var pemfile = flag.String("pem", "", "Path to pem file")
 	var keyfile = flag.String("key", "", "Path to key file")
@@ -131,14 +131,7 @@ func getParams(kpass string) (map[string]string, error) {
 func setup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Type", "text/html")
-	if r.FormValue("APIURL") == "" {
-		p := map[string]string{
-			"dummy": "dummy",
-		}
-		t, ror := template.ParseFiles("templates/authority.html")
-		er(ror)
-		t.Execute(w, p)
-	} else {
+	if r.FormValue("APIURL") != "" {
 		p := map[string]string{
 			"APIURL":   r.FormValue("APIURL"),
 			"LABEL":    r.FormValue("LABEL"),
@@ -167,12 +160,21 @@ func setup(w http.ResponseWriter, r *http.Request) {
 		t, ror := template.ParseFiles("templates/authorize.html")
 		er(ror)
 		t.Execute(w, u)
+	} else {
+		p := map[string]string{
+			"dummy": "dummy",
+		}
+		t, ror := template.ParseFiles("templates/authority.html")
+		er(ror)
+		t.Execute(w, p)
 	}
 }
 
 func er(ror error) {
-	//  if ror != nil { log.Fatalln(ror) }
 	if ror != nil {
-		log.Println(ror)
+		log.Fatalln(ror)
 	}
+	/*	if ror != nil {
+		log.Println(ror)
+	}*/
 }
