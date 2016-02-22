@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/NYTimes/gziphandler"
+	gz "github.com/NYTimes/gziphandler"
 	"github.com/neilscudder/control-golang/authority"
 	"github.com/neilscudder/control-golang/mpdcacher"
 	"html/template"
@@ -16,14 +16,14 @@ import (
 var searchBuffer = make(map[string][]string)
 
 func main() {
-	resGz := gziphandler.GzipHandler(http.FileServer(http.Dir("res/")))
-	guiGz := gziphandler.GzipHandler(http.HandlerFunc(gui))
-	browserGz := gziphandler.GzipHandler(http.HandlerFunc(browser))
-	getGz := gziphandler.GzipHandler(http.HandlerFunc(get))
-	setupGz := gziphandler.GzipHandler(http.HandlerFunc(setup))
-	authGz := gziphandler.GzipHandler(http.HandlerFunc(auth))
-	searchGz := gziphandler.GzipHandler(http.HandlerFunc(search))
-	postGz := gziphandler.GzipHandler(http.HandlerFunc(post))
+	resGz := gz.GzipHandler(http.FileServer(http.Dir("res/")))
+	guiGz := gz.GzipHandler(http.HandlerFunc(gui))
+	browserGz := gz.GzipHandler(http.HandlerFunc(browser))
+	getGz := gz.GzipHandler(http.HandlerFunc(get))
+	setupGz := gz.GzipHandler(http.HandlerFunc(setup))
+	authGz := gz.GzipHandler(http.HandlerFunc(auth))
+	searchGz := gz.GzipHandler(http.HandlerFunc(search))
+	postGz := gz.GzipHandler(http.HandlerFunc(post))
 
 	http.Handle("/res/", resGz)
 	http.Handle("/", guiGz)
