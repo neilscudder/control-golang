@@ -9,7 +9,6 @@ function getURLParameter(name) {
 }
 
 getparams = getURLParameter('APIURL')
-  + "get"
   + "?KPASS=" + getURLParameter('KPASS');
 
 function autoRefresh(id,interval) {
@@ -29,7 +28,7 @@ function findPos(obj) {
 function sendCmd(id) {
 //  AutoToggle = false
   var xhr = new XMLHttpRequest()
-  params = getparams + "&a=" + id
+  params = getparams + "&a=command&b=" + id
   xhr.addEventListener("load", transferComplete)
   xhr.open("GET",params,true)
   xhr.send()

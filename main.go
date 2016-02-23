@@ -17,14 +17,12 @@ var searchBuffer = make(map[string][]string)
 
 func main() {
 	resGz := gz.GzipHandler(http.FileServer(http.Dir("res/")))
-	getGz := gz.GzipHandler(http.HandlerFunc(get))
 	setupGz := gz.GzipHandler(http.HandlerFunc(setup))
 	authGz := gz.GzipHandler(http.HandlerFunc(setup))
 	postGz := gz.GzipHandler(http.HandlerFunc(post))
 	guiGz := gz.GzipHandler(http.HandlerFunc(gui))
 
 	http.Handle("/res/", resGz)
-	http.Handle("/get", getGz)
 	http.Handle("/authority", setupGz)
 	http.Handle("/authorize", authGz)
 	http.Handle("/post", postGz)
@@ -70,33 +68,23 @@ func gui(w http.ResponseWriter, r *http.Request) {
 		t, ror := template.ParseGlob("templates/browser/*")
 		er(ror)
 		t.ExecuteTemplate(w, "GUI", p)
+	case "command":
+		cmd := r.FormValue("b")
+		if cmd == "info" {
+			u := mpdcacher.MpdStatus(cmd, p)
+			t, ror := template.ParseFiles("templates/status.html")
+			er(ror)
+			t.Execute(w, u)
+		} else {
+			s := mpdcacher.MpdState(cmd, p)
+			state, _ := json.Marshal(s)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(state)
+		}
 	default:
 		t, ror := template.ParseGlob("templates/gui/*")
 		er(ror)
 		t.ExecuteTemplate(w, "GUI", p)
-	}
-}
-func get(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Encoding", "gzip")
-	kpass := r.FormValue("KPASS")
-	p, err := getParams(kpass)
-	if err != nil {
-		log.Println(err.Error())
-		fmt.Fprintf(w, err.Error())
-		return
-	}
-	cmd := r.FormValue("a")
-	if cmd == "info" {
-		w.Header().Set("Content-Type", "text/html")
-		u := mpdcacher.MpdStatus(cmd, p)
-		t, ror := template.ParseFiles("templates/status.html")
-		er(ror)
-		t.Execute(w, u)
-	} else {
-		s := mpdcacher.MpdState(cmd, p)
-		state, _ := json.Marshal(s)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(state)
 	}
 }
 
