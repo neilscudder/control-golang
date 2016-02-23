@@ -18,13 +18,12 @@ var searchBuffer = make(map[string][]string)
 func main() {
 	resGz := gz.GzipHandler(http.FileServer(http.Dir("res/")))
 	setupGz := gz.GzipHandler(http.HandlerFunc(setup))
-	authGz := gz.GzipHandler(http.HandlerFunc(setup))
 	postGz := gz.GzipHandler(http.HandlerFunc(post))
 	guiGz := gz.GzipHandler(http.HandlerFunc(gui))
 
 	http.Handle("/res/", resGz)
 	http.Handle("/authority", setupGz)
-	http.Handle("/authorize", authGz)
+	http.Handle("/authorize", setupGz)
 	http.Handle("/post", postGz)
 	http.Handle("/", guiGz)
 
