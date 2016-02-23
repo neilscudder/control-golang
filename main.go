@@ -72,12 +72,12 @@ func gui(w http.ResponseWriter, r *http.Request) {
 	case "command":
 		cmd := r.FormValue("b")
 		if cmd == "info" {
-			u := m.Command(cmd, p)
+			u := m.Info(cmd, p)
 			t, ror := template.ParseFiles("templates/status.html")
 			er(ror)
 			t.Execute(w, u)
 		} else {
-			s := m.Info(cmd, p)
+			s := m.Command(cmd, p)
 			state, _ := json.Marshal(s)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(state)
