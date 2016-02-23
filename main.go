@@ -15,6 +15,8 @@ import (
 
 var searchBuffer = make(map[string][]string)
 
+type params map[string]string
+
 func main() {
 	resGz := gz.GzipHandler(http.FileServer(http.Dir("res/")))
 	setupGz := gz.GzipHandler(http.HandlerFunc(setup))
@@ -42,7 +44,7 @@ func main() {
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
-	var p = make(map[string]string)
+	var p = make(params)
 	kpass := r.FormValue("KPASS")
 	p, err := getParams(kpass)
 	p["KPASS"] = kpass
@@ -106,8 +108,8 @@ func post(w http.ResponseWriter, r *http.Request) {
 	ok := []byte("ok")
 	w.Write(ok)
 }
-func getParams(kpass string) (map[string]string, error) {
-	var p map[string]string
+func getParams(kpass string) (params, error) {
+	var p params
 	byteP, err := authority.Authenticate(kpass)
 	if err == nil {
 		err = json.Unmarshal(byteP, &p)
@@ -120,7 +122,7 @@ func setup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Type", "text/html")
 	if r.FormValue("APIURL") != "" {
-		p := map[string]string{
+		p := params{
 			"APIURL":   r.FormValue("APIURL"),
 			"LABEL":    r.FormValue("LABEL"),
 			"EMAIL":    r.FormValue("EMAIL"),
@@ -149,12 +151,12 @@ func setup(w http.ResponseWriter, r *http.Request) {
 		er(ror)
 		t.Execute(w, u)
 	} else {
-		p := map[string]string{
+		u := map[string]string{
 			"dummy": "dummy",
 		}
 		t, ror := template.ParseFiles("templates/authority.html")
 		er(ror)
-		t.Execute(w, p)
+		t.Execute(w, u)
 	}
 }
 
