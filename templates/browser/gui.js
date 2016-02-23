@@ -117,6 +117,7 @@ function sendCmd(id) {
 function playCmd(ev) {
   var x = ev.currentTarget
   var target = x.dataset.target
+  var index = x.dataset.index
   var apiURL = getURLParameter('APIURL')
   apiURL = apiURL + "post"
   var oOutput = document.getElementById('searchResults'),
@@ -124,6 +125,7 @@ function playCmd(ev) {
   oData.append("KPASS", getURLParameter('KPASS'))
   oData.append("a", "play")
   oData.append("b", target)
+  oData.append("c", index)
   var xhr = new XMLHttpRequest()
 
   xhr.open("POST", apiURL, true)

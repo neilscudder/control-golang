@@ -4,11 +4,11 @@
 	{{ range $index,$item := .Results }}
 	    <li>
 		{{ if $item.Title }}
-		  <div class="play" data-target="{{ $item.file }}">
+		  <div class="play" data-target="{{ $item.file }}" data-index="{{ $index }}">
   		    {{ $item.Album }} - {{ $item.Title }}
 		  </div>
 		{{ else }}
-		  <div class="play" data-target="{{ $item.file }}">
+		  <div class="play" data-target="{{ $item.file }}" data-index="{{ $index }}">
   		    {{ $item.file }}
 		  </div>
 		{{ end }}

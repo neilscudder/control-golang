@@ -11,6 +11,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 var searchBuffer = make(map[string][]string)
@@ -100,10 +101,10 @@ func post(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 		return
 	}
-	//target := r.FormValue("b")
+	index, _ := strconv.Atoi(r.FormValue("c"))
 	targets := searchBuffer[kpass]
 	w.Header().Set("Content-Type", "text/html")
-	mpdcacher.MpdPlay(p, targets)
+	mpdcacher.MpdPlay(p, targets, index)
 	//fmt.Println(targets)
 	ok := []byte("ok")
 	w.Write(ok)

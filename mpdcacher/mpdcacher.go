@@ -45,7 +45,7 @@ type State struct {
 }
 
 // MpdPlay replaces the playlist with target and starts playback
-func MpdPlay(params map[string]string, targets []string) error {
+func MpdPlay(params map[string]string, targets []string, index int) error {
 	//	fmt.Println(target)
 	conn, ror := mpdConnect(params)
 	er(ror)
@@ -60,7 +60,7 @@ func MpdPlay(params map[string]string, targets []string) error {
 		}
 	}
 	fmt.Println("Added ", counter)
-	return conn.Play(0)
+	return conn.Play(index)
 }
 
 var statusBuffer = make(map[string]Status)
