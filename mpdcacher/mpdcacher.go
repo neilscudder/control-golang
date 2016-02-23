@@ -26,7 +26,7 @@ type State struct {
 	Banner                 string
 }
 
-// Status holds information on the currrent song and state of mpd.
+// Status holds information on the currrent song.
 type Status struct {
 	Timestamp int64
 	Title     string
@@ -68,6 +68,8 @@ func Play(p Params, targets []string, index int) error {
 	return conn.Play(index)
 }
 
+// Search performs a case insensitive substring search on the mpd database
+// mpd connection parameters must be supplied.
 func Search(query string, p Params) SearchResults {
 	conn, ror := mpdConnect(p)
 	er(ror)
@@ -263,12 +265,10 @@ func Info(cmd string, p Params) Status {
 	} else {
 		t := time.Now()
 		s.Timestamp = t.Unix()
-		//getInfo(conn, &s)
-		getListing(conn, &s)
+		getPlaylist(conn, &s)
 		statusBuffer[playnode] = s
 		fmt.Println("no buffer for ", playnode)
 	}
-	//	fmt.Println(s)
 	return s
 }
 
@@ -366,7 +366,6 @@ func getPlaylist(conn *mpd.Client, s *Status) {
 		first = 0
 	}
 	last = curPos + 20
-	fmt.Println("first: ", first)
 	playlist, ror := conn.PlaylistInfo(first, last)
 	er(ror)
 	var listing = make([]NowList, len(playlist))
