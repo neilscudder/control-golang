@@ -7,7 +7,7 @@ import (
 	"fmt"
 	gz "github.com/NYTimes/gziphandler"
 	"github.com/neilscudder/control-golang/authority"
-	"github.com/neilscudder/control-golang/mpdcacher"
+	m "github.com/neilscudder/control-golang/mpdcacher"
 	"html/template"
 	"log"
 	"net/http"
@@ -15,8 +15,6 @@ import (
 )
 
 var searchBuffer = make(map[string][]string)
-
-type params map[string]string
 
 func main() {
 	resGz := gz.GzipHandler(http.FileServer(http.Dir("res/")))
@@ -45,7 +43,7 @@ func main() {
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
-	var p = make(params)
+	var p = make(m.Params)
 	kpass := r.FormValue("KPASS")
 	p, err := getParams(kpass)
 	p["KPASS"] = kpass
@@ -62,7 +60,7 @@ func gui(w http.ResponseWriter, r *http.Request) {
 		query := "any \""
 		query += r.FormValue("search")
 		query += "\""
-		s := mpdcacher.Search(query, p)
+		s := m.Search(query, p)
 		searchBuffer[kpass] = s.Files
 		t, ror := template.ParseFiles("templates/search.html")
 		er(ror)
@@ -74,12 +72,12 @@ func gui(w http.ResponseWriter, r *http.Request) {
 	case "command":
 		cmd := r.FormValue("b")
 		if cmd == "info" {
-			u := mpdcacher.MpdStatus(cmd, p)
+			u := m.MpdStatus(cmd, p)
 			t, ror := template.ParseFiles("templates/status.html")
 			er(ror)
 			t.Execute(w, u)
 		} else {
-			s := mpdcacher.MpdState(cmd, p)
+			s := m.MpdState(cmd, p)
 			state, _ := json.Marshal(s)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(state)
@@ -104,13 +102,13 @@ func post(w http.ResponseWriter, r *http.Request) {
 	index, _ := strconv.Atoi(r.FormValue("c"))
 	targets := searchBuffer[kpass]
 	w.Header().Set("Content-Type", "text/html")
-	mpdcacher.MpdPlay(p, targets, index)
+	m.MpdPlay(p, targets, index)
 	//fmt.Println(targets)
 	ok := []byte("ok")
 	w.Write(ok)
 }
-func getParams(kpass string) (params, error) {
-	var p params
+func getParams(kpass string) (m.Params, error) {
+	var p m.Params
 	byteP, err := authority.Authenticate(kpass)
 	if err == nil {
 		err = json.Unmarshal(byteP, &p)
@@ -123,7 +121,7 @@ func setup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Type", "text/html")
 	if r.FormValue("APIURL") != "" {
-		p := params{
+		p := m.Params{
 			"APIURL":   r.FormValue("APIURL"),
 			"LABEL":    r.FormValue("LABEL"),
 			"EMAIL":    r.FormValue("EMAIL"),

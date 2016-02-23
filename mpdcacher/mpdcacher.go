@@ -12,6 +12,9 @@ import (
 	"time"
 )
 
+// Params stores mpd connection settings
+type Params map[string]string
+
 // Status is for compiling the status html template.
 // Holds information on the currrent song and state of mpd.
 type Status struct {
@@ -45,9 +48,9 @@ type State struct {
 }
 
 // MpdPlay replaces the playlist with target and starts playback
-func MpdPlay(params map[string]string, targets []string, index int) error {
+func MpdPlay(p Params, targets []string, index int) error {
 	//	fmt.Println(target)
-	conn, ror := mpdConnect(params)
+	conn, ror := mpdConnect(p)
 	er(ror)
 	defer conn.Close()
 	conn.Clear()
@@ -115,8 +118,8 @@ func (this ByTrack) Swap(i, j int) {
 	this[i], this[j] = this[j], this[i]
 }
 
-func Search(query string, params map[string]string) SearchResults {
-	conn, ror := mpdConnect(params)
+func Search(query string, p Params) SearchResults {
+	conn, ror := mpdConnect(p)
 	er(ror)
 	defer conn.Close()
 	var s SearchResults
@@ -168,16 +171,16 @@ func Search(query string, params map[string]string) SearchResults {
 // MpdState returns a map of data for button states and banner text.
 // It executes a command simultaneously.
 // mpd connection parameters must be supplied.
-func MpdState(cmd string, params map[string]string) State {
-	conn, ror := mpdConnect(params)
+func MpdState(cmd string, p Params) State {
+	conn, ror := mpdConnect(p)
 	er(ror)
 	defer conn.Close()
 
 	var s State
 	var uLog string
 
-	username := params["USERNAME"]
-	playnode := params["LABEL"]
+	username := p["USERNAME"]
+	playnode := p["LABEL"]
 
 	status, _ := conn.Status()
 	cVol, _ := strconv.Atoi(status["volume"])
@@ -284,13 +287,13 @@ func MpdState(cmd string, params map[string]string) State {
 
 // MpdStatus returns a map of data for html template.
 // mpd connection parameters must be supplied.
-func MpdStatus(cmd string, params map[string]string) Status {
-	conn, ror := mpdConnect(params)
+func MpdStatus(cmd string, p Params) Status {
+	conn, ror := mpdConnect(p)
 	er(ror)
 	defer conn.Close()
 
 	var s Status
-	playnode := params["LABEL"]
+	playnode := p["LABEL"]
 	_, bufExists := statusBuffer[playnode]
 
 	if bufExists {
@@ -435,7 +438,7 @@ func getPlaylist(conn *mpd.Client, s *Status) {
 	s.List = listing
 }
 
-func mpdConnect(p map[string]string) (*mpd.Client, error) {
+func mpdConnect(p Params) (*mpd.Client, error) {
 	host := p["MPDHOST"] + ":" + p["MPDPORT"]
 	pass := p["MPDPASS"]
 	return mpd.DialAuthenticated("tcp", host, pass)
