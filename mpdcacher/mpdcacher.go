@@ -55,17 +55,19 @@ func Play(p Params, targets []string, index int) error {
 	conn, ror := mpdConnect(p)
 	er(ror)
 	defer conn.Close()
-	conn.Clear()
+	cmdList := conn.BeginCommandList()
+	cmdList.Clear()
 	counter := 0
 	for _, target := range targets {
 		if target != "" {
-			conn.Add(target)
+			cmdList.Add(target)
 			counter++
 			//	fmt.Println(target)
 		}
 	}
 	fmt.Println("Added ", counter)
-	return conn.Play(index)
+	cmdList.Play(index)
+	return cmdList.End()
 }
 
 // Search performs a case insensitive substring search on the mpd database
@@ -457,6 +459,7 @@ func (this ByTrack) Swap(i, j int) {
 }
 func er(ror error) {
 	if ror != nil {
-		log.Println(ror)
+		//log.Println(ror)
+		log.Fatalln(ror)
 	}
 }
