@@ -26,8 +26,7 @@ type State struct {
 	Banner                 string
 }
 
-// Status is for compiling the status html template.
-// Holds information on the currrent song and state of mpd.
+// Status holds information on the currrent song and state of mpd.
 type Status struct {
 	Timestamp int64
 	Title     string
@@ -252,13 +251,13 @@ func Info(cmd string, p Params) Status {
 		t := time.Now()
 		n := t.Unix()
 		age := n - b.Timestamp
-		if age >= 1 {
+		if age > 1 {
+			//	fmt.Println("age = ", age)
 			s.Timestamp = n
-			//getInfo(conn, &s)
-			// getListing(conn, &s)
 			getPlaylist(conn, &s)
 			statusBuffer[playnode] = s
 		} else {
+			fmt.Println("buffer")
 			s = statusBuffer[playnode]
 		}
 	} else {
@@ -267,7 +266,9 @@ func Info(cmd string, p Params) Status {
 		//getInfo(conn, &s)
 		getListing(conn, &s)
 		statusBuffer[playnode] = s
+		fmt.Println("no buffer for ", playnode)
 	}
+	//	fmt.Println(s)
 	return s
 }
 
@@ -352,13 +353,22 @@ func getListing(conn *mpd.Client, s *Status) {
 
 // getPlaylist stores other tracks from current playlist
 func getPlaylist(conn *mpd.Client, s *Status) {
-	song, _ := conn.CurrentSong()
-	status, _ := conn.Status()
+	var first, last int
+	song, ror := conn.CurrentSong()
+	er(ror)
+	status, ror := conn.Status()
+	er(ror)
 	filename := path.Base(song["file"])
 	curPos, _ := strconv.Atoi(status["song"])
-	first := curPos - 20
-	last := curPos + 20
-	playlist, _ := conn.PlaylistInfo(first, last)
+	if curPos > 19 {
+		first = curPos - 20
+	} else {
+		first = 0
+	}
+	last = curPos + 20
+	fmt.Println("first: ", first)
+	playlist, ror := conn.PlaylistInfo(first, last)
+	er(ror)
 	var listing = make([]NowList, len(playlist))
 
 	for i := 0; i < len(playlist); i++ {
