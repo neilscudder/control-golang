@@ -12,8 +12,19 @@ import (
 	"time"
 )
 
+var statusBuffer = make(map[string]Status)
+var stateBuffer = make(map[string]State)
+
 // Params stores mpd connection settings
 type Params map[string]string
+
+// State of buttons and banner text per playnode.
+type State struct {
+	Timestamp              int64
+	Random, Repeat, Volume int
+	Play                   string
+	Banner                 string
+}
 
 // Status is for compiling the status html template.
 // Holds information on the currrent song and state of mpd.
@@ -39,16 +50,8 @@ type SearchResults struct {
 	Files   []string
 }
 
-// State of buttons and banner text per playnode.
-type State struct {
-	Timestamp              int64
-	Random, Repeat, Volume int
-	Play                   string
-	Banner                 string
-}
-
-// MpdPlay replaces the playlist with target and starts playback
-func MpdPlay(p Params, targets []string, index int) error {
+// Play replaces the playlist with targets and starts playback at index
+func Play(p Params, targets []string, index int) error {
 	//	fmt.Println(target)
 	conn, ror := mpdConnect(p)
 	er(ror)
@@ -64,58 +67,6 @@ func MpdPlay(p Params, targets []string, index int) error {
 	}
 	fmt.Println("Added ", counter)
 	return conn.Play(index)
-}
-
-var statusBuffer = make(map[string]Status)
-var stateBuffer = make(map[string]State)
-
-// All these are for sorting search results:
-type ByArtist []mpd.Attrs
-
-func (this ByArtist) Len() int {
-	return len(this)
-}
-func (this ByArtist) Less(i, j int) bool {
-	return this[i]["Artist"] < this[j]["Artist"]
-}
-func (this ByArtist) Swap(i, j int) {
-	this[i], this[j] = this[j], this[i]
-}
-
-type ByAlbum []mpd.Attrs
-
-func (this ByAlbum) Len() int {
-	return len(this)
-}
-func (this ByAlbum) Less(i, j int) bool {
-	return this[i]["Album"] < this[j]["Album"]
-}
-func (this ByAlbum) Swap(i, j int) {
-	this[i], this[j] = this[j], this[i]
-}
-
-type ByTitle []mpd.Attrs
-
-func (this ByTitle) Len() int {
-	return len(this)
-}
-func (this ByTitle) Less(i, j int) bool {
-	return this[i]["Title"] < this[j]["Title"]
-}
-func (this ByTitle) Swap(i, j int) {
-	this[i], this[j] = this[j], this[i]
-}
-
-type ByTrack []mpd.Attrs
-
-func (this ByTrack) Len() int {
-	return len(this)
-}
-func (this ByTrack) Less(i, j int) bool {
-	return this[i]["file"] < this[j]["file"]
-}
-func (this ByTrack) Swap(i, j int) {
-	this[i], this[j] = this[j], this[i]
 }
 
 func Search(query string, p Params) SearchResults {
@@ -168,10 +119,10 @@ func Search(query string, p Params) SearchResults {
 	return s
 }
 
-// MpdState returns a map of data for button states and banner text.
+// Command returns a map of data for button states and banner text.
 // It executes a command simultaneously.
 // mpd connection parameters must be supplied.
-func MpdState(cmd string, p Params) State {
+func Command(cmd string, p Params) State {
 	conn, ror := mpdConnect(p)
 	er(ror)
 	defer conn.Close()
@@ -285,9 +236,9 @@ func MpdState(cmd string, p Params) State {
 	return s
 }
 
-// MpdStatus returns a map of data for html template.
+// Info returns current track info for html template.
 // mpd connection parameters must be supplied.
-func MpdStatus(cmd string, p Params) Status {
+func Info(cmd string, p Params) Status {
 	conn, ror := mpdConnect(p)
 	er(ror)
 	defer conn.Close()
@@ -444,6 +395,54 @@ func mpdConnect(p Params) (*mpd.Client, error) {
 	return mpd.DialAuthenticated("tcp", host, pass)
 }
 
+// All these are for sorting search results:
+type ByArtist []mpd.Attrs
+
+func (this ByArtist) Len() int {
+	return len(this)
+}
+func (this ByArtist) Less(i, j int) bool {
+	return this[i]["Artist"] < this[j]["Artist"]
+}
+func (this ByArtist) Swap(i, j int) {
+	this[i], this[j] = this[j], this[i]
+}
+
+type ByAlbum []mpd.Attrs
+
+func (this ByAlbum) Len() int {
+	return len(this)
+}
+func (this ByAlbum) Less(i, j int) bool {
+	return this[i]["Album"] < this[j]["Album"]
+}
+func (this ByAlbum) Swap(i, j int) {
+	this[i], this[j] = this[j], this[i]
+}
+
+type ByTitle []mpd.Attrs
+
+func (this ByTitle) Len() int {
+	return len(this)
+}
+func (this ByTitle) Less(i, j int) bool {
+	return this[i]["Title"] < this[j]["Title"]
+}
+func (this ByTitle) Swap(i, j int) {
+	this[i], this[j] = this[j], this[i]
+}
+
+type ByTrack []mpd.Attrs
+
+func (this ByTrack) Len() int {
+	return len(this)
+}
+func (this ByTrack) Less(i, j int) bool {
+	return this[i]["file"] < this[j]["file"]
+}
+func (this ByTrack) Swap(i, j int) {
+	this[i], this[j] = this[j], this[i]
+}
 func er(ror error) {
 	if ror != nil {
 		log.Println(ror)

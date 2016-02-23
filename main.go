@@ -72,12 +72,12 @@ func gui(w http.ResponseWriter, r *http.Request) {
 	case "command":
 		cmd := r.FormValue("b")
 		if cmd == "info" {
-			u := m.MpdStatus(cmd, p)
+			u := m.Command(cmd, p)
 			t, ror := template.ParseFiles("templates/status.html")
 			er(ror)
 			t.Execute(w, u)
 		} else {
-			s := m.MpdState(cmd, p)
+			s := m.Info(cmd, p)
 			state, _ := json.Marshal(s)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(state)
@@ -102,7 +102,7 @@ func post(w http.ResponseWriter, r *http.Request) {
 	index, _ := strconv.Atoi(r.FormValue("c"))
 	targets := searchBuffer[kpass]
 	w.Header().Set("Content-Type", "text/html")
-	m.MpdPlay(p, targets, index)
+	m.Play(p, targets, index)
 	//fmt.Println(targets)
 	ok := []byte("ok")
 	w.Write(ok)
