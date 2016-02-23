@@ -42,8 +42,6 @@ func main() {
 }
 
 func gui(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Encoding", "gzip")
-	w.Header().Set("Content-Type", "text/html")
 	var p = make(map[string]string)
 	kpass := r.FormValue("KPASS")
 	p, err := getParams(kpass)
@@ -53,6 +51,9 @@ func gui(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 		return
 	}
+
+	w.Header().Set("Content-Encoding", "gzip")
+	w.Header().Set("Content-Type", "text/html")
 	switch r.FormValue("a") {
 	case "search":
 		query := "any \""
