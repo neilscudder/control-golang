@@ -57,10 +57,9 @@ func gui(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	switch r.FormValue("a") {
 	case "search":
-		query := "any \""
-		query += r.FormValue("search")
-		query += "\""
-		s := m.Search(query, p)
+		queryType := "any"
+		query := r.FormValue("search")
+		s := m.Search(query, queryType, p)
 		searchBuffer[kpass] = s.Files
 		t, ror := template.ParseFiles("templates/search.html")
 		er(ror)

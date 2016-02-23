@@ -70,12 +70,15 @@ func Play(p Params, targets []string, index int) error {
 
 // Search performs a case insensitive substring search on the mpd database
 // mpd connection parameters must be supplied.
-func Search(query string, p Params) SearchResults {
+func Search(query string, qType string, p Params) SearchResults {
 	conn, ror := mpdConnect(p)
 	er(ror)
 	defer conn.Close()
 	var s SearchResults
-	results, ror := conn.Search(query)
+	qType += " \""
+	qType += query
+	qType += "\""
+	results, ror := conn.Search(qType)
 	er(ror)
 
 	sort.Sort(ByArtist(results))
