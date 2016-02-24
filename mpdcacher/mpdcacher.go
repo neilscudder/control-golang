@@ -355,11 +355,8 @@ func getListing(conn *mpd.Client, s *Status) {
 // getPlaylist stores other tracks from current playlist
 func getPlaylist(conn *mpd.Client, s *Status) {
 	var first, last int
-	song, ror := conn.CurrentSong()
-	er(ror)
 	status, ror := conn.Status()
 	er(ror)
-	curFile := path.Base(song["file"])
 	curPos, _ := strconv.Atoi(status["song"])
 	if curPos > 19 {
 		first = curPos - 20
@@ -369,10 +366,11 @@ func getPlaylist(conn *mpd.Client, s *Status) {
 	last = curPos + 20
 	playlist, ror := conn.PlaylistInfo(first, last)
 	er(ror)
-	var listing = make([]NowList, len(playlist))
 
+	var listing = make([]NowList, len(playlist))
 	for i := 0; i < len(playlist); i++ {
 		item := playlist[i]
+		iPos, _ := strconv.Atoi(item["Pos"])
 		filepath := item["file"]
 		t := item["title"]
 		d := path.Dir(filepath)
@@ -381,14 +379,14 @@ func getPlaylist(conn *mpd.Client, s *Status) {
 			continue
 		}
 		if t != "" {
-			if f == curFile {
+			if curPos == iPos {
 				listing[i].Current = true
 				listing[i].Album = item["album"]
 			}
 			listing[i].Artist = item["artist"]
 			listing[i].Label = t
 		} else {
-			if f == curFile {
+			if curPos == iPos {
 				listing[i].Current = true
 				listing[i].Album = d
 			}
