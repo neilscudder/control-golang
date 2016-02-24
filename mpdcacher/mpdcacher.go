@@ -412,8 +412,12 @@ func mpdConnect(p Params) (*mpd.Client, error) {
 func watcher(p Params, playnode string) {
 	host := p["MPDHOST"] + ":" + p["MPDPORT"]
 	pass := p["MPDPASS"]
-	w, ror := mpd.NewWatcher("tcp", host, pass)
-	er(ror)
+	w, err := mpd.NewWatcher("tcp", host, pass)
+	if err != nil {
+		fmt.Println("Connection failed to: ", playnode)
+		delete(statusBuffer, playnode)
+		return
+	}
 	fmt.Println("New watcher for: ", playnode)
 	defer w.Close()
 
