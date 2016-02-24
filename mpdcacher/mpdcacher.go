@@ -292,73 +292,6 @@ func userLog(playnode, details string) {
 	log.Println(details)
 }
 
-// getInfo formats details for the current track
-func getInfo(conn *mpd.Client, s *Status) {
-	song, _ := conn.CurrentSong()
-	s.Title = song["Title"]
-	filename := path.Base(song["file"])
-	directory := path.Dir(song["file"])
-	var searchParams string
-
-	if song["Title"] != "" {
-		s.Info = map[int]map[string]string{
-			1: {
-				"Artist": song["Artist"],
-			},
-			2: {
-				"Album": song["Album"] + " (" + song["Date"] + ")",
-			},
-		}
-		searchParams = song["Artist"] + " music " + song["Title"]
-	} else {
-		s.Info = map[int]map[string]string{
-			1: {
-				"Folder": directory,
-			},
-		}
-		searchParams = filename
-	}
-	encQuery := url.QueryEscape(searchParams)
-	tldr := "https://www.youtube.com/embed?fs=0&controls=0&listType=search&list="
-	s.YouTube = tldr + encQuery
-}
-
-// getListing stores other tracks from same folder as current track
-func getListing(conn *mpd.Client, s *Status) {
-	song, _ := conn.CurrentSong()
-	filename := path.Base(song["file"])
-	directory := path.Dir(song["file"])
-	thisDir, _ := conn.ListInfo(directory)
-	var listing = make([]NowList, len(thisDir))
-
-	for i := 0; i < len(thisDir); i++ {
-		m := thisDir[i]
-		p := m["file"]
-		t := m["title"]
-		d := path.Dir(p)
-		f := path.Base(p)
-		if f == "." || f == "" {
-			continue
-		}
-		if t != "" {
-			if f == filename {
-				listing[i].Current = true
-				listing[i].Album = m["album"]
-			}
-			listing[i].Artist = m["artist"]
-			listing[i].Label = t
-		} else {
-			if f == filename {
-				listing[i].Current = true
-				listing[i].Album = d
-			}
-			listing[i].Artist = m["artist"]
-			listing[i].Label = f
-		}
-	}
-	s.List = listing
-}
-
 // getPlaylist stores other tracks from current playlist
 func getPlaylist(conn *mpd.Client, s *Status) {
 	var first, last int
@@ -488,4 +421,73 @@ func er(ror error) {
 		log.Println(ror)
 		//log.Fatalln(ror)
 	}
+}
+
+//
+// UNUSED FUNCTIONS
+// getInfo formats details for the current track
+func getInfo(conn *mpd.Client, s *Status) {
+	song, _ := conn.CurrentSong()
+	s.Title = song["Title"]
+	filename := path.Base(song["file"])
+	directory := path.Dir(song["file"])
+	var searchParams string
+
+	if song["Title"] != "" {
+		s.Info = map[int]map[string]string{
+			1: {
+				"Artist": song["Artist"],
+			},
+			2: {
+				"Album": song["Album"] + " (" + song["Date"] + ")",
+			},
+		}
+		searchParams = song["Artist"] + " music " + song["Title"]
+	} else {
+		s.Info = map[int]map[string]string{
+			1: {
+				"Folder": directory,
+			},
+		}
+		searchParams = filename
+	}
+	encQuery := url.QueryEscape(searchParams)
+	tldr := "https://www.youtube.com/embed?fs=0&controls=0&listType=search&list="
+	s.YouTube = tldr + encQuery
+}
+
+// getListing stores other tracks from same folder as current track
+func getListing(conn *mpd.Client, s *Status) {
+	song, _ := conn.CurrentSong()
+	filename := path.Base(song["file"])
+	directory := path.Dir(song["file"])
+	thisDir, _ := conn.ListInfo(directory)
+	var listing = make([]NowList, len(thisDir))
+
+	for i := 0; i < len(thisDir); i++ {
+		m := thisDir[i]
+		p := m["file"]
+		t := m["title"]
+		d := path.Dir(p)
+		f := path.Base(p)
+		if f == "." || f == "" {
+			continue
+		}
+		if t != "" {
+			if f == filename {
+				listing[i].Current = true
+				listing[i].Album = m["album"]
+			}
+			listing[i].Artist = m["artist"]
+			listing[i].Label = t
+		} else {
+			if f == filename {
+				listing[i].Current = true
+				listing[i].Album = d
+			}
+			listing[i].Artist = m["artist"]
+			listing[i].Label = f
+		}
+	}
+	s.List = listing
 }
