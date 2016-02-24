@@ -22,7 +22,7 @@ function findPos(obj) {
       do {
         curtop += obj.offsetTop
       } while (obj = obj.offsetParent)
-      return [curtop - 210]
+      return [curtop - 150]
     }
 }
 function sendCmd(id) {

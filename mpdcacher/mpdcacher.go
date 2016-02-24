@@ -241,11 +241,17 @@ func Command(cmd string, p Params) State {
 // Info returns current track info for html template.
 // mpd connection parameters must be supplied.
 func Info(cmd string, p Params) Status {
-	conn, ror := mpdConnect(p)
-	er(ror)
+	var s Status
+	conn, err := mpdConnect(p)
+	if err != nil {
+		var listing = make([]NowList, 1)
+		listing[0].Label = "Music player offline"
+		listing[0].Current = true
+		s.List = listing
+		return s
+	}
 	defer conn.Close()
 
-	var s Status
 	playnode := p["LABEL"]
 	_, bufExists := statusBuffer[playnode]
 
@@ -475,7 +481,7 @@ func (this ByTrack) Swap(i, j int) {
 }
 func er(ror error) {
 	if ror != nil {
-		//log.Println(ror)
-		log.Fatalln(ror)
+		log.Println(ror)
+		//log.Fatalln(ror)
 	}
 }

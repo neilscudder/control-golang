@@ -160,9 +160,7 @@ func setup(w http.ResponseWriter, r *http.Request) {
 
 func er(ror error) {
 	if ror != nil {
-		log.Fatalln(ror)
-	}
-	/*	if ror != nil {
+		//	log.Fatalln(ror)
 		log.Println(ror)
-	}*/
+	}
 }
