@@ -254,21 +254,22 @@ func Info(cmd string, p Params) Status {
 		t := time.Now()
 		n := t.Unix()
 		age := n - b.Timestamp
-		if age > 1 {
-			//	fmt.Println("age = ", age)
+		if age > 10 {
+			fmt.Println("Timeout at age = ", age)
 			s.Timestamp = n
 			getPlaylist(conn, &s)
 			statusBuffer[playnode] = s
 		} else {
-			fmt.Println("buffer")
+			fmt.Println("Info buffer")
 			s = statusBuffer[playnode]
 		}
 	} else {
+		fmt.Println("no buffer for ", playnode)
+		go watcher(p, playnode)
 		t := time.Now()
 		s.Timestamp = t.Unix()
 		getPlaylist(conn, &s)
 		statusBuffer[playnode] = s
-		fmt.Println("no buffer for ", playnode)
 	}
 	return s
 }
@@ -401,6 +402,27 @@ func mpdConnect(p Params) (*mpd.Client, error) {
 	host := p["MPDHOST"] + ":" + p["MPDPORT"]
 	pass := p["MPDPASS"]
 	return mpd.DialAuthenticated("tcp", host, pass)
+}
+func watcher(p Params, playnode string) {
+	host := p["MPDHOST"] + ":" + p["MPDPORT"]
+	pass := p["MPDPASS"]
+	w, ror := mpd.NewWatcher("tcp", host, pass)
+	er(ror)
+	fmt.Println("New watcher for: ", playnode)
+	defer w.Close()
+
+	go func() {
+		for err := range w.Error {
+			fmt.Println("Error:", err)
+		}
+	}()
+
+	for subsystem := range w.Event {
+		fmt.Println("Changed subsystem: ", subsystem)
+		fmt.Println("Reset buffer for: ", playnode)
+		delete(statusBuffer, playnode)
+		return
+	}
 }
 
 // All these are for sorting search results:
