@@ -147,7 +147,7 @@ func Command(cmd string, p Params) State {
 
 	_, bufExists := stateBuffer[playnode]
 
-	if cPlay == "pause" && cmd != "play" {
+	if cPlay == "pause" && cmd != "play" && cmd != "dn" {
 		if bufExists {
 			s = stateBuffer[playnode]
 		} else {
@@ -170,10 +170,8 @@ func Command(cmd string, p Params) State {
 		uLog = username + " skipped back"
 	case "up":
 		if cVol <= 90 {
-			for i := 0; i < 3; i++ {
-				cVol = cVol + 3
-				conn.SetVolume(cVol)
-			}
+			cVol = cVol + 10
+			conn.SetVolume(cVol)
 			uLog = username + " raised volume to " + strconv.Itoa(cVol)
 		} else if cVol != 100 {
 			cVol = 100
@@ -184,10 +182,8 @@ func Command(cmd string, p Params) State {
 		}
 	case "dn":
 		if cVol >= 10 {
-			for i := 0; i < 3; i++ {
-				cVol = cVol - 3
-				conn.SetVolume(cVol)
-			}
+			cVol = cVol - 10
+			conn.SetVolume(cVol)
 			uLog = username + " lowered volume to " + strconv.Itoa(cVol)
 		} else if cVol != 0 {
 			cVol = 0
