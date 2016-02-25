@@ -169,8 +169,8 @@ func Command(cmd string, p Params) State {
 		conn.Previous()
 		uLog = username + " skipped back"
 	case "up":
-		if cVol <= 90 {
-			cVol = cVol + 10
+		if cVol <= 95 {
+			cVol = cVol + 5
 			conn.SetVolume(cVol)
 			uLog = username + " raised volume to " + strconv.Itoa(cVol)
 		} else if cVol != 100 {
@@ -181,8 +181,8 @@ func Command(cmd string, p Params) State {
 			uLog = "Volume at max"
 		}
 	case "dn":
-		if cVol >= 10 {
-			cVol = cVol - 10
+		if cVol >= 5 {
+			cVol = cVol - 5
 			conn.SetVolume(cVol)
 			uLog = username + " lowered volume to " + strconv.Itoa(cVol)
 		} else if cVol != 0 {
