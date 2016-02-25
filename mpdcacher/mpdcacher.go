@@ -151,7 +151,9 @@ func Command(cmd string, p Params) State {
 		if bufExists {
 			s = stateBuffer[playnode]
 		} else {
-			s = stateBuffer[playnode]
+			t := time.Now()
+			n := t.Unix()
+			s.Timestamp = n
 			s.Random = cRnd
 			s.Repeat = cRpt
 			s.Volume = cVol
@@ -224,11 +226,16 @@ func Command(cmd string, p Params) State {
 		}
 	}
 
-	s = stateBuffer[playnode]
+	if bufExists {
+		s = stateBuffer[playnode]
+	}
 	if uLog != "" {
 		userLog(playnode, uLog)
 		s.Banner = uLog
 	}
+	t := time.Now()
+	n := t.Unix()
+	s.Timestamp = n
 	s.Random = cRnd
 	s.Repeat = cRpt
 	s.Volume = cVol
@@ -349,6 +356,7 @@ func watcher(p Params, playnode string) {
 	if err != nil {
 		fmt.Println("Connection failed to: ", playnode)
 		delete(statusBuffer, playnode)
+		delete(stateBuffer, playnode)
 		return
 	}
 	fmt.Println("New watcher for: ", playnode)
@@ -364,6 +372,13 @@ func watcher(p Params, playnode string) {
 		fmt.Println("Changed subsystem: ", subsystem)
 		fmt.Println("Reset buffer for: ", playnode)
 		delete(statusBuffer, playnode)
+		b := stateBuffer[playnode]
+		t := time.Now()
+		n := t.Unix()
+		age := n - b.Timestamp
+		if age >= 1 {
+			delete(stateBuffer, playnode)
+		}
 		return
 	}
 }
