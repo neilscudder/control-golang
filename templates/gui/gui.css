@@ -112,22 +112,22 @@ nav {
   display: inline-block;
   width: 50%;
   min-width: 150px;
-  height: 50px;
-  line-height: 50px;
 }
 .quarter {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   display: inline-block;
-  margin: -6px;
-  padding: 0;
-  height: 50px;
-  line-height: 50px;
+  margin: -3px;
+  height: 60px;
+  line-height: 60px;
   width: 25%;
   border-radius: 15px;
   border: 3px solid #002b36;
 }
 .animated {
-  -webkit-animation-duration: .12s;
-  animation-duration: .12s;
+  -webkit-animation-duration: .09s;
+  animation-duration: .09s;
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both;
   transform: translate3d(0,0,0);
