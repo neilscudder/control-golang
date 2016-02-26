@@ -39,11 +39,6 @@ h3.playing {
   display: inline;
   font-size: 73%;
 }
-.by {
-    color: #586e75;
-    display: inline-block;
-    font-size: 60%;
-}
 .from {
     color: #586e75;
     display: inline-block;
@@ -58,25 +53,6 @@ li.notPlaying {
     display: inline-block;
     font-size: 90%;
 }
-.notPlaying.index {
-    color: #586e75;
-    display: inline-block;
-    font-size: 65%;
-    text-align: right;
-    width: 11px;
-  }
-
-img.playbtn {
-  height: 60px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-svg.play {
-  height: 40px;
-  display: block;
-  margin: auto;
-}
 svg.toolbar {
   pointer-events: none;
   height: 50px;
@@ -84,12 +60,8 @@ svg.toolbar {
   margin-left: auto;
   margin-right: auto;
 }
-.buttonPath {
-  fill: #073642;
-}
-.playPath {
-  fill: #93A1A1;
-}
+
+
 nav {
   display: table;
   overflow: hidden;
@@ -123,73 +95,6 @@ nav {
 .info-container{
         margin: 0px auto 30px auto;
 }
-iframe {
-  width: 100%;
-  max-width: 700px;
-  height: 430px;
-} 
-#dn {
-  background-color: #6c71c4;
-}
-#up {
-  background-color: #6c71c4;
-}
-#random {
-  background-color: #839496;
-} 
-#browser {
-  background-color: #dc322f;
-} 
-#play {
-  background-color: #dc322f;
-}
-#repeat {
-  background-color: #839496;
-}
-#bk {
-  background-color: #b58900;
-}
-#fw {
-  background-color: #b58900;
-}
-.quarter {
-  display: table-cell;
-  height: 50px;
-  line-height: 50px;
-  width: 25%;
-  border-radius: 15px;
-  border: 3px solid #002b36;
-}
-.playbtn {
-  height: 100%;
-  width: 80px;
-  float: right;
-}
-.button {
-  display: table-cell;
-  width: 200px;
-  height: 50px;
-  line-height: 50px;
-  background-color: #268bd2;
-  border: 3px solid #002b36;
-  border-radius: 16px;
-  text-align: center;
-  text-decoration: none;
-} 
-.button a {
-  text-decoration: none;
-  font-weight: 800;
-  color: #002b36;
-} 
-
-.animated {
-  -webkit-animation-duration: .12s;
-  animation-duration: .12s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-  transform: translate3d(0,0,0);
-  -webkit-transform: translate3d(0,0,0);
-} 
 .heartbeat {
   -webkit-animation-duration: 35s;
   animation-duration: 25s;
@@ -201,32 +106,37 @@ iframe {
   animation-name: beater;
 } 
 .opaque { opacity: 1 }
+
+
+
+.quarter {
+  display: table-cell;
+  height: 50px;
+  line-height: 50px;
+  width: 25%;
+  border-radius: 15px;
+  border: 3px solid #002b36;
+}
+.animated {
+  -webkit-animation-duration: .12s;
+  animation-duration: .12s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  transform: translate3d(0,0,0);
+  -webkit-transform: translate3d(0,0,0);
+} 
 .pushed {
   -webkit-animation-name: pusher;
   animation-name: pusher;
-} 
-.timeout {
-  -webkit-animation-name: pusher;
-  animation-name: pusher;
-} 
+}
 .released {
   -webkit-animation-name: releaser;
   animation-name: releaser;
 } 
-.denied {
-  -webkit-animation-name: denier;
-  animation-name: denier;
-} 
-.confirm {
-  -webkit-animation-name: confirmer;
-  animation-name: confirmer;
-  height: 100px;
-} 
-path.confirm {
-  fill: red;
-  width: 1.5em;
-  height: 1.5em;
-} 
+
+
+
+/*** KEYFRAMES ***/
 @-webkit-keyframes beater {
   0% { opacity: 1 }
   100% { opacity: 0}
@@ -277,49 +187,37 @@ path.confirm {
     transform: scale3d(1, 1, 1);
   }
 }
-@-webkit-keyframes denier {
-  0% {
-    -webkit-transform: scale3d(0, 1, 1);
-    transform: scale3d(0, 1, 1);
-    opacity: 0.1;
-  }
-  100% {
-    -webkit-transform: scale3d(1, 1, 1);
-    transform: scale3d(1, 1, 1);
-    opacity: 0.5;
-  }
+
+
+/*** BUTTONS ***/
+.iconFill {
+  fill: #002b36;
 }
-@keyframes denier {
-  0% {
-    -webkit-transform: scale3d(0, 1, 1);
-    transform: scale3d(0, 1, 1);
-    opacity: 0.1;
-  }
-  100% {
-    -webkit-transform: scale3d(1, 1, 1);
-    transform: scale3d(1, 1, 1);
-    opacity: 0.5;
-  }
+
+#dn {
+  background-color: #6c71c4;
 }
-@-webkit-keyframes confirmer {
-  0% {
-    -webkit-transform: scale3d(0, 1, 1);
-    transform: scale3d(0, 1, 1);
-  }
-  100% {
-    -webkit-transform: scale3d(2,2,2);
-    transform: scale3d(2,2,2);
-  }
+#up {
+  background-color: #6c71c4;
 }
-@keyframes confirmer {
-  0% {
-    -webkit-transform: scale3d(0, 1, 1);
-    transform: scale3d(0, 1, 1);
-  }
-  100% {
-    -webkit-transform: scale3d(2, 2, 2);
-    transform: scale3d(2, 2, 2);
-  }
+#random {
+  background-color: #839496;
+} 
+#browser {
+  background-color: #dc322f;
+} 
+#play {
+  background-color: #dc322f;
 }
+#repeat {
+  background-color: #839496;
+}
+#bk {
+  background-color: #b58900;
+}
+#fw {
+  background-color: #b58900;
+}
+
 </style>
 {{end}}
