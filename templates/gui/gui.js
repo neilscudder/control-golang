@@ -57,13 +57,17 @@ function sendCmd(id) {
       	banner.innerHTML = state.Banner
     	  if (state.Random == 0) { 
     	    document.getElementById("random").style.backgroundColor = "#586e75"
+          document.getElementById("random").style.opacity = "0.5"
     	  } else {
     	    document.getElementById("random").style.backgroundColor = "#839496"
+          document.getElementById("random").style.opacity = "1.0"
     	  }
     	  if (state.Repeat == 0) { 
     	    document.getElementById("repeat").style.backgroundColor = "#586e75"
+          document.getElementById("repeat").style.opacity = "0.5"
     	  } else {
     	    document.getElementById("repeat").style.backgroundColor = "#839496"
+          document.getElementById("repeat").style.opacity = "1.0"
     	  }
     	  var playSVG = document.getElementById('playsvg')
     	  if (state.Play == 'play') {

@@ -220,16 +220,18 @@ nav {
   background-color: #6c71c4;
 }
 #random {
-  background-color: #839496;
-} 
+  background-color: #586e75;
+  opacity: 0.5;
+}
+#repeat {
+  background-color: #586e75;
+  opacity: 0.5;
+}
 #browser {
   background-color: #dc322f;
 } 
 #play {
   background-color: #dc322f;
-}
-#repeat {
-  background-color: #839496;
 }
 #bk {
   background-color: #b58900;
