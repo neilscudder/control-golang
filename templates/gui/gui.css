@@ -28,6 +28,25 @@ li {
   border-bottom: 1px solid #073642;
   padding: 0;
 }
+
+#info{
+  padding-top: 130px;
+}
+.info-container{
+        margin: 0px auto 30px auto;
+}
+.heartbeat {
+  -webkit-animation-duration: 35s;
+  animation-duration: 25s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  transform: translate3d(0,0,0);
+  -webkit-transform: translate3d(0,0,0);
+  -webkit-animation-name: beater;
+  animation-name: beater;
+} 
+.opaque { opacity: 1 }
+
 h3.playing {
 /*  color: #eee8d5 ;
   font-weight: normal; */
@@ -61,7 +80,6 @@ svg.toolbar {
   margin-right: auto;
 }
 
-
 nav {
   display: table;
   overflow: hidden;
@@ -85,37 +103,6 @@ nav {
   text-align:right;
   border-bottom: 1px solid #002b36;
 } 
-#info{
-  padding-top: 130px;
-}
-.info-container{
-        margin: 0px auto 30px auto;
-}
-.heartbeat {
-  -webkit-animation-duration: 35s;
-  animation-duration: 25s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-  transform: translate3d(0,0,0);
-  -webkit-transform: translate3d(0,0,0);
-  -webkit-animation-name: beater;
-  animation-name: beater;
-} 
-.opaque { opacity: 1 }
-
-
-/*.row {
-  display: table-row;
-  width: 100%;
-  height: 12px;
-  line-height: 12px;
-}
-.buttonSegment {
-  display: inline-block;
-  width: 280px;
-  height: 56px;
-  line-height: 56px;
-}*/
 
 .row {
   display: flex;
@@ -125,17 +112,17 @@ nav {
   margin-bottom: 0;
 }
 .buttonSegment {
-  display: inline-block;
+  display: inline-flex;
   width: 100%;
-  line-height: 10%;
-  height: 10%;
 }
 .quarter {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
+
   display: inline-block;
-  margin: -3px;
+  flex: 1;
+/*  margin: -1px;*/
   line-height: 100%;
   height: 100%;
   width: 25%;
@@ -143,7 +130,6 @@ nav {
   border-radius: 15px;
   border: 3px solid #002b36;
 }
-
 @media all and ( min-width: 500px ) {
   .buttonSegment {
     width: 50%;
