@@ -16,14 +16,13 @@ function autoRefresh(id,interval) {
   setTimeout(function(){ autoRefresh(id,interval) },interval)
 } 
 //Finds y value of given object
-function findPos(obj) {
-  var curtop = 0
-    if (obj.offsetParent) {
-      do {
-        curtop += obj.offsetTop
-      } while (obj = obj.offsetParent)
-      return [curtop - 160]
+function findPos(element) {
+    var yPosition = 0;
+    while(element) {
+      yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+      element = element.offsetParent;
     }
+    return [ yPosition - 160 ]
 }
 function sendCmd(id) {
 //  AutoToggle = false
@@ -45,7 +44,7 @@ function sendCmd(id) {
         infoDiv.innerHTML = CurrentInfo
         PreviousInfo = CurrentInfo
         animatedButtonListener()
-	window.scroll(0,findPos(document.getElementById("scrollTo")))
+	scrollTo()
       }
     } else {
       var CurrentState = this.responseText
@@ -102,8 +101,15 @@ function initialise() {
   autoRefresh('info', 1500)
   autoRefresh("state", 3000)
   animatedButtonListener()
+  window.addEventListener("deviceorientation", scrollTo, true);
 }
-
+var oBuffer = 45
+function scrollTo() {
+	if (window.orientation != oBuffer) {
+		oBuffer = window.orientation
+		window.scroll(0,findPos(document.getElementById("scrollTo")))
+	}
+}
 function pushed(id){
     document.getElementById(id).classList.add('pushed')
     document.getElementById(id).classList.remove('released')
