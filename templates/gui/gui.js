@@ -101,14 +101,17 @@ function initialise() {
   autoRefresh('info', 1500)
   autoRefresh("state", 3000)
   animatedButtonListener()
-  window.addEventListener("deviceorientation", scrollTo, true);
+  window.addEventListener("deviceorientation", rotHandler, true);
 }
 var oBuffer = 45
-function scrollTo() {
+function rotHandler() {
 	if (window.orientation != oBuffer) {
 		oBuffer = window.orientation
-		window.scroll(0,findPos(document.getElementById("scrollTo")))
+		scrollTo()
 	}
+}
+function scrollTo() {
+	window.scroll(0,findPos(document.getElementById("scrollTo")))
 }
 function pushed(id){
     document.getElementById(id).classList.add('pushed')
