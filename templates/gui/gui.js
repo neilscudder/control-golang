@@ -4,11 +4,12 @@ var ClickEventType = ((document.ontouchstart!==null)?'click':'touchstart')
 var PreviousInfo
 var PreviousState
 var AutoToggle = true
+var oBuffer = 45
 function getURLParameter(name) {
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
 }
 
-getparams = getURLParameter('APIURL')
+var getparams = getURLParameter('APIURL')
   + "?KPASS=" + getURLParameter('KPASS');
 
 function autoRefresh(id,interval) {
@@ -18,11 +19,18 @@ function autoRefresh(id,interval) {
 //Finds y value of given object
 function findPos(element) {
     var yPosition = 0;
-    while(element) {
-      yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-      element = element.offsetParent;
-    }
-    return [ yPosition - 160 ]
+    yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+    yPosition = [ yPosition - 160 ]
+    return yPosition
+}
+function rotHandler() {
+	if (window.orientation != oBuffer) {
+		oBuffer = window.orientation
+		scrollTo()
+	}
+}
+function scrollTo() {
+	window.scroll(0,findPos(document.getElementById("scrollTo")))
 }
 function sendCmd(id) {
 //  AutoToggle = false
@@ -102,16 +110,6 @@ function initialise() {
   autoRefresh("state", 3000)
   animatedButtonListener()
   window.addEventListener("deviceorientation", rotHandler, true);
-}
-var oBuffer = 45
-function rotHandler() {
-	if (window.orientation != oBuffer) {
-		oBuffer = window.orientation
-		scrollTo()
-	}
-}
-function scrollTo() {
-	window.scroll(0,findPos(document.getElementById("scrollTo")))
 }
 function pushed(id){
     document.getElementById(id).classList.add('pushed')
