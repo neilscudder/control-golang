@@ -1,4 +1,4 @@
-# control-golang
+# go-control
 A web client for mpd, the music player daemon, (https://github.com/MaxKellermann/MPD). Features a custom authentication framework to allow sharing of controls without passwords.
 
 Alpha status.
