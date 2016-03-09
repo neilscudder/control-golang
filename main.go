@@ -150,7 +150,7 @@ func setup(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, u)
 	} else {
 		u := map[string]string{
-			"dummy": "dummy",
+			"server": "https://playnode.ca",
 		}
 		t, ror := template.ParseFiles("templates/authority.html")
 		er(ror)

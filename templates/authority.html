@@ -36,8 +36,8 @@
       <input type="text" name="MPDHOST" value="localhost"/>
       <h4>MPD password:</h4>
       <input type="text" name="MPDPASS" value="user"/>
-      <input type="hidden" name="GUIURL" value="https://playnode.ca/"/>
-      <input type="hidden" name="APIURL" value="https://playnode.ca/"/>
+      <input type="hidden" name="GUIURL" value="{{ .server }}"/>
+      <input type="hidden" name="APIURL" value="{{ .server }}"/>
       <input type="submit" value="Submit"/>
     </form>
   </body>

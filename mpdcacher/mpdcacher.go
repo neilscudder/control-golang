@@ -268,16 +268,16 @@ func Info(cmd string, p Params) Status {
 		n := t.Unix()
 		age := n - b.Timestamp
 		if age > 10 {
-//			fmt.Println("Timeout at age = ", age)
+			//			fmt.Println("Timeout at age = ", age)
 			s.Timestamp = n
 			getPlaylist(conn, &s)
 			statusBuffer[playnode] = s
 		} else {
-//			fmt.Println("Info buffer")
+			//			fmt.Println("Info buffer")
 			s = statusBuffer[playnode]
 		}
 	} else {
-//		fmt.Println("no buffer for ", playnode)
+		//		fmt.Println("no buffer for ", playnode)
 		go watcher(p, playnode)
 		t := time.Now()
 		s.Timestamp = t.Unix()
@@ -359,7 +359,7 @@ func watcher(p Params, playnode string) {
 		delete(stateBuffer, playnode)
 		return
 	}
-//	fmt.Println("New watcher for: ", playnode)
+	//	fmt.Println("New watcher for: ", playnode)
 	defer w.Close()
 
 	go func() {
@@ -369,8 +369,8 @@ func watcher(p Params, playnode string) {
 	}()
 
 	for subsystem := range w.Event {
-//		fmt.Println("Changed subsystem: ", subsystem)
-//		fmt.Println("Reset buffer for: ", playnode)
+		fmt.Println("Changed subsystem: ", subsystem)
+		//		fmt.Println("Reset buffer for: ", playnode)
 		delete(statusBuffer, playnode)
 		b := stateBuffer[playnode]
 		t := time.Now()
