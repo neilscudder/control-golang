@@ -9,8 +9,7 @@ function getURLParameter(name) {
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
 }
 
-var getparams = getURLParameter('APIURL')
-  + "?KPASS=" + getURLParameter('KPASS');
+var getparams = "?KPASS=" + getURLParameter('KPASS');
 
 function autoRefresh(id,interval) {
   if (AutoToggle){ sendCmd(id) }

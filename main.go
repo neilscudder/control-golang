@@ -31,9 +31,8 @@ func main() {
 
 	var pemfile = flag.String("pem", "", "Path to pem file")
 	var keyfile = flag.String("key", "", "Path to key file")
-	var serverFlag = flag.String("url", "http://localhost:8080/", "Server URL")
+	flag.StringVar(&serverURL, "url", "http://localhost:8080/", "Server URL")
 	flag.Parse()
-	serverURL = *serverFlag
 	if *pemfile == "" {
 		ror := http.ListenAndServe(":8080", nil)
 		er(ror)
@@ -122,9 +121,8 @@ func getParams(kpass string) (m.Params, error) {
 func setup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Type", "text/html")
-	if r.FormValue("APIURL") != "" {
+	if r.FormValue("GUIURL") != "" {
 		p := m.Params{
-			"APIURL":   r.FormValue("APIURL"),
 			"PLAYNODE": r.FormValue("PLAYNODE"),
 			"EMAIL":    r.FormValue("EMAIL"),
 			"USERNAME": r.FormValue("USERNAME"),
@@ -132,13 +130,10 @@ func setup(w http.ResponseWriter, r *http.Request) {
 			"MPDHOST":  r.FormValue("MPDHOST"),
 			"MPDPASS":  r.FormValue("MPDPASS"),
 		}
-		cURL := r.FormValue("GUIURL") + "/?"
-		if p["APIURL"] != "" {
-			cURL += "&APIURL=" + p["APIURL"]
-		}
+		cURL := r.FormValue("GUIURL") + "?"
 		rURL := cURL
-		cURL += "&KPASS="
-		rURL += "&RPASS="
+		cURL += "KPASS="
+		rURL += "RPASS="
 		byteP, ror := json.Marshal(p)
 		er(ror)
 		kpass, rpass := authority.Authorize(byteP)
@@ -153,7 +148,7 @@ func setup(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, u)
 	} else {
 		u := map[string]string{
-			"server": *serverURL,
+			"server": serverURL,
 		}
 		t, ror := template.ParseFiles("templates/authority.html")
 		er(ror)
