@@ -24,22 +24,20 @@
   </head>
   <body>
     <form action="authorize" method="post" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate="">
-      <h4>Playnode label:</h4>
-      <input type="text" name="LABEL" value="Porto"/>
+      <h4>Playnode Name:</h4>
+      <input type="text" name="PLAYNODE" value="Porto"/>
       <h4>User email:</h4>
       <input type="text" name="EMAIL" value="dude@default.com"/>
       <h4>User name:</h4>
-      <input type="text" name="USERNAME" value="Dude Man"/>
+      <input type="text" name="USERNAME" value="Dudeman"/>
       <h4>MPD port:</h4>
       <input type="text" name="MPDPORT" value="1025"/>
       <h4>MPD host:</h4>
       <input type="text" name="MPDHOST" value="localhost"/>
       <h4>MPD password:</h4>
       <input type="text" name="MPDPASS" value="user"/>
-      <h4>GUI Server:</h4>
-      <input type="text" name="GUIURL" value="https://playnode.ca/"/>
-      <h4>API Server:</h4>
-      <input type="text" name="APIURL" value="https://playnode.ca/"/>
+      <input type="hidden" name="GUIURL" value="https://playnode.ca/"/>
+      <input type="hidden" name="APIURL" value="https://playnode.ca/"/>
       <input type="submit" value="Submit"/>
     </form>
   </body>

@@ -122,7 +122,7 @@ func setup(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("APIURL") != "" {
 		p := m.Params{
 			"APIURL":   r.FormValue("APIURL"),
-			"LABEL":    r.FormValue("LABEL"),
+			"PLAYNODE": r.FormValue("PLAYNODE"),
 			"EMAIL":    r.FormValue("EMAIL"),
 			"USERNAME": r.FormValue("USERNAME"),
 			"MPDPORT":  r.FormValue("MPDPORT"),
