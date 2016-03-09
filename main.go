@@ -15,6 +15,7 @@ import (
 )
 
 var searchBuffer = make(map[string][]string)
+var serverURL string
 
 func main() {
 	resGz := gz.GzipHandler(http.FileServer(http.Dir("res/")))
@@ -30,7 +31,9 @@ func main() {
 
 	var pemfile = flag.String("pem", "", "Path to pem file")
 	var keyfile = flag.String("key", "", "Path to key file")
+	var serverFlag = flag.String("url", "http://localhost:8080/", "Server URL")
 	flag.Parse()
+	serverURL = *serverFlag
 	if *pemfile == "" {
 		ror := http.ListenAndServe(":8080", nil)
 		er(ror)
@@ -150,7 +153,7 @@ func setup(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, u)
 	} else {
 		u := map[string]string{
-			"server": "https://playnode.ca",
+			"server": *serverURL,
 		}
 		t, ror := template.ParseFiles("templates/authority.html")
 		er(ror)
